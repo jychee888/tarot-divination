@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useSession, signIn, signOut } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -27,6 +28,40 @@ const themes = [
   { id: "health" as DivinationTheme, label: "健康", icon: Activity },
   { id: "self-exploration" as DivinationTheme, label: "自我探索", icon: Eye },
 ]
+
+function AuthStatus() {
+  const { data: session, status } = useSession()
+
+  if (status === "loading") {
+    return <div className="text-white animate-pulse">驗證中...</div>
+  }
+
+  if (session) {
+    return (
+      <div className="flex items-center gap-3">
+        <p className="text-sm text-purple-200">歡迎, {session.user?.name}</p>
+        <Button
+          onClick={() => signOut()}
+          variant="outline"
+          size="sm"
+          className="bg-slate-700/50 border-purple-500/30 text-purple-200 hover:bg-purple-600/20 hover:text-white"
+        >
+          登出
+        </Button>
+      </div>
+    )
+  }
+
+  return (
+    <Button
+      onClick={() => signIn("google")}
+      className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white"
+      size="sm"
+    >
+      使用 Google 登入
+    </Button>
+  )
+}
 
 const spreads = [
   { id: "single" as SpreadType, label: "單張牌", count: 1 },
@@ -112,6 +147,9 @@ export default function TarotDivination() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       <div className="container mx-auto px-4 py-8">
+        <div className="flex justify-end mb-4">
+          <AuthStatus />
+        </div>
         {/* 頁面標題區域 */}
         <header className="text-center mb-12">
           <div className="flex items-center justify-center mb-4">
