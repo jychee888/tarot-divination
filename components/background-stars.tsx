@@ -2,7 +2,7 @@ import React from 'react';
 
 const BackgroundStars = () => {
   return (
-    <div className="fixed inset-[5%] w-[90%] h-[90%] -z-11 bg-black">
+    <div className="fixed inset-[5%] w-[90%] h-[90%] -z-1 ">
       <svg 
         className="w-full h-full" 
         viewBox="0 0 893 568" 
