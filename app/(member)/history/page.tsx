@@ -51,23 +51,18 @@ export default function HistoryPage() {
   }, [status, router])
 
   if (isLoading || status === 'loading') {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white flex items-center justify-center">
-        <p className="text-2xl animate-pulse">載入歷史紀錄中...</p>
-      </div>
-    )
+    return <p className="text-2xl animate-pulse">載入歷史紀錄中...</p>
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      <div className="container mx-auto px-4 py-8">
-        <header className="text-center mb-12">
-          <h1 className="text-4xl md:text-6xl font-bold text-white">我的占卜紀錄</h1>
-          <p className="text-xl text-purple-200">回顧你的每一次探索</p>
+    <div>
+        <header className="mb-8">
+          <h1 className="text-3xl font-bold text-white">我的占卜紀錄</h1>
+          <p className="text-purple-200">回顧你的每一次探索</p>
         </header>
 
         {history.length === 0 ? (
-          <div className="text-center text-purple-200">
+          <div className="text-center text-purple-200 py-16">
             <p className="text-lg mb-4">你還沒有任何占卜紀錄。</p>
             <Link href="/" className="inline-block px-6 py-3 rounded-lg bg-purple-600 hover:bg-purple-700 text-white font-semibold">
               開始第一次占卜
@@ -76,7 +71,7 @@ export default function HistoryPage() {
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {history.map((record) => (
-              <div key={record.id} className="bg-slate-800/50 border border-purple-500/30 text-white rounded-lg p-6 flex flex-col">
+              <div key={record.id} className="bg-slate-900/70 border border-purple-500/30 text-white rounded-lg p-6 flex flex-col">
                 <div className="mb-4">
                   <h3 className="capitalize font-bold text-lg">{record.theme} - {record.spreadType}</h3>
                   <p className="text-sm text-purple-300">
@@ -94,12 +89,6 @@ export default function HistoryPage() {
             ))}
           </div>
         )}
-         <div className="text-center mt-12">
-            <Link href="/" className="inline-block px-6 py-3 rounded-lg bg-purple-600 hover:bg-purple-700 text-white font-semibold">
-              返回主頁
-            </Link>
-        </div>
-      </div>
     </div>
   )
 }

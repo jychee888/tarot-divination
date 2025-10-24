@@ -11,17 +11,23 @@ export default function ProfilePage() {
   const [bio, setBio] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
+  // This effect runs only once on mount to initialize the form with session data.
   useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/')
-    }
     if (session?.user) {
       // @ts-ignore
-      setNickname(session.user.nickname || '')
+      setNickname(session.user.nickname || '');
       // @ts-ignore
-      setBio(session.user.bio || '')
+      setBio(session.user.bio || '');
     }
-  }, [session, status, router])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session?.user.id]); // Depend on a stable property like user.id to run only once per user session.
+
+  // This effect handles redirection based on auth status.
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/');
+    }
+  }, [status, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -57,19 +63,18 @@ export default function ProfilePage() {
     }
   }
 
-  if (status === 'loading' || !session) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white flex items-center justify-center">
-        <p className="text-2xl animate-pulse">載入中...</p>
-      </div>
-    )
+  // Only show the full-page loader on initial load when session is not yet available
+  if (status === 'loading' && !session) {
+    return <p className="text-2xl animate-pulse">載入中...</p>
   }
 
+  // In the unlikely event that session is null after the initial loading, render nothing.
+  if (!session) return null;
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white">
-      <div className="container mx-auto px-4 py-12">
-        <h1 className="text-4xl font-bold text-center mb-8">個人資料</h1>
-        <div className="max-w-md mx-auto bg-slate-800/50 p-8 rounded-lg">
+    <div>
+      <h1 className="text-3xl font-bold mb-8">個人資料</h1>
+      <div className="max-w-md">
           <div className="flex items-center gap-4 mb-6">
             <img src={session.user?.image || ''} alt="User avatar" className="w-20 h-20 rounded-full" />
             <div>
@@ -85,7 +90,7 @@ export default function ProfilePage() {
                 type="text"
                 value={nickname}
                 onChange={(e) => setNickname(e.target.value)}
-                className="w-full bg-slate-700/50 border border-purple-500/30 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                className="w-full bg-slate-900/70 border border-purple-500/30 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:outline-none"
               />
             </div>
             <div>
@@ -95,7 +100,7 @@ export default function ProfilePage() {
                 rows={4}
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
-                className="w-full bg-slate-700/50 border border-purple-500/30 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                className="w-full bg-slate-900/70 border border-purple-500/30 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:outline-none"
               />
             </div>
             <div>
@@ -105,7 +110,6 @@ export default function ProfilePage() {
             </div>
           </form>
         </div>
-      </div>
     </div>
   )
 }
