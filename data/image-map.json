@@ -1,0 +1,391 @@
+[{
+		"id": "the_fool",
+		"name": "愚者",
+		"image": "/data/images/thefool.jpeg"
+	},
+	{
+		"id": "the_magician",
+		"name": "魔術師",
+		"image": "/data/images/themagician.jpeg"
+	},
+	{
+		"id": "the_high_priestess",
+		"name": "女祭司",
+		"image": "/data/images/thehighpriestess.jpeg"
+	},
+	{
+		"id": "the_empress",
+		"name": "皇后",
+		"image": "/data/images/theempress.jpeg"
+	},
+	{
+		"id": "the_emperor",
+		"name": "皇帝",
+		"image": "/data/images/theemperor.jpeg"
+	},
+	{
+		"id": "the_hierophant",
+		"name": "教皇",
+		"image": "/data/images/thehierophant.jpeg"
+	},
+	{
+		"id": "the_lovers",
+		"name": "戀人",
+		"image": "/data/images/theLovers.jpg"
+	},
+	{
+		"id": "the_chariot",
+		"name": "戰車",
+		"image": "/data/images/thechariot.jpeg"
+	},
+	{
+		"id": "strength",
+		"name": "力量",
+		"image": "/data/images/thestrength.jpeg"
+	},
+	{
+		"id": "the_hermit",
+		"name": "隱者",
+		"image": "/data/images/thehermit.jpeg"
+	},
+	{
+		"id": "wheel_of_fortune",
+		"name": "命運之輪",
+		"image": "/data/images/wheeloffortune.jpeg"
+	},
+	{
+		"id": "justice",
+		"name": "正義",
+		"image": "/data/images/justice.jpeg"
+	},
+	{
+		"id": "the_hanged_man",
+		"name": "吊人",
+		"image": "/data/images/thehangedman.jpeg"
+	},
+	{
+		"id": "death",
+		"name": "死神",
+		"image": "/data/images/death.jpeg"
+	},
+	{
+		"id": "temperance",
+		"name": "節制",
+		"image": "/data/images/temperance.jpeg"
+	},
+	{
+		"id": "the_devil",
+		"name": "惡魔",
+		"image": "/data/images/thedevil.jpeg"
+	},
+	{
+		"id": "the_tower",
+		"name": "高塔",
+		"image": "/data/images/thetower.jpeg"
+	},
+	{
+		"id": "the_star",
+		"name": "星星",
+		"image": "/data/images/thestar.jpeg"
+	},
+	{
+		"id": "the_moon",
+		"name": "月亮",
+		"image": "/data/images/themoon.jpeg"
+	},
+	{
+		"id": "the_sun",
+		"name": "太陽",
+		"image": "/data/images/thesun.jpeg"
+	},
+	{
+		"id": "judgement",
+		"name": "審判",
+		"image": "/data/images/judgement.jpeg"
+	},
+	{
+		"id": "the_world",
+		"name": "世界",
+		"image": "/data/images/theworld.jpeg"
+	},
+	{
+		"id": "ace_of_wands",
+		"name": "權杖一",
+		"image": "/data/images/aceofwands.jpeg"
+	},
+	{
+		"id": "two_of_wands",
+		"name": "權杖二",
+		"image": "/data/images/twoofwands.jpeg"
+	},
+	{
+		"id": "three_of_wands",
+		"name": "權杖三",
+		"image": "/data/images/threeofwands.jpeg"
+	},
+	{
+		"id": "four_of_wands",
+		"name": "權杖四",
+		"image": "/data/images/fourofwands.jpeg"
+	},
+	{
+		"id": "five_of_wands",
+		"name": "權杖五",
+		"image": "/data/images/fiveofwands.jpeg"
+	},
+	{
+		"id": "six_of_wands",
+		"name": "權杖六",
+		"image": "/data/images/sixofwands.jpeg"
+	},
+	{
+		"id": "seven_of_wands",
+		"name": "權杖七",
+		"image": "/data/images/sevenofwands.jpeg"
+	},
+	{
+		"id": "eight_of_wands",
+		"name": "權杖八",
+		"image": "/data/images/eightofwands.jpeg"
+	},
+	{
+		"id": "nine_of_wands",
+		"name": "權杖九",
+		"image": "/data/images/nineofwands.jpeg"
+	},
+	{
+		"id": "ten_of_wands",
+		"name": "權杖十",
+		"image": "/data/images/tenofwands.jpeg"
+	},
+	{
+		"id": "page_of_wands",
+		"name": "權杖侍者",
+		"image": "/data/images/pageofwands.jpeg"
+	},
+	{
+		"id": "knight_of_wands",
+		"name": "權杖騎士",
+		"image": "/data/images/knightofwands.jpeg"
+	},
+	{
+		"id": "queen_of_wands",
+		"name": "權杖皇后",
+		"image": "/data/images/queenofwands.jpeg"
+	},
+	{
+		"id": "king_of_wands",
+		"name": "權杖國王",
+		"image": "/data/images/kingofwands.jpeg"
+	},
+	{
+		"id": "ace_of_cups",
+		"name": "聖杯一",
+		"image": "/data/images/aceofcups.jpeg"
+	},
+	{
+		"id": "two_of_cups",
+		"name": "聖杯二",
+		"image": "/data/images/twoofcups.jpeg"
+	},
+	{
+		"id": "three_of_cups",
+		"name": "聖杯三",
+		"image": "/data/images/threeofcups.jpeg"
+	},
+	{
+		"id": "four_of_cups",
+		"name": "聖杯四",
+		"image": "/data/images/fourofcups.jpeg"
+	},
+	{
+		"id": "five_of_cups",
+		"name": "聖杯五",
+		"image": "/data/images/fiveofcups.jpeg"
+	},
+	{
+		"id": "six_of_cups",
+		"name": "聖杯六",
+		"image": "/data/images/sixofcups.jpeg"
+	},
+	{
+		"id": "seven_of_cups",
+		"name": "聖杯七",
+		"image": "/data/images/sevenofcups.jpeg"
+	},
+	{
+		"id": "eight_of_cups",
+		"name": "聖杯八",
+		"image": "/data/images/eightofcups.jpeg"
+	},
+	{
+		"id": "nine_of_cups",
+		"name": "聖杯九",
+		"image": "/data/images/nineofcups.jpeg"
+	},
+	{
+		"id": "ten_of_cups",
+		"name": "聖杯十",
+		"image": "/data/images/tenofcups.jpeg"
+	},
+	{
+		"id": "page_of_cups",
+		"name": "聖杯侍者",
+		"image": "/data/images/pageofcups.jpeg"
+	},
+	{
+		"id": "knight_of_cups",
+		"name": "聖杯騎士",
+		"image": "/data/images/knightofcups.jpeg"
+	},
+	{
+		"id": "queen_of_cups",
+		"name": "聖杯皇后",
+		"image": "/data/images/queenofcups.jpeg"
+	},
+	{
+		"id": "king_of_cups",
+		"name": "聖杯國王",
+		"image": "/data/images/kingofcups.jpeg"
+	},
+	{
+		"id": "ace_of_swords",
+		"name": "寶劍一",
+		"image": "/data/images/aceofswords.jpeg"
+	},
+	{
+		"id": "two_of_swords",
+		"name": "寶劍二",
+		"image": "/data/images/twoofswords.jpeg"
+	},
+	{
+		"id": "three_of_swords",
+		"name": "寶劍三",
+		"image": "/data/images/threeofswords.jpeg"
+	},
+	{
+		"id": "four_of_swords",
+		"name": "寶劍四",
+		"image": "/data/images/fourofswords.jpeg"
+	},
+	{
+		"id": "five_of_swords",
+		"name": "寶劍五",
+		"image": "/data/images/fiveofswords.jpeg"
+	},
+	{
+		"id": "six_of_swords",
+		"name": "寶劍六",
+		"image": "/data/images/sixofswords.jpeg"
+	},
+	{
+		"id": "seven_of_swords",
+		"name": "寶劍七",
+		"image": "/data/images/sevenofswords.jpeg"
+	},
+	{
+		"id": "eight_of_swords",
+		"name": "寶劍八",
+		"image": "/data/images/eightofswords.jpeg"
+	},
+	{
+		"id": "nine_of_swords",
+		"name": "寶劍九",
+		"image": "/data/images/nineofswords.jpeg"
+	},
+	{
+		"id": "ten_of_swords",
+		"name": "寶劍十",
+		"image": "/data/images/tenofswords.jpeg"
+	},
+	{
+		"id": "page_of_swords",
+		"name": "寶劍侍者",
+		"image": "/data/images/pageofswords.jpeg"
+	},
+	{
+		"id": "knight_of_swords",
+		"name": "寶劍騎士",
+		"image": "/data/images/knightofswords.jpeg"
+	},
+	{
+		"id": "queen_of_swords",
+		"name": "寶劍皇后",
+		"image": "/data/images/queenofswords.jpeg"
+	},
+	{
+		"id": "king_of_swords",
+		"name": "寶劍國王",
+		"image": "/data/images/kingofswords.jpeg"
+	},
+	{
+		"id": "ace_of_pentacles",
+		"name": "錢幣一",
+		"image": "/data/images/aceofpentacles.jpeg"
+	},
+	{
+		"id": "two_of_pentacles",
+		"name": "錢幣二",
+		"image": "/data/images/twoofpentacles.jpeg"
+	},
+	{
+		"id": "three_of_pentacles",
+		"name": "錢幣三",
+		"image": "/data/images/threeofpentacles.jpeg"
+	},
+	{
+		"id": "four_of_pentacles",
+		"name": "錢幣四",
+		"image": "/data/images/fourofpentacles.jpeg"
+	},
+	{
+		"id": "five_of_pentacles",
+		"name": "錢幣五",
+		"image": "/data/images/fiveofpentacles.jpeg"
+	},
+	{
+		"id": "six_of_pentacles",
+		"name": "錢幣六",
+		"image": "/data/images/sixofpentacles.jpeg"
+	},
+	{
+		"id": "seven_of_pentacles",
+		"name": "錢幣七",
+		"image": "/data/images/sevenofpentacles.jpeg"
+	},
+	{
+		"id": "eight_of_pentacles",
+		"name": "錢幣八",
+		"image": "/data/images/eightofpentacles.jpeg"
+	},
+	{
+		"id": "nine_of_pentacles",
+		"name": "錢幣九",
+		"image": "/data/images/nineofpentacles.jpeg"
+	},
+	{
+		"id": "ten_of_pentacles",
+		"name": "錢幣十",
+		"image": "/data/images/tenofpentacles.jpeg"
+	},
+	{
+		"id": "page_of_pentacles",
+		"name": "錢幣侍者",
+		"image": "/data/images/pageofpentacles.jpeg"
+	},
+	{
+		"id": "knight_of_pentacles",
+		"name": "錢幣騎士",
+		"image": "/data/images/knightofpentacles.jpeg"
+	},
+	{
+		"id": "queen_of_pentacles",
+		"name": "錢幣皇后",
+		"image": "/data/images/queenofpentacles.jpeg"
+	},
+	{
+		"id": "king_of_pentacles",
+		"name": "錢幣國王",
+		"image": "/data/images/kingofpentacles.jpeg"
+	}
+]

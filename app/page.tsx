@@ -9,18 +9,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { Sparkles, Moon, Heart, Briefcase, Users, Activity, Eye } from "lucide-react"
-import { tarotCards } from "./data/tarot-cards"
+import tarotCards, { TarotCard as TarotCardData } from "../data/tarot-cards"
 
 type DivinationTheme = "love" | "career" | "relationship" | "health" | "self-exploration"
 type SpreadType = "single" | "three" | "celtic-cross"
 
 interface TarotCard {
-  id: number
-  name: string
-  isReversed: boolean
-  isRevealed: boolean
-  meaning: string
-  image: string
+  id: string;
+  name: string;
+  isReversed: boolean;
+  isRevealed: boolean;
+  meaning: { summary: string; details: string[] };
+  image: string;
 }
 
 const themes = [
@@ -97,14 +97,29 @@ export default function TarotDivination() {
       const selectedCard = availableCards.splice(randomIndex, 1)[0]
       const isReversed = Math.random() > 0.5
 
+            // 安全地獲取主題牌義，如果不存在則提供預設值
+            const themeMeaning = selectedCard.meanings[selectedTheme] || { 
+              upright: { summary: '暫無牌義', details: [] }, 
+              reversed: { summary: '暫無牌義', details: [] } 
+            };
+
+            const meaning = isReversed
+              ? themeMeaning.reversed
+              : themeMeaning.upright;
+
+      // Ensure meaning is in the new format
+      const structuredMeaning = typeof meaning === 'string' 
+        ? { summary: meaning, details: [] } 
+        : meaning;
+
       newCards.push({
-        id: i,
+        id: selectedCard.id, // 使用正確的 string ID
         name: selectedCard.name,
         isReversed,
         isRevealed: false,
-        meaning: isReversed ? selectedCard.meanings[selectedTheme].reversed : selectedCard.meanings[selectedTheme].upright,
+        meaning: structuredMeaning,
         image: selectedCard.image
-      })
+      });
     }
 
     setCards(newCards)
@@ -113,13 +128,14 @@ export default function TarotDivination() {
     setIsSaved(false) // Reset save status for new divination
   }
 
-  const revealCard = (cardId: number) => {
+  const revealCard = (cardId: string) => {
     setCards((prev) => prev.map((card) => (card.id === cardId ? { ...card, isRevealed: true } : card)))
 
     // 檢查是否所有牌都翻開了
-    const updatedCards = cards.map((card) => (card.id === cardId ? { ...card, isRevealed: true } : card))
-
-    if (updatedCards.every((card) => card.isRevealed)) {
+    // 這部分邏輯可以在 setCards 的回調中完成，以避免狀態更新延遲問題
+    // 但為保持最小改動，暫時保留。更好的做法是在 useEffect 中處理。
+    const currentlyRevealed = cards.filter(c => c.isRevealed || c.id === cardId).length;
+    if (currentlyRevealed === cards.length) {
       setTimeout(() => setShowResults(true), 500)
     }
   }
@@ -400,7 +416,16 @@ export default function TarotDivination() {
                           {card.isReversed ? "逆位" : "正位"}
                         </Badge>
                       </header>
-                      <p className="text-purple-200 leading-relaxed">{card.meaning}</p>
+                      <div className="text-purple-200 space-y-3">
+                        <p className="leading-relaxed font-semibold">{card.meaning.summary}</p>
+                        {card.meaning.details && card.meaning.details.length > 0 && (
+                          <ul className="list-disc list-inside space-y-1 text-sm opacity-90">
+                            {card.meaning.details.map((detail, i) => (
+                              <li key={i}>{detail}</li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
                     </article>
                   ))}
 
