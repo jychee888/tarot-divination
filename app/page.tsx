@@ -2,6 +2,8 @@
 
 import { useState } from "react"
 import { useSession, signIn, signOut } from "next-auth/react"
+import { useToast } from "@/hooks/use-toast"
+import Link from 'next/link'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -39,7 +41,9 @@ function AuthStatus() {
   if (session) {
     return (
       <div className="flex items-center gap-3">
-        <p className="text-sm text-purple-200">歡迎, {session.user?.name}</p>
+        <Link href="/profile" className="text-sm text-purple-200 hover:text-white hover:underline">
+          歡迎, {session.user?.name}
+        </Link>
         <Button
           onClick={() => signOut()}
           variant="outline"
@@ -70,11 +74,14 @@ const spreads = [
 ]
 
 export default function TarotDivination() {
+  const { data: session } = useSession()
   const [selectedTheme, setSelectedTheme] = useState<DivinationTheme>("love")
   const [selectedSpread, setSelectedSpread] = useState<SpreadType>("three")
   const [isReading, setIsReading] = useState(false)
   const [cards, setCards] = useState<TarotCard[]>([])
   const [showResults, setShowResults] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
+  const { toast } = useToast()
 
   const startDivination = () => {
     const spreadCount = spreads.find((s) => s.id === selectedSpread)?.count || 3
@@ -128,6 +135,50 @@ export default function TarotDivination() {
       return "grid-cols-1 md:grid-cols-3 gap-6"
     } else {
       return "grid-cols-2 md:grid-cols-4 gap-4"
+    }
+  }
+
+  const saveDivination = async () => {
+    if (!session) {
+      toast({
+        title: "請先登入",
+        description: "登入後才能儲存您的占卜紀錄。",
+        variant: "destructive",
+      })
+      return
+    }
+
+    setIsSaving(true)
+    try {
+      const response = await fetch('/api/divinations', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          theme: selectedTheme,
+          spreadType: selectedSpread,
+          cards: cards.map(c => ({ name: c.name, isReversed: c.isReversed, meaning: c.meaning })),
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('儲存失敗')
+      }
+
+      toast({
+        title: "儲存成功！",
+        description: "您的占卜紀錄已儲存。",
+      })
+    } catch (error) {
+      console.error('Failed to save divination:', error)
+      toast({
+        title: "儲存失敗",
+        description: "無法儲存您的占卜紀錄，請稍後再試。",
+        variant: "destructive",
+      })
+    } finally {
+      setIsSaving(false)
     }
   }
 
@@ -362,6 +413,11 @@ export default function TarotDivination() {
                   ))}
 
                   <div className="flex flex-col sm:flex-row gap-4 pt-6">
+                    {session && (
+                      <Button onClick={saveDivination} disabled={isSaving} variant="outline" className="bg-slate-700/50 border-purple-500/30 text-purple-200 hover:bg-purple-600/20 flex-1 transition-all duration-200 hover:scale-105">
+                        {isSaving ? "儲存中..." : "儲存本次占卜"}
+                      </Button>
+                    )}
                     <Button
                       className="bg-green-600 hover:bg-green-700 text-white flex-1 transition-all duration-200 hover:scale-105"
                       size="lg"

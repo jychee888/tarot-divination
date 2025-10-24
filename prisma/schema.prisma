@@ -45,6 +45,7 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+  divinations   DivinationRecord[]
 
   // Custom fields for user profile
   nickname      String?   @unique
@@ -58,3 +59,14 @@ model VerificationToken {
 
   @@unique([identifier, token])
 }
+
+model DivinationRecord {
+  id          String   @id @default(cuid())
+  theme       String
+  spreadType  String
+  cards       Json     // Store card details as JSON
+  createdAt   DateTime @default(now())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
