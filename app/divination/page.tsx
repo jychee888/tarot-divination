@@ -9,18 +9,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { Sparkles, Moon, Heart, Briefcase, Users, Activity, Eye } from "lucide-react"
-import tarotCards, { TarotCard as TarotCardData } from "../data/tarot-cards"
+import { TarotCardData, tarotCards } from "../data/tarot-cards"
 
 type DivinationTheme = "love" | "career" | "relationship" | "health" | "self-exploration"
 type SpreadType = "single" | "three" | "celtic-cross"
 
-interface TarotCard {
-  id: string;
-  name: string;
+// Extend the imported TarotCard type with local state properties
+type LocalTarotCard = TarotCardData & {
   isReversed: boolean;
   isRevealed: boolean;
   meaning: { summary: string; details: string[] };
-  image: string;
 }
 
 const themes = [
@@ -78,7 +76,7 @@ export default function TarotDivination() {
   const [selectedTheme, setSelectedTheme] = useState<DivinationTheme>("love")
   const [selectedSpread, setSelectedSpread] = useState<SpreadType>("three")
   const [isReading, setIsReading] = useState(false)
-  const [cards, setCards] = useState<TarotCard[]>([])
+  const [cards, setCards] = useState<LocalTarotCard[]>([])
   const [showResults, setShowResults] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [isSaved, setIsSaved] = useState(false)
@@ -86,7 +84,7 @@ export default function TarotDivination() {
 
   const startDivination = () => {
     const spreadCount = spreads.find((s) => s.id === selectedSpread)?.count || 3
-    const newCards: TarotCard[] = []
+    const newCards: LocalTarotCard[] = []
     
     // Create a copy of the tarot cards array to avoid mutating the original
     const availableCards = [...tarotCards]
@@ -118,7 +116,9 @@ export default function TarotDivination() {
         isReversed,
         isRevealed: false,
         meaning: structuredMeaning,
-        image: selectedCard.image
+        image: selectedCard.image,
+        type: selectedCard.type,
+        meanings: selectedCard.meanings,
       });
     }
 
@@ -177,7 +177,16 @@ export default function TarotDivination() {
         body: JSON.stringify({
           theme: selectedTheme,
           spreadType: selectedSpread,
-          cards: cards.map(c => ({ name: c.name, isReversed: c.isReversed, meaning: c.meaning })),
+          cards: cards.map(c => ({
+            id: c.id,
+            name: c.name,
+            image: c.image,
+            type: c.type,
+            meanings: c.meanings,
+            isReversed: c.isReversed,
+            isRevealed: c.isRevealed,
+            meaning: c.meaning
+          })),
         }),
       })
 

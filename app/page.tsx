@@ -2,10 +2,12 @@ import Link from 'next/link';
 import { Sparkles, Moon, Star, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CornerDecoration } from '@/components/corner-decoration';
+import BackgroundStars from '@/components/background-stars';
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-black text-white relative overflow-hidden">
+      <BackgroundStars />
       {/* Golden Borders */}
       <div className="fixed inset-0 pointer-events-none z-50">
         {/* Outer Border */}

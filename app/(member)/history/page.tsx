@@ -75,7 +75,14 @@ export default function HistoryPage() {
                 <div className="mb-4">
                   <h3 className="capitalize font-bold text-lg">{record.theme} - {record.spreadType}</h3>
                   <p className="text-sm text-purple-300">
-                    {new Date(record.createdAt).toLocaleDateString('zh-TW', { year: 'numeric', month: 'long', day: 'numeric' })}
+                    {new Date(record.createdAt).toLocaleString('zh-TW', { 
+                      year: 'numeric', 
+                      month: 'long', 
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      hour12: false
+                    })}
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2 flex-grow">
