@@ -80,9 +80,9 @@ export default function HistoryPage() {
                 </div>
                 <div className="flex flex-wrap gap-2 flex-grow">
                   {record.cards.map((card, index) => (
-                    <span key={index} className={`px-2 py-1 text-xs font-semibold rounded-full ${card.isReversed ? 'bg-red-500/20 text-red-300' : 'bg-blue-500/20 text-blue-300'}`}>
+                    <div key={index} className={`px-2 py-1 text-xs font-semibold rounded-lg h-fit ${card.isReversed ? 'bg-red-500/20 text-red-300' : 'bg-blue-500/20 text-blue-300'}`}>
                       {card.name} {card.isReversed ? '(逆)' : ''}
-                    </span>
+                    </div>
                   ))}
                 </div>
               </div>

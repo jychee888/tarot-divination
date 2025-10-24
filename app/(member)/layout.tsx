@@ -3,9 +3,10 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { signOut } from 'next-auth/react'
-import { User, Clock, LogOut } from 'lucide-react'
+import { User, Clock, LogOut, Home } from 'lucide-react'
 
 const navigation = [
+  { name: '返回首頁', href: '/', icon: Home },
   { name: '個人資料', href: '/profile', icon: User },
   { name: '占卜歷史', href: '/history', icon: Clock },
 ]

@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { Download, Sparkles, Moon, Heart, Briefcase, Users, Activity, Eye } from "lucide-react"
+import { Sparkles, Moon, Heart, Briefcase, Users, Activity, Eye } from "lucide-react"
 import { tarotCards } from "./data/tarot-cards"
 
 type DivinationTheme = "love" | "career" | "relationship" | "health" | "self-exploration"
@@ -81,6 +81,7 @@ export default function TarotDivination() {
   const [cards, setCards] = useState<TarotCard[]>([])
   const [showResults, setShowResults] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
+  const [isSaved, setIsSaved] = useState(false)
   const { toast } = useToast()
 
   const startDivination = () => {
@@ -109,6 +110,7 @@ export default function TarotDivination() {
     setCards(newCards)
     setIsReading(true)
     setShowResults(false)
+    setIsSaved(false) // Reset save status for new divination
   }
 
   const revealCard = (cardId: number) => {
@@ -126,6 +128,7 @@ export default function TarotDivination() {
     setIsReading(false)
     setShowResults(false)
     setCards([])
+    setIsSaved(false) // Reset save status for re-reading
   }
 
   const getSpreadLayout = () => {
@@ -166,6 +169,8 @@ export default function TarotDivination() {
         throw new Error('儲存失敗')
       }
 
+      setIsSaved(true) // Mark as saved
+
       toast({
         title: "儲存成功！",
         description: "您的占卜紀錄已儲存。",
@@ -179,19 +184,6 @@ export default function TarotDivination() {
       })
     } finally {
       setIsSaving(false)
-    }
-  }
-
-  const downloadPDF = async () => {
-    // 使用 React 19 的新特性 - 更好的異步處理
-    try {
-      // 這裡可以集成 PDF 生成邏輯
-      console.log("正在生成 PDF...")
-      // 模擬 PDF 生成
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-      console.log("PDF 生成完成")
-    } catch (error) {
-      console.error("PDF 生成失敗:", error)
     }
   }
 
@@ -233,7 +225,7 @@ export default function TarotDivination() {
                           className={`h-20 flex-col gap-2 transition-all duration-200 ${
                             selectedTheme === theme.id
                               ? "bg-purple-600 hover:bg-purple-700 text-white shadow-lg scale-105"
-                              : "bg-slate-700/50 border-purple-500/30 text-purple-200 hover:bg-purple-600/20 hover:scale-105"
+                              : "bg-slate-700/50 border-purple-500/30 text-purple-200 hover:bg-purple-600/20 hover:text-white hover:scale-105"
                           }`}
                           onClick={() => setSelectedTheme(theme.id)}
                           aria-pressed={selectedTheme === theme.id}
@@ -414,21 +406,14 @@ export default function TarotDivination() {
 
                   <div className="flex flex-col sm:flex-row gap-4 pt-6">
                     {session && (
-                      <Button onClick={saveDivination} disabled={isSaving} variant="outline" className="bg-slate-700/50 border-purple-500/30 text-purple-200 hover:bg-purple-600/20 flex-1 transition-all duration-200 hover:scale-105">
-                        {isSaving ? "儲存中..." : "儲存本次占卜"}
+                      <Button onClick={saveDivination} disabled={isSaving || isSaved} variant="outline" className="bg-slate-700/50 border-purple-500/30 text-purple-200 hover:bg-purple-600/20 hover:text-white flex-1 transition-all duration-200 hover:scale-105 disabled:opacity-70 disabled:cursor-not-allowed">
+                        {isSaving ? "儲存中..." : (isSaved ? "已儲存" : "儲存本次占卜")}
                       </Button>
                     )}
-                    <Button
-                      className="bg-green-600 hover:bg-green-700 text-white flex-1 transition-all duration-200 hover:scale-105"
-                      size="lg"
-                      onClick={downloadPDF}
-                    >
-                      <Download className="w-5 h-5 mr-2" />
-                      下載結果 PDF
-                    </Button>
+
                     <Button
                       variant="outline"
-                      className="bg-slate-700/50 border-purple-500/30 text-purple-200 hover:bg-purple-600/20 flex-1 transition-all duration-200 hover:scale-105"
+                      className="bg-slate-700/50 border-purple-500/30 text-purple-200 hover:bg-purple-600/20 hover:text-white flex-1 transition-all duration-200 hover:scale-105"
                       size="lg"
                       onClick={resetReading}
                     >
