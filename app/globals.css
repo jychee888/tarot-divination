@@ -1,3 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&display=swap');
+
+/* 中文字體 - 霸道黑體 */
+@font-face {
+  font-family: 'Bakudai-Regular';
+  src: url('https://cdn.jsdelivr.net/gh/max32002/bakudaifont@1.48/webfont/Bakudai-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -16,6 +27,45 @@ body {
 
   .backface-hidden {
     backface-visibility: hidden;
+  }
+
+  /* 標題使用的英文字體 - 正體 */
+  .im-fell-english-regular {
+    font-family: "IM Fell English", serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+
+  /* 標題使用的英文字體 - 斜體 */
+  .im-fell-english-regular-italic {
+    font-family: "IM Fell English", serif;
+    font-weight: 400;
+    font-style: italic;
+  }
+
+  /* 中文標題字體 - 霸道黑體 */
+  .chinese-title-bakudai {
+    font-family: 'Bakudai-Regular', sans-serif;
+    font-weight: normal;
+    letter-spacing: 0.1em;
+  }
+
+  /* Floating animation */
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+  
+  .hover\:animate-float {
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .hover\:animate-float:hover {
+    animation: float 2s ease-in-out infinite;
   }
 
   .rotate-y-180 {
