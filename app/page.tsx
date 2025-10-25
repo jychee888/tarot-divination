@@ -11,13 +11,13 @@ import { DivinationBackground } from '@/components/divination-background';
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-[rgb(23,17,17)] text-white relative overflow-hidden">
+    <div className="min-h-screen bg-[rgb(23,17,17)] text-[#F9ECDC] relative overflow-hidden">
       <DivinationBackground />
       <div className="absolute inset-0 flex items-center justify-between px-8 pointer-events-none z-10">
-        <div className="relative w-[10%] left-[5%] h-auto">
+        <div className="relative w-[8%] left-[8%] h-auto">
           <SunIcon className="w-full h-auto" />
         </div>
-        <div className="relative w-[10%] right-[5%] h-auto">
+        <div className="relative w-[8%] right-[8%] h-auto">
           <MoonIcon className="w-full h-auto" />
         </div>
       </div>
@@ -36,29 +36,29 @@ export default function Home() {
         <CornerDecoration position="bottom-left" className="bottom-4 right-4 scale-y-[-1]" />
       </div>
       {/* Hero Section */}
-      <div className="container mx-auto px-10 py-24 text-center relative">
+      <div className="absolute w-full h-full inset-0 px-10 flex flex-col justify-center items-center text-center">
         {/* Title Section */}
-        <div className="relative z-10">
+        <div className="relative z-30 w-full">
           <div className="flex flex-col items-center justify-center mb-6 space-y-2 w-full">
-            <h2 className="chinese-title-bakudai text-[3vw] relative z-20">心靈之眼</h2>
+            <h2 className="chinese-title-bakudai text-[3vw] relative z-20 ">心靈之眼</h2>
             <div className="relative flex items-center justify-center w-full">
-              <EyeIcon className="absolute top-0 left-[10%] z-20"/>
-              <h1 className="im-fell-english-regular text-[7vw] leading-none relative z-20">
+              <EyeIcon className="absolute top-0 left-[20%] z-20"/>
+              <h1 className="im-fell-english-regular text-[6vw] leading-none relative">
                 Soul's Eye
               </h1>
-              <EyeIcon mirror className="absolute top-0 right-[10%] z-20"/>
+              <EyeIcon mirror className="absolute top-0 right-[20%] z-20"/>
             </div>
           </div>
         </div>
 
         {/* Tarot Visual */}
-        <div className="relative -mt-[10%] z-10">
+        <div className="relative -mt-[10%] z-20">
           <TarotVisual />
         </div>
         
         {/* Description and Buttons */}
-        <div className="relative z-10"> 
-          <p className="chinese-title-bakudai text-2xl -mt-[2%] mb-10 max-w-3xl mx-auto">
+        <div className="relative z-30"> 
+          <p className="chinese-title-bakudai text-2xl mt-[2%] mb-10 max-w-3xl mx-auto">
             開啟你的內在智慧<br />讓塔羅牌指引你找到生命的答案
           </p>
           
