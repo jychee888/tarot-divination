@@ -97,9 +97,11 @@ const DynamicStarBackground = () => {
       @keyframes twinkle {
         0%, 100% { 
           opacity: 0.3;
+          transform: scale(0.8);
         }
         50% { 
           opacity: 1;
+          transform: scale(1.2);
         }
       }
       
@@ -143,7 +145,6 @@ const DynamicStarBackground = () => {
               left: `${star.x}%`,
               top: `${star.y}%`,
               opacity: star.opacity,
-              transform: `rotate(${star.rotation}deg)`,
               animation: 'twinkle var(--duration) infinite var(--delay) ease-in-out',
             } as CustomCSSProperties}
           >
@@ -156,6 +157,11 @@ const DynamicStarBackground = () => {
               strokeLinecap="round" 
               strokeLinejoin="round"
               preserveAspectRatio="xMidYMid meet"
+              style={{
+                transform: `rotate(${star.rotation}deg)`,
+                transformOrigin: 'center',
+                transformBox: 'fill-box'
+              }}
             >
               <path d="M74.3003 155.207L75.071 161.297L70.491 165.385L76.5216 166.534L78.9936 172.153L81.9496 166.773L88.0563 166.158L83.8536 161.683L85.1563 155.685L79.603 158.299L74.3003 155.207Z" />
             </svg>
