@@ -3,6 +3,7 @@ export interface TarotCardData {
   name: string
   suit?: string
   type: "major" | "minor"
+  image?: string
   meanings: {
     love: { upright: string; reversed: string }
     career: { upright: string; reversed: string }

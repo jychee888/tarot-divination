@@ -9,16 +9,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { Sparkles, Moon, Heart, Briefcase, Users, Activity, Eye } from "lucide-react"
-import { TarotCardData, tarotCards } from "../data/tarot-cards"
+import tarotCards from "@/data/tarot-cards"
 
 type DivinationTheme = "love" | "career" | "relationship" | "health" | "self-exploration"
 type SpreadType = "single" | "three" | "celtic-cross"
 
-// Extend the imported TarotCard type with local state properties
-type LocalTarotCard = TarotCardData & {
+interface TarotCard {
+  id: string;
+  name: string;
   isReversed: boolean;
   isRevealed: boolean;
   meaning: { summary: string; details: string[] };
+  image?: string;
 }
 
 const themes = [
@@ -76,7 +78,7 @@ export default function TarotDivination() {
   const [selectedTheme, setSelectedTheme] = useState<DivinationTheme>("love")
   const [selectedSpread, setSelectedSpread] = useState<SpreadType>("three")
   const [isReading, setIsReading] = useState(false)
-  const [cards, setCards] = useState<LocalTarotCard[]>([])
+  const [cards, setCards] = useState<TarotCard[]>([])
   const [showResults, setShowResults] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [isSaved, setIsSaved] = useState(false)
@@ -84,7 +86,7 @@ export default function TarotDivination() {
 
   const startDivination = () => {
     const spreadCount = spreads.find((s) => s.id === selectedSpread)?.count || 3
-    const newCards: LocalTarotCard[] = []
+    const newCards: TarotCard[] = []
     
     // Create a copy of the tarot cards array to avoid mutating the original
     const availableCards = [...tarotCards]
@@ -116,9 +118,7 @@ export default function TarotDivination() {
         isReversed,
         isRevealed: false,
         meaning: structuredMeaning,
-        image: selectedCard.image,
-        type: selectedCard.type,
-        meanings: selectedCard.meanings,
+        image: selectedCard.image
       });
     }
 
@@ -177,16 +177,7 @@ export default function TarotDivination() {
         body: JSON.stringify({
           theme: selectedTheme,
           spreadType: selectedSpread,
-          cards: cards.map(c => ({
-            id: c.id,
-            name: c.name,
-            image: c.image,
-            type: c.type,
-            meanings: c.meanings,
-            isReversed: c.isReversed,
-            isRevealed: c.isRevealed,
-            meaning: c.meaning
-          })),
+          cards: cards.map(c => ({ name: c.name, isReversed: c.isReversed, meaning: c.meaning })),
         }),
       })
 
@@ -221,12 +212,11 @@ export default function TarotDivination() {
         {/* 頁面標題區域 */}
         <header className="text-center mb-12">
           <div className="flex items-center justify-center mb-4">
-            <Moon className="w-8 h-8 text-purple-400 mr-3 animate-pulse" />
-            <h1 className="text-4xl md:text-6xl font-bold text-white bg-clip-text text-transparent bg-gradient-to-r from-purple-300 via-pink-300 to-indigo-300">心靈之眼</h1>
-            <Sparkles className="w-8 h-8 text-purple-400 ml-3 animate-pulse" />
+            <Moon className="w-8 h-8 text-purple-400 mr-3" />
+            <h1 className="text-4xl md:text-6xl font-bold text-white">線上塔羅占卜</h1>
+            <Sparkles className="w-8 h-8 text-purple-400 ml-3" />
           </div>
-          <p className="text-xl text-purple-200 max-w-2xl mx-auto mb-6">開啟內在智慧之窗，讓塔羅牌指引你找到心靈的答案</p>
-          <div className="w-24 h-1 bg-gradient-to-r from-purple-500 to-transparent mx-auto mb-6 rounded-full"></div>
+          <p className="text-xl text-purple-200 max-w-2xl mx-auto">選擇你的問題與牌陣，啟動內心的直覺</p>
         </header>
 
         {!isReading ? (
@@ -234,8 +224,8 @@ export default function TarotDivination() {
           <main>
             <Card className="max-w-4xl mx-auto bg-slate-800/50 border-purple-500/30 backdrop-blur-sm">
               <CardHeader>
-                <CardTitle className="text-2xl text-white text-center">✨ 開啟心靈之眼 ✨</CardTitle>
-                <CardDescription className="text-purple-200 text-center">選擇占卜主題和牌陣，讓塔羅牌為你揭示隱藏的訊息</CardDescription>
+                <CardTitle className="text-2xl text-white text-center">開始你的占卜之旅</CardTitle>
+                <CardDescription className="text-purple-200 text-center">選擇占卜主題和牌陣類型</CardDescription>
               </CardHeader>
               <CardContent className="space-y-8">
                 {/* 占卜主題選擇 */}
