@@ -8,6 +8,7 @@ import { TarotVisual } from '@/components/tarot-visual';
 import { SunIcon } from '@/components/sun-icon';
 import { MoonIcon } from '@/components/moon-icon';
 import { DivinationBackground } from '@/components/divination-background';
+import { AuthStatus } from '@/components/auth-status';
 
 export default function Home() {
   return (
@@ -35,12 +36,25 @@ export default function Home() {
         <CornerDecoration position="bottom-right" className="bottom-4 left-4 scale-x-[-1]" />
         <CornerDecoration position="bottom-left" className="bottom-4 right-4 scale-y-[-1]" />
       </div>
+      {/* Header Section */}
+      <div className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between py-14 px-16 ">
+        {/* Logo */}
+        <Link href="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
+          <span className="im-fell-english-regular text-xl text-white">Soul's Eye</span>
+        </Link>
+        
+        {/* User Profile */}
+        <div className="flex justify-end">
+          <AuthStatus />
+        </div>
+      </div>
+
       {/* Hero Section */}
       <div className="absolute w-full h-full inset-0 px-10 flex flex-col justify-center items-center text-center">
         {/* Title Section */}
         <div className="relative z-30 w-full">
           <div className="flex flex-col items-center justify-center mb-6 space-y-2 w-full">
-            <h2 className="chinese-title-bakudai text-[3vw] relative z-20 ">心靈之眼</h2>
+            <h2 className="chinese-title-bakudai text-[3vw] relative z-20">心靈之眼</h2>
             <div className="relative flex items-center justify-center w-full">
               <EyeIcon className="absolute top-0 left-[20%] z-20"/>
               <h1 className="im-fell-english-regular text-[6vw] leading-none relative">
