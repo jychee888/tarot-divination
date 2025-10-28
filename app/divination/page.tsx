@@ -115,23 +115,33 @@ export default function TarotDivination() {
     setIsSaved(false) // Reset save status for new divination
   }
 
-  // 當 showResults 變為 true 時滾動到結果標題（向下偏移50px）
-  useEffect(() => {
-    if (showResults && resultsTitleRef.current) {
-      const yOffset = -50 // 向上偏移50px
-      const y = resultsTitleRef.current.getBoundingClientRect().top + window.pageYOffset + yOffset
-      window.scrollTo({ top: y, behavior: 'smooth' })
-    }
-  }, [showResults])
+  // 當 showResults 變為 true 時，滾動邏輯已移至 revealCard 函數中
 
   const revealCard = (cardId: string) => {
-    setCards((prev) => prev.map((card) => (card.id === cardId ? { ...card, isRevealed: true } : card)))
-
-    // 檢查是否所有牌都翻開了
-    const currentlyRevealed = cards.filter(c => c.isRevealed || c.id === cardId).length;
-    if (currentlyRevealed === cards.length) {
-      setTimeout(() => setShowResults(true), 500)
-    }
+    setCards((prev) => {
+      const updatedCards = prev.map((card) => 
+        card.id === cardId ? { ...card, isRevealed: true } : card
+      );
+      
+      // 檢查是否所有牌都翻開了
+      const allRevealed = updatedCards.every(card => card.isRevealed);
+      if (allRevealed) {
+        // 先等待翻牌動畫完成 (500ms)
+        setTimeout(() => {
+          setShowResults(true);
+          // 再等待短暫延遲後平滑滾動到結果 (額外500ms)
+          setTimeout(() => {
+            if (resultsTitleRef.current) {
+              const yOffset = -50; // 向上偏移50px
+              const y = resultsTitleRef.current.getBoundingClientRect().top + window.pageYOffset + yOffset;
+              window.scrollTo({ top: y, behavior: 'smooth' });
+            }
+          }, 1000);
+        }, 1000);
+      }
+      
+      return updatedCards;
+    });
   }
 
   const resetReading = () => {

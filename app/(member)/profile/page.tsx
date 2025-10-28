@@ -65,51 +65,88 @@ export default function ProfilePage() {
 
   // Only show the full-page loader on initial load when session is not yet available
   if (status === 'loading' && !session) {
-    return <p className="text-2xl animate-pulse">載入中...</p>
+    return <p className="text-1xl animate-pulse">載入中...</p>
   }
 
   // In the unlikely event that session is null after the initial loading, render nothing.
   if (!session) return null;
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold mb-8">個人資料</h1>
-      <div className="max-w-md">
-          <div className="flex items-center gap-4 mb-6">
-            <img src={session.user?.image || ''} alt="User avatar" className="w-20 h-20 rounded-full" />
-            <div>
-              <h2 className="text-2xl font-bold">{session.user?.name}</h2>
-              <p className="text-purple-300">{session.user?.email}</p>
-            </div>
-          </div>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label htmlFor="nickname" className="block text-sm font-medium text-purple-200 mb-2">暱稱</label>
-              <input
-                id="nickname"
-                type="text"
-                value={nickname}
-                onChange={(e) => setNickname(e.target.value)}
-                className="w-full bg-slate-900/70 border border-purple-500/30 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:outline-none"
-              />
-            </div>
-            <div>
-              <label htmlFor="bio" className="block text-sm font-medium text-purple-200 mb-2">個人簡介</label>
-              <textarea
-                id="bio"
-                rows={4}
-                value={bio}
-                onChange={(e) => setBio(e.target.value)}
-                className="w-full bg-slate-900/70 border border-purple-500/30 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-purple-500 focus:outline-none"
-              />
-            </div>
-            <div>
-              <button type="submit" disabled={isLoading} className="w-full px-4 py-3 rounded-lg bg-purple-600 hover:bg-purple-700 text-white font-bold transition-colors disabled:opacity-50">
-                {isLoading ? '儲存中...' : '儲存變更'}
-              </button>
-            </div>
-          </form>
+    <div className="space-y-6">
+      <div className="border-b border-amber-400/30 pb-4">
+        <h1 className="text-2xl font-medium text-amber-100">個人資料</h1>
+        <p className="text-amber-100/60 text-sm mt-1">更新您的個人資料和偏好設定</p>
+      </div>
+      
+      <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
+        <div className="space-y-2">
+          <label htmlFor="nickname" className="block text-sm font-medium text-amber-100/80">
+            暱稱
+          </label>
+          <input
+            type="text"
+            id="nickname"
+            value={nickname}
+            onChange={(e) => setNickname(e.target.value)}
+            className="w-full px-4 py-2 bg-amber-900/30 border border-amber-400/30 rounded-md 
+                     text-amber-100 placeholder-amber-400/50 
+                     focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:border-amber-400/50
+                     hover:border-amber-400/50
+                     transition-all duration-300"
+            placeholder="請輸入您的暱稱"
+          />
         </div>
+
+        <div className="space-y-2">
+          <label htmlFor="bio" className="block text-sm font-medium text-amber-100/80">
+            自我介紹
+          </label>
+          <textarea
+            id="bio"
+            rows={4}
+            value={bio}
+            onChange={(e) => setBio(e.target.value)}
+            className="w-full px-4 py-2 bg-amber-900/30 border border-amber-400/30 rounded-md 
+                     text-amber-100 placeholder-amber-400/50 
+                     focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:border-amber-400/50
+                     hover:border-amber-400/50
+                     transition-all duration-300"
+            placeholder="簡單介紹一下自己..."
+          />
+        </div>
+
+        <div className="flex items-center justify-end space-x-3 pt-4">
+          <button
+            type="button"
+            onClick={() => router.back()}
+            className="px-4 py-2 border border-amber-400/30 text-amber-100 rounded-md 
+                     hover:bg-amber-500/10 hover:border-amber-400/50
+                     focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:ring-offset-2 focus:ring-offset-amber-900/50
+                     transition-all duration-200"
+          >
+            取消
+          </button>
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="px-6 py-2 bg-amber-500/30 border border-amber-400/60 text-amber-100 rounded-md 
+                     hover:bg-amber-500/40 hover:shadow-[0_0_10px_rgba(251,191,36,0.2)]
+                     focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:ring-offset-2 focus:ring-offset-amber-900/50
+                     disabled:opacity-50 disabled:cursor-not-allowed
+                     transition-all duration-200 flex items-center"
+          >
+            {isLoading ? (
+              <>
+                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-amber-100" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                更新中...
+              </>
+            ) : '更新資料'}
+          </button>
+        </div>
+      </form>
     </div>
   )
 }
