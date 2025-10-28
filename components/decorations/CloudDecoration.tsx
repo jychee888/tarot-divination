@@ -43,37 +43,32 @@ const CloudSVG: React.FC<CloudProps> = ({ className = '', mirrored = false }) =>
 
 interface CloudDecorationProps {
   className?: string;
-  cloudSize?: 'sm' | 'md' | 'lg';
   position?: 'top' | 'middle' | 'bottom';
 }
 
 export const CloudDecoration: React.FC<CloudDecorationProps> = ({ 
   className = '',
-  cloudSize = 'md',
   position = 'middle'
 }) => {
-  const sizeClasses = {
-    sm: 'w-1/6',
-    md: 'w-1/5',
-    lg: 'w-1/3'
-  };
-
   const positionClasses = {
     top: 'top-0',
     middle: 'top-1/2 -translate-y-1/2',
     bottom: 'bottom-0'
-
   };
+  //sm: 640px 以上
+  // md: 768px 以上
+  // lg: 1024px 以上
+  // xl: 1280px 以上
+  // 2xl: 1536px 以上
 
   return (
     <div className={`absolute inset-x-0 ${positionClasses[position]} ${className}`}>
       {/* Left Cloud */}
-      <div className={`absolute -left-[30%]  ${sizeClasses[cloudSize]} max-w-xs`}>
+      <div className="absolute -left-[40%] w-1/5 max-w-xs">
         <CloudSVG />
       </div>
-
       {/* Right Cloud (mirrored) */}
-      <div className={`absolute -right-[30%]  ${sizeClasses[cloudSize]} max-w-xs`}>
+      <div className="absolute -right-[40%] w-1/5 max-w-xs">
         <CloudSVG mirrored />
       </div>
     </div>

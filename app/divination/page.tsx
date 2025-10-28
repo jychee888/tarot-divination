@@ -228,7 +228,7 @@ export default function TarotDivination() {
             {!isReading ? (
           /* 設定區塊 */
           <main>
-            <div className="relative max-w-3xl mx-auto">
+            <div className="relative max-w-2xl mx-auto">
               {/* 占卜設定 */}
             <Card className="bg-[rgba(23, 17, 17, 0.2)] border-2 border-amber-400 backdrop-blur-sm rounded-none relative overflow-visible">
               <MoonPhaseIndicator position="top" />
@@ -249,7 +249,7 @@ export default function TarotDivination() {
                         <Button
                           key={theme.id}
                           variant={selectedTheme === theme.id ? "default" : "outline"}
-                          className={`font-serif py-8 border-2 border-amber-400 bg-transparent hover:bg-amber-500/20 text-amber-300 hover:text-amber-200 text-lg transition-all duration-300 transform rounded-full ${
+                          className={`font-serif py-6 border-2 border-amber-400 bg-transparent hover:bg-amber-500/20 text-amber-300 hover:text-amber-200 text-md transition-all duration-300 transform rounded-full ${
                             selectedTheme === theme.id 
                               ? 'scale-105 bg-amber-500/10' 
                               : 'hover:scale-105'
@@ -273,7 +273,7 @@ export default function TarotDivination() {
                       <Button
                         key={spread.id}
                         variant={selectedSpread === spread.id ? "default" : "outline"}
-                        className={`font-serif py-8 border-2 border-amber-400 bg-transparent hover:bg-amber-500/20 text-amber-300 hover:text-amber-200 text-lg transition-all duration-300 transform rounded-full ${
+                        className={`font-serif py-6 border-2 border-amber-400 bg-transparent hover:bg-amber-500/20 text-amber-300 hover:text-amber-200 text-md transition-all duration-300 transform rounded-full ${
                           selectedSpread === spread.id 
                             ? 'scale-105 bg-amber-500/10' 
                             : 'hover:scale-105'
@@ -291,7 +291,7 @@ export default function TarotDivination() {
                 <div className="text-center pt-6">
                   <Button
                     size="lg"
-                    className="font-serif border-2 border-amber-400 bg-transparent hover:bg-amber-500/20 text-amber-300 hover:text-amber-200 text-xl px-10 py-8 transition-all duration-300 transform hover:scale-105 rounded-full"
+                    className="font-serif border-2 border-amber-400 bg-transparent hover:bg-amber-500/20 text-amber-300 hover:text-amber-200 text-md px-10 py-6 transition-all duration-300 transform hover:scale-105 rounded-full"
                     onClick={startDivination}
                   >
                     <Sparkles className="w-5 h-5 mr-2 text-amber-200" />
@@ -307,7 +307,7 @@ export default function TarotDivination() {
           </div>
           </main>
         ) : (
-          <main className="max-w-3xl mx-auto">
+          <main className="max-w-2xl mx-auto">
             {/* 抽牌區塊 */}
             <Card className="bg-[rgba(23, 17, 17, 0.2)] pb-[50px] border-2 border-amber-400 backdrop-blur-sm rounded-none relative ">
               <MoonPhaseIndicator position="top" />
@@ -345,7 +345,7 @@ export default function TarotDivination() {
                       }}
                     >
                       {/* Card Title and Badge - Only shown when revealed */}
-                      <div className={`mb-4 text-center w-full z-10  ${card.isRevealed ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
+                      <div className={`mb-1 text-center w-full z-10  ${card.isRevealed ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
                         <h3 className=" font-bold pb-2 text-amber-100 text-sm truncate px-1 font-serif">
                           {card.name}
                         </h3>
@@ -428,7 +428,7 @@ export default function TarotDivination() {
                 <DecorativeCorner position="top-left" className="left-0 top-0" />
                 <DecorativeCorner position="top-right" className="right-0 top-0" />
 
-                <CardHeader className="text-center mt-[50px] mb-[50px]">
+                <CardHeader className="text-center mt-[50px] mb-[0px]">
                   <CardTitle className="text-2xl md:text-3xl text-amber-100 font-serif tracking-wider">占卜結果</CardTitle>
                   <CardDescription className="text-amber-200/90 text-sm md:text-base mt-1">
                     <span className="inline-block border-b border-amber-500/50 pb-1">以下是你的塔羅牌解讀</span>
