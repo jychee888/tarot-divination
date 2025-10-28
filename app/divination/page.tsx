@@ -1,19 +1,39 @@
 "use client"
 
+// React & Next.js
 import { useState } from "react"
 import { useSession, signIn, signOut } from "next-auth/react"
-import { useToast } from "@/hooks/use-toast"
 import Link from 'next/link'
+
+// UI Components
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
+
+// Icons
 import { Sparkles, Moon, Heart, Briefcase, Users, Activity, Eye } from "lucide-react"
+
+// Custom Hooks
+import { useToast } from "@/hooks/use-toast"
+
+// Data
 import tarotCards from "@/data/tarot-cards"
-import { CornerDecoration } from "@/components/corner-decoration"
+
+// Custom Components - Decorations
+import { DecorativeCorner } from "@/components/decorations/decorative-corner"
+import { MoonPhaseIndicator } from '@/components/decorations/moonPhaseIndicator'
+import { CloudDecoration } from '@/components/decorations/CloudDecoration'
+import { MoonFaceDecoration } from '@/components/decorations/MoonFaceDecoration'
+import { Start01decoration } from '@/components/decorations/Start01decoration'
+import { CornerDecoration } from "@/components/decorations/corner-decoration"
+import BackgroundStars from "@/components/decorations/background-stars"
+import { TarotDecorativeElements } from "@/components/decorations/decorative-elements"
+import LeftSideDecorations from "@/components/decorations/LeftSideDecorations"
+import RightSideDecorations from "@/components/decorations/RightSideDecorations"
+
+// Auth
 import { AuthStatus } from "@/components/auth-status"
-import BackgroundStars from "@/components/background-stars"
-import { TarotDecorativeElements } from "@/components/decorative-elements"
 
 type DivinationTheme = "love" | "career" | "relationship" | "health" | "self-exploration"
 type SpreadType = "single" | "three" | "celtic-cross"
@@ -172,15 +192,15 @@ export default function TarotDivination() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-[#F9ECDC] relative overflow-hidden p-4">
+    <div className="min-h-screen bg-[#171111] text-[#F9ECDC] relative overflow-hidden p-4">
      
-     <div className="relative w-full h-full border-2 border-amber-400/50 rounded-3xl p-4 bg-gray-900/80 backdrop-blur-sm">
+     <div className="relative w-full h-full border-2 border-amber-400/50 rounded-3xl p-4">
         {/* Corner Decorations */}
         <CornerDecoration position="top-left" className="top-0 left-0" />
         <CornerDecoration position="top-right" className="top-0 right-0" />
         <CornerDecoration position="bottom-right" className="bottom-0 left-0 scale-x-[-1]" />
         <CornerDecoration position="bottom-left" className="bottom-0 right-0 scale-y-[-1]" />
-      <div className="w-full h-full border-2 border-amber-400/30 rounded-xl bg-gradient-to-br from-amber-950/20 via-gray-900/40 to-amber-950/20">
+      <div className="w-full h-full border-2 border-amber-400/30 rounded-xl">
 
       {/* Header Section */}
       <div className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between py-14 px-16 ">
@@ -196,18 +216,28 @@ export default function TarotDivination() {
       </div>
 
 
-      <div className="container mx-auto px-4 py-8 relative">
-        <div className="absolute inset-0 bg-gradient-to-b from-amber-900/5 via-transparent to-amber-900/5 pointer-events-none" />
-        <TarotDecorativeElements className="absolute w-full h-full mb-20" />
+      <div className="container mx-auto px-4 py-8 pb-[100px] relative">
+        <div className="absolute inset-0 pointer-events-none" />
+          {/* 主視覺 */}
+          <TarotDecorativeElements className="absolute w-full h-full mb-20" />
 
         {!isReading ? (
           /* 設定區塊 */
           <main>
-            <Card className="max-w-4xl mx-auto bg-amber-900/30 border-amber-400/30 backdrop-blur-sm shadow-lg">
-              <CardContent className="space-y-8 p-6 mt-4">
+            <div className="relative max-w-4xl mx-auto">
+              {/* 占卜設定 */}
+            <Card className="bg-[rgba(23, 17, 17, 0.2)] border-2 border-amber-400 backdrop-blur-sm rounded-none relative overflow-visible">
+              <MoonPhaseIndicator position="top" />
+              <CloudDecoration className="w-full" position="top" />
+              <Start01decoration className="w-full" position="top" />
+              <MoonFaceDecoration className="w-full -mt-4" position="top" size="md" />
+              
+              <DecorativeCorner position="top-left" className="left-0 top-0" />
+              <DecorativeCorner position="top-right" className="right-0 top-0" />
+              <CardContent className="space-y-8 p-8 mt-4 mb-8 relative">
                 {/* 占卜主題選擇 */}
                 <section>
-                  <h2 className="text-xl font-semibold text-amber-100 mb-6 text-center font-serif tracking-wider">占卜主題</h2>
+                  <h2 className="chinese-title-bakudai text-3xl font-bold text-amber-100 mb-6 text-center font-serif tracking-wider">占卜主題</h2>
                   <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
                     {themes.map((theme) => {
                       const Icon = theme.icon
@@ -215,10 +245,10 @@ export default function TarotDivination() {
                         <Button
                           key={theme.id}
                           variant={selectedTheme === theme.id ? "default" : "outline"}
-                          className={`h-20 flex-col gap-2 transition-all duration-200 font-medium ${
-                            selectedTheme === theme.id
-                              ? "bg-gradient-to-br from-amber-500 to-amber-700 hover:from-amber-600 hover:to-amber-800 text-amber-50 shadow-lg scale-105 border-amber-400/50"
-                              : "bg-amber-900/50 border-amber-400/30 text-amber-100 hover:bg-amber-800/40 hover:text-amber-50 hover:scale-105"
+                          className={`font-serif py-8 border-2 border-amber-400 bg-transparent hover:bg-amber-500/20 text-amber-300 hover:text-amber-200 text-lg transition-all duration-300 transform rounded-full ${
+                            selectedTheme === theme.id 
+                              ? 'scale-105 bg-amber-500/10' 
+                              : 'hover:scale-105'
                           }`}
                           onClick={() => setSelectedTheme(theme.id)}
                           aria-pressed={selectedTheme === theme.id}
@@ -231,28 +261,23 @@ export default function TarotDivination() {
                   </div>
                 </section>
 
-                <Separator className="bg-amber-500/30 h-0.5" />
-
                 {/* 牌陣選擇 */}
                 <section>
-                  <h2 className="text-xl font-semibold text-amber-100 mb-6 text-center font-serif tracking-wider">牌陣選擇</h2>
+                  <h2 className="chinese-title-bakudai text-3xl text-amber-100 mb-6 text-center font-serif tracking-wider">牌陣選擇</h2>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {spreads.map((spread) => (
                       <Button
                         key={spread.id}
                         variant={selectedSpread === spread.id ? "default" : "outline"}
-                        className={`h-16 transition-all duration-200 font-medium ${
-                          selectedSpread === spread.id
-                            ? "bg-gradient-to-br from-amber-500 to-amber-700 hover:from-amber-600 hover:to-amber-800 text-amber-50 shadow-lg scale-105 border-amber-400/50"
-                            : "bg-amber-900/50 border-amber-400/30 text-amber-100 hover:bg-amber-800/40 hover:text-amber-50 hover:scale-105"
+                        className={`font-serif py-8 border-2 border-amber-400 bg-transparent hover:bg-amber-500/20 text-amber-300 hover:text-amber-200 text-lg transition-all duration-300 transform rounded-full ${
+                          selectedSpread === spread.id 
+                            ? 'scale-105 bg-amber-500/10' 
+                            : 'hover:scale-105'
                         }`}
                         onClick={() => setSelectedSpread(spread.id)}
                         aria-pressed={selectedSpread === spread.id}
                       >
-                        <div className="text-center">
-                          <div className="font-semibold">{spread.label}</div>
-                          <div className="text-xs opacity-80 mt-1">{spread.count} 張牌</div>
-                        </div>
+                        {spread.label}
                       </Button>
                     ))}
                   </div>
@@ -262,7 +287,7 @@ export default function TarotDivination() {
                 <div className="text-center pt-6">
                   <Button
                     size="lg"
-                    className="bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 hover:from-amber-600 hover:via-amber-700 hover:to-amber-800 text-amber-50 px-12 py-6 text-lg font-semibold transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-amber-500/30"
+                    className="font-serif border-2 border-amber-400 bg-transparent hover:bg-amber-500/20 text-amber-300 hover:text-amber-200 text-xl px-10 py-8 transition-all duration-300 transform hover:scale-105 rounded-full"
                     onClick={startDivination}
                   >
                     <Sparkles className="w-5 h-5 mr-2 text-amber-200" />
@@ -270,13 +295,26 @@ export default function TarotDivination() {
                   </Button>
                 </div>
               </CardContent>
+              <DecorativeCorner position="bottom-left" className="left-0 bottom-0" />
+              <DecorativeCorner position="bottom-right" className="right-0 bottom-0" />
+              
+              <MoonPhaseIndicator position="bottom" />
             </Card>
+          </div>
           </main>
         ) : (
-          <main className="max-w-6xl mx-auto space-y-8">
+          <main className="max-w-4xl mx-auto">
             {/* 抽牌區塊 */}
-            <Card className="bg-amber-900/20 border-amber-400/50 backdrop-blur-sm">
-              <CardHeader className="text-center">
+            <Card className="bg-[rgba(23, 17, 17, 0.2)] pb-[50px] border-2 border-amber-400 backdrop-blur-sm rounded-none relative ">
+              <MoonPhaseIndicator position="top" />
+              <CloudDecoration className="w-full" position="top" />
+              <Start01decoration className="w-full" position="top" />
+              <MoonFaceDecoration className="w-full" position="top" size="md" />  
+              
+              <DecorativeCorner position="top-left" className="left-0 top-0" />
+              <DecorativeCorner position="top-right" className="right-0 top-0" />
+              
+              <CardHeader className="text-center mt-[50px] mb-[50px]">
                 <CardTitle className="text-2xl md:text-3xl text-amber-100 font-serif tracking-wider">
                   {themes.find((t) => t.id === selectedTheme)?.label} -{" "}
                   {spreads.find((s) => s.id === selectedSpread)?.label}
@@ -286,7 +324,7 @@ export default function TarotDivination() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className={`grid ${getSpreadLayout()} max-w-4xl mx-auto`}>
+                <div className={`grid ${getSpreadLayout()} max-w-2xl mx-auto`}>
                   {cards.map((card) => (
                     <div
                       key={card.id}
@@ -375,12 +413,23 @@ export default function TarotDivination() {
                   ))}
                 </div>
               </CardContent>
+              <DecorativeCorner position="bottom-left" className="left-0 bottom-0" />
+              <DecorativeCorner position="bottom-right" className="right-0 bottom-0" />
+              
+              <MoonPhaseIndicator position="bottom" />
             </Card>
 
             {/* 解牌區塊 */}
             {showResults && (
-              <Card className="bg-amber-900/20 border-amber-400/50 backdrop-blur-sm animate-in fade-in duration-500 shadow-lg">
-                <CardHeader className="text-center">
+               <Card className="bg-[rgba(23, 17, 17, 0.2)] mt-[80px] pb-[50px] border-2 border-amber-400 backdrop-blur-sm rounded-none relative">
+                <MoonPhaseIndicator position="top" />
+                <LeftSideDecorations />
+                <RightSideDecorations />
+                
+                <DecorativeCorner position="top-left" className="left-0 top-0" />
+                <DecorativeCorner position="top-right" className="right-0 top-0" />
+
+                <CardHeader className="text-center mt-[50px] mb-[50px]">
                   <CardTitle className="text-2xl md:text-3xl text-amber-100 font-serif tracking-wider">占卜結果</CardTitle>
                   <CardDescription className="text-amber-200/90 text-sm md:text-base mt-1">
                     <span className="inline-block border-b border-amber-500/50 pb-1">以下是你的塔羅牌解讀</span>
@@ -443,6 +492,10 @@ export default function TarotDivination() {
                     </Button>
                   </div>
                 </CardContent>
+                <DecorativeCorner position="bottom-left" className="left-0 bottom-0" />
+                <DecorativeCorner position="bottom-right" className="right-0 bottom-0" />
+                
+                <MoonPhaseIndicator position="bottom" />
               </Card>
             )}
           </main>

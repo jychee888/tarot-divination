@@ -1,13 +1,13 @@
 import Link from 'next/link';
 import { Sparkles, Moon, Star, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { CornerDecoration } from '@/components/corner-decoration';
-import BackgroundStars from '@/components/background-stars';
-import { EyeIcon } from '@/components/eye-icon';
-import { TarotVisual } from '@/components/tarot-visual';
-import { SunIcon } from '@/components/sun-icon';
-import { MoonIcon } from '@/components/moon-icon';
-import { DivinationBackground } from '@/components/divination-background';
+import { CornerDecoration } from '@/components/decorations/corner-decoration';
+import BackgroundStars from '@/components/decorations/background-stars';
+import { EyeIcon } from '@/components/decorations/eye-icon';
+import { TarotVisual } from '@/components/decorations/tarot-visual';
+import { SunIcon } from '@/components/decorations/sun-icon';
+import { MoonIcon } from '@/components/decorations/moon-icon';
+import { DivinationBackground } from '@/components/decorations/divination-background';
 import { AuthStatus } from '@/components/auth-status';
 
 export default function Home() {
