@@ -56,6 +56,13 @@ export default function Home() {
               <EyeIcon mirror className="absolute top-0 right-[20%] z-20"/>
             </div>
           </div>
+          <div className="flex flex-col sm:flex-row justify-center">
+            <Link href="/divination">
+              <Button className="chinese-title-bakudai border-2 border-amber-400 bg-transparent hover:bg-amber-500/20 text-amber-300 hover:text-amber-200 text-lg px-8 py-6 rounded-full transition-all duration-300 transform hover:scale-105 backdrop-blur-sm">
+                開始占卜 <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
+          </div>
         </div>
 
         {/* Tarot Visual */}
@@ -68,14 +75,6 @@ export default function Home() {
           <p className="chinese-title-bakudai text-2xl mt-[2%] mb-10 max-w-3xl mx-auto">
             開啟你的內在智慧<br />讓塔羅牌指引你找到生命的答案
           </p>
-          
-          <div className="flex flex-col sm:flex-row justify-center">
-            <Link href="/divination">
-              <Button className="chinese-title-bakudai border-2 border-amber-400 bg-transparent hover:bg-amber-500/20 text-amber-300 hover:text-amber-200 text-lg px-8 py-6 rounded-full transition-all duration-300 transform hover:scale-105">
-                開始占卜 <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
-          </div>
         </div>
       </div>
       

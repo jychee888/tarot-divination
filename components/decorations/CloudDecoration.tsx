@@ -54,7 +54,7 @@ export const CloudDecoration: React.FC<CloudDecorationProps> = ({
 }) => {
   const sizeClasses = {
     sm: 'w-1/6',
-    md: 'w-1/4',
+    md: 'w-1/5',
     lg: 'w-1/3'
   };
 
@@ -68,12 +68,12 @@ export const CloudDecoration: React.FC<CloudDecorationProps> = ({
   return (
     <div className={`absolute inset-x-0 ${positionClasses[position]} ${className}`}>
       {/* Left Cloud */}
-      <div className={`absolute -left-[30%] -translate-x-1/2 ${sizeClasses[cloudSize]} max-w-xs`}>
+      <div className={`absolute -left-[40%]  ${sizeClasses[cloudSize]} max-w-xs`}>
         <CloudSVG />
       </div>
 
       {/* Right Cloud (mirrored) */}
-      <div className={`absolute -right-[30%] translate-x-1/2 ${sizeClasses[cloudSize]} max-w-xs`}>
+      <div className={`absolute -right-[40%]  ${sizeClasses[cloudSize]} max-w-xs`}>
         <CloudSVG mirrored />
       </div>
     </div>

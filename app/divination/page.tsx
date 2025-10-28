@@ -228,7 +228,7 @@ export default function TarotDivination() {
             {!isReading ? (
           /* 設定區塊 */
           <main>
-            <div className="relative max-w-4xl mx-auto">
+            <div className="relative max-w-3xl mx-auto">
               {/* 占卜設定 */}
             <Card className="bg-[rgba(23, 17, 17, 0.2)] border-2 border-amber-400 backdrop-blur-sm rounded-none relative overflow-visible">
               <MoonPhaseIndicator position="top" />
@@ -307,7 +307,7 @@ export default function TarotDivination() {
           </div>
           </main>
         ) : (
-          <main className="max-w-4xl mx-auto">
+          <main className="max-w-3xl mx-auto">
             {/* 抽牌區塊 */}
             <Card className="bg-[rgba(23, 17, 17, 0.2)] pb-[50px] border-2 border-amber-400 backdrop-blur-sm rounded-none relative ">
               <MoonPhaseIndicator position="top" />
