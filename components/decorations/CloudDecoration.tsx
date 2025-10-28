@@ -68,12 +68,12 @@ export const CloudDecoration: React.FC<CloudDecorationProps> = ({
   return (
     <div className={`absolute inset-x-0 ${positionClasses[position]} ${className}`}>
       {/* Left Cloud */}
-      <div className={`absolute -left-[40%]  ${sizeClasses[cloudSize]} max-w-xs`}>
+      <div className={`absolute -left-[30%]  ${sizeClasses[cloudSize]} max-w-xs`}>
         <CloudSVG />
       </div>
 
       {/* Right Cloud (mirrored) */}
-      <div className={`absolute -right-[40%]  ${sizeClasses[cloudSize]} max-w-xs`}>
+      <div className={`absolute -right-[30%]  ${sizeClasses[cloudSize]} max-w-xs`}>
         <CloudSVG mirrored />
       </div>
     </div>
