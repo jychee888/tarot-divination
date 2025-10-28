@@ -56,13 +56,13 @@ export default function HistoryPage() {
 
   return (
     <div className="space-y-6">
-      <div className="border-b border-amber-400/30 pb-4">
+      <div className="border-b border-[#C99041]/30 pb-4">
         <h1 className="text-2xl font-medium text-amber-100">我的占卜紀錄</h1>
         <p className="text-amber-100/60 text-sm mt-1">回顧你的每一次探索與啟示</p>
       </div>
 
       {history.length === 0 ? (
-        <div className="text-center py-16 rounded-lg border-2 border-dashed border-amber-400/20 bg-amber-900/10">
+        <div className="text-center py-16 rounded-lg border-2 border-dashed border-[#C99041]/20 bg-amber-900/10">
           <div className="max-w-md mx-auto
           ">
             <div className="text-amber-400/50 mb-4">
@@ -74,7 +74,7 @@ export default function HistoryPage() {
             <p className="text-amber-100/60 mb-6">開始你的第一次占卜，記錄下重要的時刻</p>
             <Link 
               href="/divination" 
-              className="inline-flex items-center px-6 py-2.5 bg-amber-500/30 border border-amber-400/60 text-amber-100 rounded-md 
+              className="inline-flex items-center px-6 py-2.5 bg-amber-500/30 border border-[#C99041]/60 text-amber-100 rounded-md 
                       hover:bg-amber-500/40 hover:shadow-[0_0_10px_rgba(251,191,36,0.2)]
                       focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:ring-offset-2 focus:ring-offset-amber-900/50
                       transition-all duration-200"
@@ -91,7 +91,7 @@ export default function HistoryPage() {
           {history.map((record) => (
             <div 
               key={record.id} 
-              className="group relative bg-amber-900/10 border border-amber-400/20 rounded-lg p-5 hover:border-amber-400/40 
+              className="group relative bg-amber-900/10 border border-[#C99041]/20 rounded-lg p-5 hover:border-[#C99041]/40 
                         hover:bg-amber-900/20 transition-all duration-300 hover:shadow-[0_0_20px_rgba(251,191,36,0.1)]"
             >
               <div className="flex justify-between items-start mb-3">
@@ -119,7 +119,7 @@ export default function HistoryPage() {
                 ))}
               </div>
               
-              <div className="text-xs text-amber-100/60 mt-3 pt-3 border-t border-amber-400/10">
+              <div className="text-xs text-amber-100/60 mt-3 pt-3 border-t border-[#C99041]/10">
                 <div className="flex items-center">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -132,7 +132,7 @@ export default function HistoryPage() {
                 </div>
               </div>
               
-              <div className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none border border-amber-400/30"></div>
+              <div className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none border border-[#C99041]/30"></div>
             </div>
           ))}
         </div>

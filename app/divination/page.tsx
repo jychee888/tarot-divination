@@ -213,13 +213,13 @@ export default function TarotDivination() {
       {/* Header Section */}
       <Header />
 
-     <div className="relative w-full h-full border-2 border-amber-400/50 rounded-3xl p-4 z-[1]">
+     <div className="relative w-full h-full border border-[#C99041] rounded-3xl p-4 z-[1]">
         {/* Corner Decorations */}
         <CornerDecoration position="top-left" className="top-0 left-0" />
         <CornerDecoration position="top-right" className="top-0 right-0" />
         <CornerDecoration position="bottom-right" className="bottom-0 left-0 scale-x-[-1]" />
         <CornerDecoration position="bottom-left" className="bottom-0 right-0 scale-y-[-1]" />
-        <div className="w-full h-full border-2 border-amber-400/30 rounded-xl">
+        <div className="w-full h-full border-2 border-[#C99041]/30 rounded-xl">
           <div className="container mx-auto px-4 py-8 pb-[100px] relative">
             <div className="absolute inset-0 pointer-events-none" />
               {/* 主視覺 */}
@@ -230,7 +230,7 @@ export default function TarotDivination() {
           <main>
             <div className="relative max-w-2xl mx-auto">
               {/* 占卜設定 */}
-            <Card className="bg-[rgba(23, 17, 17, 0.2)] border-2 border-amber-400 backdrop-blur-sm rounded-none relative overflow-visible">
+            <Card className="bg-[rgba(23, 17, 17, 0.2)] border border-[#C99041] backdrop-blur-sm rounded-none relative overflow-visible">
               <MoonPhaseIndicator position="top" />
               <CloudDecoration className="w-full" position="top" />
               <Start01decoration className="w-full" position="top" />
@@ -249,7 +249,7 @@ export default function TarotDivination() {
                         <Button
                           key={theme.id}
                           variant={selectedTheme === theme.id ? "default" : "outline"}
-                          className={`font-serif py-6 border-2 border-amber-400 bg-transparent hover:bg-amber-500/20 text-amber-300 hover:text-amber-200 text-md transition-all duration-300 transform rounded-full ${
+                          className={`font-serif py-6 border border-[#C99041] bg-transparent hover:bg-amber-500/20 text-amber-300 hover:text-amber-200 text-md transition-all duration-300 transform rounded-full ${
                             selectedTheme === theme.id 
                               ? 'scale-105 bg-amber-500/10' 
                               : 'hover:scale-105'
@@ -273,7 +273,7 @@ export default function TarotDivination() {
                       <Button
                         key={spread.id}
                         variant={selectedSpread === spread.id ? "default" : "outline"}
-                        className={`font-serif py-6 border-2 border-amber-400 bg-transparent hover:bg-amber-500/20 text-amber-300 hover:text-amber-200 text-md transition-all duration-300 transform rounded-full ${
+                        className={`font-serif py-6 border border-[#C99041] bg-transparent hover:bg-amber-500/20 text-amber-300 hover:text-amber-200 text-md transition-all duration-300 transform rounded-full ${
                           selectedSpread === spread.id 
                             ? 'scale-105 bg-amber-500/10' 
                             : 'hover:scale-105'
@@ -291,7 +291,7 @@ export default function TarotDivination() {
                 <div className="text-center pt-6">
                   <Button
                     size="lg"
-                    className="font-serif border-2 border-amber-400 bg-transparent hover:bg-amber-500/20 text-amber-300 hover:text-amber-200 text-md px-10 py-6 transition-all duration-300 transform hover:scale-105 rounded-full"
+                    className="font-serif border border-[#C99041] bg-transparent hover:bg-amber-500/20 text-amber-300 hover:text-amber-200 text-md px-10 py-6 transition-all duration-300 transform hover:scale-105 rounded-full"
                     onClick={startDivination}
                   >
                     <Sparkles className="w-5 h-5 mr-2 text-amber-200" />
@@ -309,7 +309,7 @@ export default function TarotDivination() {
         ) : (
           <main className="max-w-2xl mx-auto">
             {/* 抽牌區塊 */}
-            <Card className="bg-[rgba(23, 17, 17, 0.2)] pb-[50px] border-2 border-amber-400 backdrop-blur-sm rounded-none relative ">
+            <Card className="bg-[rgba(23, 17, 17, 0.2)] pb-[50px] border border-[#C99041] backdrop-blur-sm rounded-none relative ">
               <MoonPhaseIndicator position="top" />
               <CloudDecoration className="w-full" position="top" />
               <Start01decoration className="w-full" position="top" />
@@ -324,7 +324,7 @@ export default function TarotDivination() {
                   {spreads.find((s) => s.id === selectedSpread)?.label}
                 </CardTitle>
                 <CardDescription className="text-amber-200/90 text-sm md:text-base mt-2">
-                  <span className="inline-block border-b border-amber-400/50 pb-1">點擊卡片來揭示你的命運</span>
+                  <span className="inline-block border-b border-[#C99041]/50 pb-1">點擊卡片來揭示你的命運</span>
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -420,7 +420,7 @@ export default function TarotDivination() {
 
             {/* 解牌區塊 */}
             {showResults && (
-               <Card ref={resultsTitleRef} className="bg-[rgba(23, 17, 17, 0.2)] mt-[80px] pb-[50px] border-2 border-amber-400 backdrop-blur-sm rounded-none relative">
+               <Card ref={resultsTitleRef} className="bg-[rgba(23, 17, 17, 0.2)] mt-[80px] pb-[50px] border-2 border-[#C99041]/50 backdrop-blur-sm rounded-none relative">
                 <MoonPhaseIndicator position="top" />
                 <LeftSideDecorations />
                 <RightSideDecorations />
@@ -442,7 +442,7 @@ export default function TarotDivination() {
                       style={{ animationDelay: `${index * 100}ms` }}
                     >
                       <header className="flex items-center gap-4 mb-4">
-                        <div className="w-8 h-8 bg-amber-400/10 hover:bg-amber-500/20 text-amber-50 border-amber-400 rounded-full flex items-center justify-center text-amber-50 font-bold">
+                        <div className="w-8 h-8 bg-amber-400/10 hover:bg-amber-500/20 text-amber-50 border-[#C99041]/50 rounded-full flex items-center justify-center text-amber-50 font-bold">
                           {index + 1}
                         </div>
                         <h3 className="text-xl font-semibold text-amber-100 font-serif tracking-wider">{card.name}</h3>
@@ -451,7 +451,7 @@ export default function TarotDivination() {
                           className={`ml-auto font-medium transition-all duration-300 ${
                             card.isReversed 
                               ? 'bg-amber-900/50 hover:bg-amber-900/70 text-amber-300 border-amber-700/50 hover:border-amber-600/60' 
-                              : 'bg-amber-500/80 hover:bg-amber-400/90 text-amber-50 border-amber-400/80 hover:border-amber-300/90 shadow-[0_0_10px_rgba(245,158,11,0.3)]'
+                              : 'bg-amber-500/80 hover:bg-amber-400/90 text-amber-50 border-[#C99041]/80 hover:border-amber-300/90 shadow-[0_0_10px_rgba(245,158,11,0.3)]'
                           }`}
                         >
                           {card.isReversed ? "逆位" : "正位"}
@@ -479,7 +479,7 @@ export default function TarotDivination() {
                         onClick={saveDivination} 
                         disabled={isSaving || isSaved} 
                         variant="outline" 
-                        className="chinese-title-bakudai border-2 border-amber-400 bg-transparent hover:bg-amber-500/20 text-amber-300 hover:text-amber-200 text-lg px-8 py-6 rounded-full transition-all duration-300 transform hover:scale-105 disabled:cursor-not-allowed"
+                        className="chinese-title-bakudai border-2 border-[#C99041]/50 bg-transparent hover:bg-amber-500/20 text-amber-300 hover:text-amber-200 text-lg px-8 py-6 rounded-full transition-all duration-300 transform hover:scale-105 disabled:cursor-not-allowed"
                         >
                         {isSaving ? "儲存中..." : (isSaved ? "已儲存" : "儲存本次占卜")}
                       </Button>
@@ -487,7 +487,7 @@ export default function TarotDivination() {
 
                     <Button
                       variant="outline"
-                      className="chinese-title-bakudai border-2 border-amber-400 bg-transparent hover:bg-amber-500/20 text-amber-300 hover:text-amber-200 text-lg px-8 py-6 rounded-full transition-all duration-300 transform hover:scale-105"
+                      className="chinese-title-bakudai border-2 border-[#C99041]/50 bg-transparent hover:bg-amber-500/20 text-amber-300 hover:text-amber-200 text-lg px-8 py-6 rounded-full transition-all duration-300 transform hover:scale-105"
                       size="lg"
                       onClick={resetReading}
                     >

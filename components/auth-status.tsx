@@ -72,7 +72,7 @@ export function AuthStatus() {
       ) : (
         <button
           onClick={() => signIn("google")}
-          className="chinese-title-bakudai border-2 border-amber-400 bg-transparent hover:bg-amber-500/20 text-amber-300 hover:text-amber-200 px-8 py-2 rounded-full transition-all duration-300 transform hover:scale-105 backdrop-blur-sm">
+          className="chinese-title-bakudai border border-[#C99041] bg-transparent hover:bg-amber-500/20 text-amber-300 hover:text-amber-200 px-8 py-2 rounded-full transition-all duration-300 transform hover:scale-105 backdrop-blur-sm">
           登入
         </button>
       )}

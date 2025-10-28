@@ -28,9 +28,9 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
       {/* Golden Borders */}
       <div className="fixed inset-0 pointer-events-none z-50">
         {/* Outer Border */}
-        <div className="absolute inset-4 border-2 border-amber-400/30 rounded-3xl"></div>
+        <div className="absolute inset-4 border-2 border-[#C99041]/30 rounded-3xl"></div>
         {/* Inner Border */}
-        <div className="absolute inset-8 border-2 border-amber-400/30 rounded-xl"></div>
+        <div className="absolute inset-8 border-2 border-[#C99041]/30 rounded-xl"></div>
         
         {/* Corner Decorations */}
         <CornerDecoration position="top-left" className="top-4 left-4" />
@@ -42,7 +42,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
       <div className="container mx-auto px-4 py-8 relative z-20">
         <div className="md:flex md:gap-8">
           <aside className="md:w-64 mb-8 md:mb-0 flex-shrink-0">
-            <div className="bg-amber-900/20 backdrop-blur-sm p-6 rounded-lg border border-amber-400/20 shadow-lg">
+            <div className="bg-amber-900/20 backdrop-blur-sm p-6 rounded-lg border border-[#C99041]/20 shadow-lg">
               <h2 className="text-xl font-medium text-amber-100 mb-6 flex items-center">
                 <span className="w-2 h-6 bg-amber-400 mr-3 rounded-full"></span>
                 會員中心
@@ -54,7 +54,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
                     href={item.href}
                     className={classNames(
                       pathname === item.href
-                        ? 'bg-amber-500/20 text-amber-100 border-amber-400/50'
+                        ? 'bg-amber-500/20 text-amber-100 border-[#C99041]'
                         : 'text-amber-100/80 hover:bg-amber-500/10 hover:text-amber-100 border-transparent',
                       'group flex items-center px-4 py-3 text-sm font-medium rounded-md transition-all border'
                     )}
@@ -65,7 +65,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
                 ))}
                 <button
                   onClick={() => signOut({ callbackUrl: '/' })}
-                  className='group flex items-center w-full px-4 py-3 text-sm font-medium rounded-md transition-all border border-transparent hover:border-amber-400/30 hover:bg-amber-500/10 text-amber-100/80 hover:text-amber-100 mt-4'
+                  className='group flex items-center w-full px-4 py-3 text-sm font-medium rounded-md transition-all border border-transparent hover:border-[#C99041]/30 hover:bg-amber-500/10 text-amber-100/80 hover:text-amber-100 mt-4'
                 >
                   <LogOut className="mr-3 h-5 w-5 text-amber-400" />
                   登出
@@ -73,7 +73,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
               </nav>
             </div>
           </aside>
-          <main className="flex-1 bg-amber-900/10 backdrop-blur-sm p-8 rounded-lg border border-amber-400/20 shadow-lg">
+          <main className="flex-1 bg-amber-900/10 backdrop-blur-sm p-8 rounded-lg border border-[#C99041]/20 shadow-lg">
             {children}
           </main>
         </div>

@@ -30,9 +30,9 @@ export default function Home() {
       {/* Golden Borders */}
       <div className="fixed inset-0 pointer-events-none z-50">
         {/* Outer Border */}
-        <div className="absolute inset-4 border-2 border-amber-400/50 rounded-3xl"></div>
+        <div className="absolute inset-4 border border-[#C99041] rounded-3xl"></div>
         {/* Inner Border */}
-        <div className="absolute inset-8 border-2 border-amber-400/50 rounded-xl"></div>
+        <div className="absolute inset-8 border border-[#C99041] rounded-xl"></div>
         
         {/* Corner Decorations */}
         <CornerDecoration position="top-left" className="top-4 left-4" />
@@ -58,7 +58,7 @@ export default function Home() {
           </div>
           <div className="flex flex-col sm:flex-row justify-center">
             <Link href="/divination">
-              <Button className="chinese-title-bakudai border-2 border-amber-400 bg-transparent hover:bg-amber-500/20 text-amber-300 hover:text-amber-200 text-lg px-8 py-6 rounded-full transition-all duration-300 transform hover:scale-105 backdrop-blur-sm">
+              <Button className="chinese-title-bakudai border border-[#C99041] bg-transparent hover:bg-amber-500/20 text-amber-300 hover:text-amber-200 text-lg px-8 py-6 rounded-full transition-all duration-300 transform hover:scale-105 backdrop-blur-sm">
                 開始占卜 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>

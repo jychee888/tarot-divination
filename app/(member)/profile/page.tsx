@@ -73,7 +73,7 @@ export default function ProfilePage() {
 
   return (
     <div className="space-y-6">
-      <div className="border-b border-amber-400/30 pb-4">
+      <div className="border-b border-[#C99041]/30 pb-4">
         <h1 className="text-2xl font-medium text-amber-100">個人資料</h1>
         <p className="text-amber-100/60 text-sm mt-1">更新您的個人資料和偏好設定</p>
       </div>
@@ -88,10 +88,10 @@ export default function ProfilePage() {
             id="nickname"
             value={nickname}
             onChange={(e) => setNickname(e.target.value)}
-            className="w-full px-4 py-2 bg-amber-900/30 border border-amber-400/30 rounded-md 
+            className="w-full px-4 py-2 bg-amber-900/30 border border-[#C99041]/30 rounded-md 
                      text-amber-100 placeholder-amber-400/50 
-                     focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:border-amber-400/50
-                     hover:border-amber-400/50
+                     focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:border-[#C99041]
+                     hover:border-[#C99041]
                      transition-all duration-300"
             placeholder="請輸入您的暱稱"
           />
@@ -106,10 +106,10 @@ export default function ProfilePage() {
             rows={4}
             value={bio}
             onChange={(e) => setBio(e.target.value)}
-            className="w-full px-4 py-2 bg-amber-900/30 border border-amber-400/30 rounded-md 
+            className="w-full px-4 py-2 bg-amber-900/30 border border-[#C99041]/30 rounded-md 
                      text-amber-100 placeholder-amber-400/50 
-                     focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:border-amber-400/50
-                     hover:border-amber-400/50
+                     focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:border-[#C99041]
+                     hover:border-[#C99041]
                      transition-all duration-300"
             placeholder="簡單介紹一下自己..."
           />
@@ -119,8 +119,8 @@ export default function ProfilePage() {
           <button
             type="button"
             onClick={() => router.back()}
-            className="px-4 py-2 border border-amber-400/30 text-amber-100 rounded-md 
-                     hover:bg-amber-500/10 hover:border-amber-400/50
+            className="px-4 py-2 border border-[#C99041]/30 text-amber-100 rounded-md 
+                     hover:bg-amber-500/10 hover:border-[#C99041]
                      focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:ring-offset-2 focus:ring-offset-amber-900/50
                      transition-all duration-200"
           >
@@ -129,7 +129,7 @@ export default function ProfilePage() {
           <button
             type="submit"
             disabled={isLoading}
-            className="px-6 py-2 bg-amber-500/30 border border-amber-400/60 text-amber-100 rounded-md 
+            className="px-6 py-2 bg-amber-500/30 border border-[#C99041]/60 text-amber-100 rounded-md 
                      hover:bg-amber-500/40 hover:shadow-[0_0_10px_rgba(251,191,36,0.2)]
                      focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:ring-offset-2 focus:ring-offset-amber-900/50
                      disabled:opacity-50 disabled:cursor-not-allowed
