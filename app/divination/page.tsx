@@ -1,15 +1,17 @@
 "use client"
 
 // React & Next.js
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import { useSession, signIn, signOut } from "next-auth/react"
 import Link from 'next/link'
 
 // UI Components
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import CardBack from "@/components/CardBack"
+import CardFront from "@/components/CardFront"
 import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
+import Header from "@/components/layout/Header"
 
 // Icons
 import { Sparkles, Moon, Heart, Briefcase, Users, Activity, Eye } from "lucide-react"
@@ -27,13 +29,9 @@ import { CloudDecoration } from '@/components/decorations/CloudDecoration'
 import { MoonFaceDecoration } from '@/components/decorations/MoonFaceDecoration'
 import { Start01decoration } from '@/components/decorations/Start01decoration'
 import { CornerDecoration } from "@/components/decorations/corner-decoration"
-import BackgroundStars from "@/components/decorations/background-stars"
 import { TarotDecorativeElements } from "@/components/decorations/decorative-elements"
 import LeftSideDecorations from "@/components/decorations/LeftSideDecorations"
 import RightSideDecorations from "@/components/decorations/RightSideDecorations"
-
-// Auth
-import { AuthStatus } from "@/components/auth-status"
 
 type DivinationTheme = "love" | "career" | "relationship" | "health" | "self-exploration"
 type SpreadType = "single" | "three" | "celtic-cross"
@@ -70,6 +68,7 @@ export default function TarotDivination() {
   const [showResults, setShowResults] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [isSaved, setIsSaved] = useState(false)
+  const resultsTitleRef = useRef<HTMLDivElement>(null)
   const { toast } = useToast()
 
   const startDivination = () => {
@@ -116,12 +115,19 @@ export default function TarotDivination() {
     setIsSaved(false) // Reset save status for new divination
   }
 
+  // 當 showResults 變為 true 時滾動到結果標題（向下偏移50px）
+  useEffect(() => {
+    if (showResults && resultsTitleRef.current) {
+      const yOffset = -50 // 向上偏移50px
+      const y = resultsTitleRef.current.getBoundingClientRect().top + window.pageYOffset + yOffset
+      window.scrollTo({ top: y, behavior: 'smooth' })
+    }
+  }, [showResults])
+
   const revealCard = (cardId: string) => {
     setCards((prev) => prev.map((card) => (card.id === cardId ? { ...card, isRevealed: true } : card)))
 
     // 檢查是否所有牌都翻開了
-    // 這部分邏輯可以在 setCards 的回調中完成，以避免狀態更新延遲問題
-    // 但為保持最小改動，暫時保留。更好的做法是在 useEffect 中處理。
     const currentlyRevealed = cards.filter(c => c.isRevealed || c.id === cardId).length;
     if (currentlyRevealed === cards.length) {
       setTimeout(() => setShowResults(true), 500)
@@ -192,36 +198,24 @@ export default function TarotDivination() {
   }
 
   return (
-    <div className="min-h-screen bg-[#171111] text-[#F9ECDC] relative overflow-hidden p-4">
+    <div className="relative remin-h-screen bg-[#171111] text-[#F9ECDC] relative overflow-hidden p-4">
      
-     <div className="relative w-full h-full border-2 border-amber-400/50 rounded-3xl p-4">
+      {/* Header Section */}
+      <Header />
+
+     <div className="relative w-full h-full border-2 border-amber-400/50 rounded-3xl p-4 z-[1]">
         {/* Corner Decorations */}
         <CornerDecoration position="top-left" className="top-0 left-0" />
         <CornerDecoration position="top-right" className="top-0 right-0" />
         <CornerDecoration position="bottom-right" className="bottom-0 left-0 scale-x-[-1]" />
         <CornerDecoration position="bottom-left" className="bottom-0 right-0 scale-y-[-1]" />
-      <div className="w-full h-full border-2 border-amber-400/30 rounded-xl">
+        <div className="w-full h-full border-2 border-amber-400/30 rounded-xl">
+          <div className="container mx-auto px-4 py-8 pb-[100px] relative">
+            <div className="absolute inset-0 pointer-events-none" />
+              {/* 主視覺 */}
+              <TarotDecorativeElements className="absolute w-full h-full mb-20" />
 
-      {/* Header Section */}
-      <div className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between py-14 px-16 ">
-        {/* Logo */}
-        <Link href="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
-          <span className="im-fell-english-regular text-2xl text-amber-100 tracking-wider">Soul's Eye</span>
-        </Link>
-      
-        {/* User Profile */}
-        <div className="flex justify-end">
-          <AuthStatus />
-        </div>
-      </div>
-
-
-      <div className="container mx-auto px-4 py-8 pb-[100px] relative">
-        <div className="absolute inset-0 pointer-events-none" />
-          {/* 主視覺 */}
-          <TarotDecorativeElements className="absolute w-full h-full mb-20" />
-
-        {!isReading ? (
+            {!isReading ? (
           /* 設定區塊 */
           <main>
             <div className="relative max-w-4xl mx-auto">
@@ -314,7 +308,7 @@ export default function TarotDivination() {
               <DecorativeCorner position="top-left" className="left-0 top-0" />
               <DecorativeCorner position="top-right" className="right-0 top-0" />
               
-              <CardHeader className="text-center mt-[50px] mb-[50px]">
+              <CardHeader className="text-center mt-[50px] mb-[0px]">
                 <CardTitle className="text-2xl md:text-3xl text-amber-100 font-serif tracking-wider">
                   {themes.find((t) => t.id === selectedTheme)?.label} -{" "}
                   {spreads.find((s) => s.id === selectedSpread)?.label}
@@ -324,7 +318,7 @@ export default function TarotDivination() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className={`grid ${getSpreadLayout()} max-w-2xl mx-auto`}>
+                <div className={`grid ${getSpreadLayout()} max-w-3xl mx-auto`}>
                   {cards.map((card) => (
                     <div
                       key={card.id}
@@ -340,9 +334,21 @@ export default function TarotDivination() {
                         }
                       }}
                     >
+                      {/* Card Title and Badge - Only shown when revealed */}
+                      <div className={`mb-4 text-center w-full z-10  ${card.isRevealed ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
+                        <h3 className=" font-bold pb-2 text-amber-100 text-sm truncate px-1 font-serif">
+                          {card.name}
+                        </h3>
+                        <Badge 
+                          variant={card.isReversed ? "destructive" : "default"} 
+                          className="text-xs mb-1 bg-amber-700 hover:bg-amber-800 text-amber-50 border-amber-600/50"
+                        >
+                          {card.isReversed ? "逆位" : "正位"}
+                        </Badge>
+                      </div>
                       <div
                         className={`
-                        relative w-32 h-[240px] md:w-40 md:h-[320px] mx-auto
+                        relative w-[200px] h-0 pb-[300px] mx-auto
                         transform transition-all duration-700 preserve-3d flex flex-col
                         ${card.isRevealed ? "rotate-y-180" : "hover:scale-105 group-hover:shadow-2xl"}
                       `}
@@ -354,29 +360,21 @@ export default function TarotDivination() {
                         <div
                           className={`
                           absolute inset-0 w-full h-full
-                          bg-gradient-to-br from-amber-900 via-amber-800 to-amber-700
-                          border-2 border-amber-500/50 rounded-lg
-                          flex items-center justify-center shadow-inner
-                          transition-opacity duration-300 overflow-hidden
+                          transition-opacity duration-300
                           ${card.isRevealed ? "opacity-0 pointer-events-none" : "opacity-100"}
                         `}
                           style={{
                             backfaceVisibility: "hidden",
                           }}
                         >
-                          <div className="absolute inset-0 bg-[url('/card-pattern.png')] opacity-10"></div>
-                          <div className="text-center z-10">
-                            <Moon className="w-8 h-8 text-amber-300 mx-auto mb-2 animate-pulse" />
-                            <div className="text-amber-200 text-sm font-medium tracking-wider">塔羅牌</div>
-                          </div>
+                          <CardBack />
                         </div>
 
                         {/* 卡片正面 */}
                         <div
                           className={`
                           absolute inset-0 w-full h-full
-                          bg-amber-50 border-2 border-amber-400 rounded-lg
-                          flex flex-col items-center justify-between p-2
+                          flex flex-col items-center justify-center 
                           transition-opacity duration-300 overflow-hidden shadow-inner
                           ${card.isRevealed ? "opacity-100" : "opacity-0 pointer-events-none"}
                         `}
@@ -385,29 +383,20 @@ export default function TarotDivination() {
                             transform: "rotateY(180deg)",
                           }}
                         >
-                          <div className="absolute inset-0 bg-gradient-to-br from-amber-50 to-amber-100 opacity-70"></div>
-                          <div className="text-center w-full z-10">
-                            <h3 className="font-bold text-amber-900 text-sm truncate px-1 font-serif">
-                              {card.name}
-                            </h3>
-                            <Badge 
-                              variant={card.isReversed ? "destructive" : "default"} 
-                              className="text-xs mb-1 bg-amber-700 hover:bg-amber-800 text-amber-50 border-amber-600/50"
-                            >
-                              {card.isReversed ? "逆位" : "正位"}
-                            </Badge>
-                          </div>
-                          <div className="relative w-full h-full overflow-hidden z-10">
-                            <div className="absolute inset-0 flex items-end justify-center">
-                              <img 
-                                src={card.image} 
-                                alt={card.name}
-                                className={`h-full w-auto ${card.isReversed ? 'transform scale-y-[-1]' : ''} drop-shadow-md`}
-                                style={{ maxWidth: '100%' }}
-                              />
+                        
+                            <img 
+                              src={card.image} 
+                              alt={card.name}
+                              className={`h-[80%] w-auto ${card.isReversed ? 'transform scale-y-[-1]' : ''} rounded-lg`}
+                              style={{ maxWidth: '100%' }}
+                            />
+                            <div className="absolute inset-0 w-full h-full -z-10">
+                              <CardFront />
                             </div>
-                          </div>
+                            
+                          
                         </div>
+                        
                       </div>
                     </div>
                   ))}
@@ -421,7 +410,7 @@ export default function TarotDivination() {
 
             {/* 解牌區塊 */}
             {showResults && (
-               <Card className="bg-[rgba(23, 17, 17, 0.2)] mt-[80px] pb-[50px] border-2 border-amber-400 backdrop-blur-sm rounded-none relative">
+               <Card ref={resultsTitleRef} className="bg-[rgba(23, 17, 17, 0.2)] mt-[80px] pb-[50px] border-2 border-amber-400 backdrop-blur-sm rounded-none relative">
                 <MoonPhaseIndicator position="top" />
                 <LeftSideDecorations />
                 <RightSideDecorations />
@@ -435,21 +424,25 @@ export default function TarotDivination() {
                     <span className="inline-block border-b border-amber-500/50 pb-1">以下是你的塔羅牌解讀</span>
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-6">
+                <CardContent>
                   {cards.map((card, index) => (
                     <article
                       key={card.id}
-                      className="bg-amber-900/20 rounded-lg p-6 animate-in slide-in-from-bottom duration-500 backdrop-blur-sm border border-amber-800/30 shadow-inner"
+                      className="p-6 animate-in slide-in-from-bottom duration-500 backdrop-blur-sm shadow-inner"
                       style={{ animationDelay: `${index * 100}ms` }}
                     >
                       <header className="flex items-center gap-4 mb-4">
-                        <div className="w-8 h-8 bg-gradient-to-br from-amber-600 to-amber-800 rounded-full flex items-center justify-center text-amber-50 font-bold shadow-inner">
+                        <div className="w-8 h-8 bg-amber-400/10 hover:bg-amber-500/20 text-amber-50 border-amber-400 rounded-full flex items-center justify-center text-amber-50 font-bold">
                           {index + 1}
                         </div>
                         <h3 className="text-xl font-semibold text-amber-100 font-serif tracking-wider">{card.name}</h3>
                         <Badge 
                           variant={card.isReversed ? "destructive" : "default"} 
-                          className="ml-auto bg-amber-700 hover:bg-amber-800 text-amber-50 border-amber-600/50"
+                          className={`ml-auto font-medium transition-all duration-300 ${
+                            card.isReversed 
+                              ? 'bg-amber-900/50 hover:bg-amber-900/70 text-amber-300 border-amber-700/50 hover:border-amber-600/60' 
+                              : 'bg-amber-500/80 hover:bg-amber-400/90 text-amber-50 border-amber-400/80 hover:border-amber-300/90 shadow-[0_0_10px_rgba(245,158,11,0.3)]'
+                          }`}
                         >
                           {card.isReversed ? "逆位" : "正位"}
                         </Badge>
@@ -470,21 +463,21 @@ export default function TarotDivination() {
                     </article>
                   ))}
 
-                  <div className="flex flex-col sm:flex-row gap-4 pt-6">
+                  <div className="flex flex-col sm:flex-row gap-4 pt-6 w-full justify-center">
                     {session && (
                       <Button 
                         onClick={saveDivination} 
                         disabled={isSaving || isSaved} 
                         variant="outline" 
-                        className="bg-amber-900/40 border-amber-500/30 text-amber-100 hover:bg-amber-800/40 hover:text-amber-50 flex-1 transition-all duration-200 hover:scale-105 disabled:opacity-70 disabled:cursor-not-allowed hover:border-amber-400/50"
-                      >
+                        className="chinese-title-bakudai border-2 border-amber-400 bg-transparent hover:bg-amber-500/20 text-amber-300 hover:text-amber-200 text-lg px-8 py-6 rounded-full transition-all duration-300 transform hover:scale-105 disabled:cursor-not-allowed"
+                        >
                         {isSaving ? "儲存中..." : (isSaved ? "已儲存" : "儲存本次占卜")}
                       </Button>
                     )}
 
                     <Button
                       variant="outline"
-                      className="bg-gradient-to-r from-amber-600/80 to-amber-700/80 border-amber-500/50 text-amber-50 hover:from-amber-600 hover:to-amber-700 hover:border-amber-400/60 flex-1 transition-all duration-200 hover:scale-105 shadow-md hover:shadow-amber-500/20"
+                      className="chinese-title-bakudai border-2 border-amber-400 bg-transparent hover:bg-amber-500/20 text-amber-300 hover:text-amber-200 text-lg px-8 py-6 rounded-full transition-all duration-300 transform hover:scale-105"
                       size="lg"
                       onClick={resetReading}
                     >
@@ -492,6 +485,8 @@ export default function TarotDivination() {
                     </Button>
                   </div>
                 </CardContent>
+
+                
                 <DecorativeCorner position="bottom-left" className="left-0 bottom-0" />
                 <DecorativeCorner position="bottom-right" className="right-0 bottom-0" />
                 
@@ -503,7 +498,8 @@ export default function TarotDivination() {
       </div>
 
       </div>
-      </div>
+     </div>
+
     </div>
   )
 }

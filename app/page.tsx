@@ -8,12 +8,16 @@ import { TarotVisual } from '@/components/decorations/tarot-visual';
 import { SunIcon } from '@/components/decorations/sun-icon';
 import { MoonIcon } from '@/components/decorations/moon-icon';
 import { DivinationBackground } from '@/components/decorations/divination-background';
-import { AuthStatus } from '@/components/auth-status';
+import Header from '@/components/layout/Header';
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-[rgb(23,17,17)] text-[#F9ECDC] relative overflow-hidden">
+    <div className="relative min-h-screen bg-[rgb(23,17,17)] text-[#F9ECDC] relative overflow-hidden">
       <DivinationBackground />
+      
+      {/* Header Section */}
+      <Header />
+
       <div className="absolute inset-0 flex items-center justify-between px-8 pointer-events-none z-10">
         <div className="relative w-[8%] left-[8%] h-auto">
           <SunIcon className="w-full h-auto" />
@@ -36,18 +40,7 @@ export default function Home() {
         <CornerDecoration position="bottom-right" className="bottom-4 left-4 scale-x-[-1]" />
         <CornerDecoration position="bottom-left" className="bottom-4 right-4 scale-y-[-1]" />
       </div>
-      {/* Header Section */}
-      <div className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between py-14 px-16 ">
-        {/* Logo */}
-        <Link href="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
-          <span className="im-fell-english-regular text-xl text-white">Soul's Eye</span>
-        </Link>
-        
-        {/* User Profile */}
-        <div className="flex justify-end">
-          <AuthStatus />
-        </div>
-      </div>
+
 
       {/* Hero Section */}
       <div className="absolute w-full h-full inset-0 px-10 flex flex-col justify-center items-center text-center">
