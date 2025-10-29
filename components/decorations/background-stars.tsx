@@ -36,49 +36,44 @@ const BackgroundStars = () => {
   }, []);
 
   const stars = React.useMemo(() => {
-    if (!mounted) return [];
+    if (typeof window === 'undefined') return []; // 檢查是否在瀏覽器環境
     
     const starCount = isMobile ? 70 : 100;
     const baseSize = isMobile ? 3 : 6;
     const sizeRange = isMobile ? 9 : 18;
     const stars: Star[] = [];
     
-    // Get viewport dimensions
-    const viewportWidth = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
-    const viewportHeight = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
+    // 獲取視窗尺寸
+    const viewportWidth = Math.max(document.documentElement.clientWidth, window.innerWidth);
+    const viewportHeight = Math.max(document.documentElement.clientHeight, window.innerHeight);
     const aspectRatio = viewportWidth / viewportHeight;
     
-    // Calculate grid size based on viewport aspect ratio
+    // 根據視窗比例計算網格
     const gridCols = Math.ceil(Math.sqrt(starCount * aspectRatio));
     const gridRows = Math.ceil(starCount / gridCols);
     const cellWidth = 100 / gridCols;
     const cellHeight = 100 / gridRows;
     
-    let generated = 0;
-    while (generated < starCount) {
-      for (let i = 0; i < gridCols && generated < starCount; i++) {
-        for (let j = 0; j < gridRows && generated < starCount; j++) {
-          const depth = Math.random();
-          const type = Math.random() > 0.5 ? 'filled' : 'outlined';
-          const rotation = Math.floor(Math.random() * 360);
-          
-          stars.push({
-            id: `star-${generated}`,
-            x: (i * cellWidth) + (Math.random() * cellWidth * 0.8 + cellWidth * 0.1),
-            y: (j * cellHeight) + (Math.random() * cellHeight * 0.8 + cellHeight * 0.1),
-            size: baseSize + Math.random() * sizeRange,
-            delay: Math.random() * 5,
-            duration: 2 + Math.random() * 4,
-            depth: depth,
-            type: type,
-            rotation: rotation
-          });
-          generated++;
-        }
+    // 生成星星
+    for (let i = 0; i < gridCols; i++) {
+      for (let j = 0; j < gridRows; j++) {
+        if (stars.length >= starCount) break;
+        
+        stars.push({
+          id: `star-${i}-${j}`,
+          x: (i * cellWidth) + (Math.random() * cellWidth * 0.8 + cellWidth * 0.1),
+          y: (j * cellHeight) + (Math.random() * cellHeight * 0.8 + cellHeight * 0.1),
+          size: baseSize + Math.random() * sizeRange,
+          delay: Math.random() * 5,
+          duration: 2 + Math.random() * 4,
+          depth: Math.random(),
+          type: Math.random() > 0.5 ? 'filled' : 'outlined',
+          rotation: Math.floor(Math.random() * 360)
+        });
       }
     }
     return stars;
-  }, [isMobile]);
+  }, [isMobile, typeof window]); // 當 isMobile 或 window 對象變化時重新計算
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!containerRef.current) return;
@@ -119,7 +114,7 @@ const BackgroundStars = () => {
         const moveY = getMovement(mousePosition.y, star.depth);
         const size = star.size;
         const halfSize = size / 2;
-        
+
         if (!mounted) {
           return null; // Don't render anything during SSR
         }
