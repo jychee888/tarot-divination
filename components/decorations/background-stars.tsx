@@ -15,12 +15,14 @@ interface Star {
 }
 
 const BackgroundStars = () => {
+  const [mounted, setMounted] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0.5, y: 0.5 });
   const [isMobile, setIsMobile] = useState(false);
   const containerRef = React.useRef<HTMLDivElement>(null);
 
   // Check if mobile on component mount and window resize
   useEffect(() => {
+    setMounted(true);
     const checkIfMobile = () => {
       setIsMobile(window.innerWidth <= 768);
     };
@@ -34,6 +36,8 @@ const BackgroundStars = () => {
   }, []);
 
   const stars = React.useMemo(() => {
+    if (!mounted) return [];
+    
     const starCount = isMobile ? 70 : 100;
     const baseSize = isMobile ? 3 : 6;
     const sizeRange = isMobile ? 9 : 18;
@@ -115,6 +119,10 @@ const BackgroundStars = () => {
         const moveY = getMovement(mousePosition.y, star.depth);
         const size = star.size;
         const halfSize = size / 2;
+        
+        if (!mounted) {
+          return null; // Don't render anything during SSR
+        }
 
         return (
           <svg
