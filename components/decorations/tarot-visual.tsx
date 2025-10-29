@@ -2,7 +2,7 @@ import React from 'react';
 
 export const TarotVisual = () => (
   <div className="relative w-full flex justify-center my-8">
-    <div className="absolute z-20 w-[180px] top-[25%] left-[-30%]">
+    <div className="absolute z-20 sm:w-[180px] w-[100px] top-[25%] left-[-30%]">
       <svg 
         width="100%" 
         height="100%"  
@@ -53,7 +53,7 @@ export const TarotVisual = () => (
         <path d="M26.9195 104.384C26.6342 105.182 26.2751 107.058 25.7874 108.312" stroke="#F5AD4F" strokeWidth="1.33333" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
       </svg>
     </div>
-    <div className="absolute z-30 w-[180px] top-[25%] right-[-30%]">
+    <div className="absolute z-30 sm:w-[180px] w-[100px] top-[25%] right-[-30%]">
       <svg 
         width="100%" 
         height="100%"  
@@ -103,7 +103,7 @@ export const TarotVisual = () => (
       <path d="M43.9981 219.081C42.7092 221.434 39.7571 222.299 37.4014 221.01C35.9406 220.21 35.054 218.767 34.8984 217.225C35.1955 217.917 35.716 218.521 36.4295 218.911C38.1184 219.835 40.2366 219.217 41.1606 217.528C42.0858 215.839 41.4659 213.722 39.7769 212.797C39.0635 212.406 38.274 212.292 37.5313 212.415C38.9138 211.713 40.6074 211.684 42.0682 212.484C44.4238 213.773 45.287 216.728 43.9981 219.081Z" stroke="#F5AD4F" strokeWidth="1.33333" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
       </svg>
     </div> 
-    <div className="relative w-[400px] top-[1.2rem] hover:scale-105 transition-transform duration-500 ease-in-out">
+    <div className="relative sm:w-[400px] w-[200px] sm:top-[1.2rem] top-[.7rem] hover:scale-105 transition-transform duration-500 ease-in-out">
       <svg 
         width="100%" 
         height="100%" 

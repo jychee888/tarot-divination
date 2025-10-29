@@ -7,7 +7,7 @@ interface EyeIconProps {
 
 export const EyeIcon: React.FC<EyeIconProps> = ({ className = '', mirror = false }) => (
   <div className={`inline-block ${mirror ? 'scale-x-[-1]' : ''} ${className} hover:animate-float`}>
-    <div className=" w-[200px] transition-transform duration-1000 ease-in-out hover:scale-110">
+    <div className=" w-[80px] sm:w-[200px] transition-transform duration-1000 ease-in-out hover:scale-110">
       <svg 
         className="w-full h-full" 
         viewBox="0 0 143 90" 

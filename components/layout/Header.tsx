@@ -31,10 +31,10 @@ export default function Header({
   }, []);
   return (
     <header 
-      className={`fixed left-0 right-0 z-50 flex items-center justify-between py-4 px-16 transition-all duration-300 ${
+      className={`fixed left-0 right-0 z-50 flex items-center justify-between sm:py-4 py-2 sm:px-16 px-8 transition-all duration-300 ${
         isScrolled 
           ? 'top-0' 
-          : 'top-12'
+          : 'sm:top-12 top-6'
       } ${className}`}
     >
       {/* Logo */}
