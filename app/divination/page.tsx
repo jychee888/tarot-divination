@@ -227,9 +227,8 @@ export default function TarotDivination() {
       <div className="container mx-auto px-4 py-8 pb-[100px] relative">
        
         {/* 主視覺 */}
-        <TarotDecorativeElements className="absolute w-[200%] sm:w-full sm:top-0 top-[20px] h-full mb-20 -left-1/2 sm:left-0" />
+        <TarotDecorativeElements className="w-[200%] sm:w-full sm:top-0 top-[20px] h-full mb-20 -left-1/2 sm:left-0" />
       
-
         {!isReading ? (
           /* 設定區塊 */
           <main>

@@ -250,7 +250,7 @@ const DecorativeSVG = ({ className = '', mirrored = false }) => (
 
 export const TarotDecorativeElements = ({ className = '' }: DecorativeElementProps) => {
   return (
-    <div className={`relative pointer-events-none w-full h-full ${className}`}>
+    <div className={`relative pointer-events-none ${className}`}>
    
         <DecorativeSVG className="w-full h-full" />
      
