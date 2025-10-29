@@ -224,7 +224,7 @@ export default function TarotDivination() {
       {/* Header Section */}
       <Header />
 
-      <div className="container mx-auto px-4 py-8 pb-[100px] relative">
+      <div className="container mx-auto px-4 py-8 sm:pd-0 sm:pb-[100px] relative">
        
         {/* 主視覺 */}
         <TarotDecorativeElements className="w-[200%] sm:w-full sm:top-0 top-[20px] h-full mb-20 -left-1/2 sm:left-0" />
@@ -240,8 +240,8 @@ export default function TarotDivination() {
                 <Start01decoration className="w-full hidden sm:block" position="top" />
                 <MoonFaceDecoration className="w-full -mt-4 hidden sm:block" position="top" size="md" />
                 
-                <DecorativeCorner position="top-left" className="hidden sm:block left-0 top-0" />
-                <DecorativeCorner position="top-right" className="hidden sm:block right-0 top-0" />
+                <DecorativeCorner position="top-left" className="left-0 top-0" />
+                <DecorativeCorner position="top-right" className="right-0 top-0" />
                 <CardContent className="space-y-8 p-8 mt-4 mb-8 relative">
                   {/* 占卜主題選擇 */}
                   <section>
@@ -532,10 +532,9 @@ export default function TarotDivination() {
                       <div className="text-amber-100 space-y-3">
                         <p className="leading-relaxed font-medium text-amber-50">{card.meaning.summary}</p>
                         {card.meaning.details && card.meaning.details.length > 0 && (
-                          <ul className="list-disc list-inside space-y-2 text-sm text-amber-100/90 pl-4">
+                          <ul className="list-disc list-outside space-y-2 text-sm text-amber-100/90 pl-5 -ml-1">
                             {card.meaning.details.map((detail, i) => (
-                              <li key={i} className="relative pl-2">
-                              
+                              <li key={i} className="pl-2">
                                 {detail}
                               </li>
                             ))}
