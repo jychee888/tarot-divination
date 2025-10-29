@@ -224,36 +224,125 @@ export default function TarotDivination() {
       {/* Header Section */}
       <Header />
 
-        <div className="container mx-auto px-4 py-8 pb-[100px] relative">
-          <div className="absolute inset-0 pointer-events-none" />
-            {/* 主視覺 */}
-            <TarotDecorativeElements className="absolute w-[200%] sm:w-full sm:top-0 top-[20px] h-full mb-20 -left-1/2 sm:left-0" />
+      <div className="container mx-auto px-4 py-8 pb-[100px] relative">
+       
+        {/* 主視覺 */}
+        <TarotDecorativeElements className="absolute w-[200%] sm:w-full sm:top-0 top-[20px] h-full mb-20 -left-1/2 sm:left-0" />
+      
 
-          {!isReading ? (
-        /* 設定區塊 */
-        <main>
-          <div className="relative max-w-2xl mx-auto">
-            {/* 占卜設定 */}
-          <Card className="bg-[rgba(23, 17, 17, 0.2)] border border-[#C99041] backdrop-blur-sm rounded-none relative overflow-visible">
-            <MoonPhaseIndicator position="top" />
-            <CloudDecoration className="w-full hidden sm:block" position="top" />
-            <Start01decoration className="w-full hidden sm:block" position="top" />
-            <MoonFaceDecoration className="w-full -mt-4 hidden sm:block" position="top" size="md" />
-            
-            <DecorativeCorner position="top-left" className="hidden sm:block left-0 top-0" />
-            <DecorativeCorner position="top-right" className="hidden sm:block right-0 top-0" />
-            <CardContent className="space-y-8 p-8 mt-4 mb-8 relative">
-              {/* 占卜主題選擇 */}
-              <section>
-                <h2 className="sm:text-3xl text-[16px] font-bold text-amber-100 mb-6 text-center font-serif tracking-wider">占卜主題</h2>
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                  {themes.map((theme) => {
-                    const Icon = theme.icon
-                    return (
-                      <Button
-                        key={theme.id}
-                        variant={selectedTheme === theme.id ? "default" : "outline"}
-                        className={`
+        {!isReading ? (
+          /* 設定區塊 */
+          <main>
+            <div className="relative max-w-2xl mx-auto">
+                {/* 占卜設定 */}
+              <Card className="bg-[rgba(23, 17, 17, 0.2)] border border-[#C99041] backdrop-blur-sm rounded-none relative overflow-visible">
+                <MoonPhaseIndicator position="top" />
+                <CloudDecoration className="w-full hidden sm:block" position="top" />
+                <Start01decoration className="w-full hidden sm:block" position="top" />
+                <MoonFaceDecoration className="w-full -mt-4 hidden sm:block" position="top" size="md" />
+                
+                <DecorativeCorner position="top-left" className="hidden sm:block left-0 top-0" />
+                <DecorativeCorner position="top-right" className="hidden sm:block right-0 top-0" />
+                <CardContent className="space-y-8 p-8 mt-4 mb-8 relative">
+                  {/* 占卜主題選擇 */}
+                  <section>
+                    <h2 className="sm:text-3xl text-[16px] font-bold text-amber-100 mb-6 text-center font-serif tracking-wider">占卜主題</h2>
+                    <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                      {themes.map((theme) => {
+                        const Icon = theme.icon
+                        return (
+                          <Button
+                            key={theme.id}
+                            variant={selectedTheme === theme.id ? "default" : "outline"}
+                            className={`
+                              /* 字體與文字 */
+                              font-serif 
+                              sm:text-md
+                              text-[14px]
+                              text-amber-300 
+                              hover:text-amber-200 
+                              
+                              /* 背景與邊框 */
+                              bg-transparent 
+                              hover:bg-amber-500/20 
+                              border 
+                              border-[#C99041] 
+                              
+                              /* 間距與尺寸 */
+                              sm:py-6 
+                              rounded-full 
+                              
+                              /* 動畫與過渡 */
+                              transition-all 
+                              duration-300 
+                              transform
+                              ${
+                                selectedTheme === theme.id 
+                                  ? 'scale-105 bg-amber-500/10' 
+                                  : 'hover:scale-105'
+                              }
+                            `}
+                            onClick={() => setSelectedTheme(theme.id)}
+                            aria-pressed={selectedTheme === theme.id}
+                          >
+                            <Icon className="w-5 h-5" />
+                            {theme.label}
+                          </Button>
+                        )
+                      })}
+                    </div>
+                  </section>
+
+                  {/* 牌陣選擇 */}
+                  <section>
+                    <h2 className="sm:text-3xl text-[16px] font-bold text-amber-100 mb-6 text-center font-serif tracking-wider">牌陣選擇</h2>
+                    <div className="grid grid-cols-3 md:grid-cols-3 gap-4">
+                      {spreads.map((spread) => (
+                        <Button
+                          key={spread.id}
+                          variant={selectedSpread === spread.id ? "default" : "outline"}
+                          className={`
+                            /* 字體與文字 */
+                            font-serif 
+                            sm:text-md
+                            text-[14px]
+                            text-amber-300 
+                            hover:text-amber-200 
+                            
+                            /* 背景與邊框 */
+                            bg-transparent 
+                            hover:bg-amber-500/20 
+                            border 
+                            border-[#C99041] 
+                            
+                            /* 間距與尺寸 */
+                            sm:py-6 
+                            rounded-full 
+                            
+                            /* 動畫與過渡 */
+                            transition-all 
+                            duration-300 
+                            transform
+                            ${
+                              selectedSpread === spread.id 
+                                ? 'scale-105 bg-amber-500/10' 
+                                : 'hover:scale-105'
+                            }
+                          `}
+                          onClick={() => setSelectedSpread(spread.id)}
+                          aria-pressed={selectedSpread === spread.id}
+                        >
+                          {spread.label}
+                        </Button>
+                      ))}
+                    </div>
+                  </section>
+
+                  {/* 開始占卜按鈕 */}
+                  <div className="text-center pt-6">
+                    <Button
+                      size="lg"
+                      className=" 
                           /* 字體與文字 */
                           font-serif 
                           sm:text-md
@@ -275,109 +364,21 @@ export default function TarotDivination() {
                           transition-all 
                           duration-300 
                           transform
-                          ${
-                            selectedTheme === theme.id 
-                              ? 'scale-105 bg-amber-500/10' 
-                              : 'hover:scale-105'
-                          }
-                        `}
-                        onClick={() => setSelectedTheme(theme.id)}
-                        aria-pressed={selectedTheme === theme.id}
-                      >
-                        <Icon className="w-5 h-5" />
-                        {theme.label}
-                      </Button>
-                    )
-                  })}
-                </div>
-              </section>
-
-              {/* 牌陣選擇 */}
-              <section>
-                <h2 className="sm:text-3xl text-[16px] font-bold text-amber-100 mb-6 text-center font-serif tracking-wider">牌陣選擇</h2>
-                <div className="grid grid-cols-3 md:grid-cols-3 gap-4">
-                  {spreads.map((spread) => (
-                    <Button
-                      key={spread.id}
-                      variant={selectedSpread === spread.id ? "default" : "outline"}
-                      className={`
-                        /* 字體與文字 */
-                        font-serif 
-                        sm:text-md
-                        text-[14px]
-                        text-amber-300 
-                        hover:text-amber-200 
-                        
-                        /* 背景與邊框 */
-                        bg-transparent 
-                        hover:bg-amber-500/20 
-                        border 
-                        border-[#C99041] 
-                        
-                        /* 間距與尺寸 */
-                        sm:py-6 
-                        rounded-full 
-                        
-                        /* 動畫與過渡 */
-                        transition-all 
-                        duration-300 
-                        transform
-                        ${
-                          selectedSpread === spread.id 
-                            ? 'scale-105 bg-amber-500/10' 
-                            : 'hover:scale-105'
-                        }
-                      `}
-                      onClick={() => setSelectedSpread(spread.id)}
-                      aria-pressed={selectedSpread === spread.id}
+                          "
+                      onClick={startDivination}
                     >
-                      {spread.label}
+                      <Sparkles className="w-5 h-5 mr-2 text-amber-200" />
+                      <span className="drop-shadow-sm">開始占卜</span>
                     </Button>
-                  ))}
-                </div>
-              </section>
-
-              {/* 開始占卜按鈕 */}
-              <div className="text-center pt-6">
-                <Button
-                  size="lg"
-                  className=" 
-                      /* 字體與文字 */
-                      font-serif 
-                      sm:text-md
-                      text-[14px]
-                      text-amber-300 
-                      hover:text-amber-200 
-                      
-                      /* 背景與邊框 */
-                      bg-transparent 
-                      hover:bg-amber-500/20 
-                      border 
-                      border-[#C99041] 
-                      
-                      /* 間距與尺寸 */
-                      sm:py-6 
-                      rounded-full 
-                      
-                      /* 動畫與過渡 */
-                      transition-all 
-                      duration-300 
-                      transform
-                      "
-                  onClick={startDivination}
-                >
-                  <Sparkles className="w-5 h-5 mr-2 text-amber-200" />
-                  <span className="drop-shadow-sm">開始占卜</span>
-                </Button>
-              </div>
-            </CardContent>
-            <DecorativeCorner position="bottom-left" className="left-0 bottom-0" />
-            <DecorativeCorner position="bottom-right" className="right-0 bottom-0" />
-            
-            <MoonPhaseIndicator position="bottom" />
-          </Card>
-        </div>
-        </main>
+                  </div>
+                </CardContent>
+                <DecorativeCorner position="bottom-left" className="left-0 bottom-0" />
+                <DecorativeCorner position="bottom-right" className="right-0 bottom-0" />
+                
+                <MoonPhaseIndicator position="bottom" />
+              </Card>
+            </div>
+          </main>
         ) : (
           <main className="max-w-2xl mx-auto">
             {/* 抽牌區塊 */}
@@ -492,7 +493,7 @@ export default function TarotDivination() {
 
             {/* 解牌區塊 */}
             {showResults && (
-               <Card ref={resultsTitleRef} className="bg-[rgba(23, 17, 17, 0.2)] mt-[80px] pb-[50px] border-2 border-[#C99041]/50 backdrop-blur-sm rounded-none relative">
+              <Card ref={resultsTitleRef} className="bg-[rgba(23, 17, 17, 0.2)] mt-[80px] pb-[50px] border-2 border-[#C99041]/50 backdrop-blur-sm rounded-none relative">
                 <MoonPhaseIndicator position="top" />
                 <LeftSideDecorations className="hidden sm:block" />
                 <RightSideDecorations className="hidden sm:block" />
@@ -535,7 +536,7 @@ export default function TarotDivination() {
                           <ul className="list-disc list-inside space-y-2 text-sm text-amber-100/90 pl-4">
                             {card.meaning.details.map((detail, i) => (
                               <li key={i} className="relative pl-2">
-                               
+                              
                                 {detail}
                               </li>
                             ))}
@@ -577,7 +578,7 @@ export default function TarotDivination() {
             )}
           </main>
         )}
-        </div>
+      </div>
 
     </div>
      
