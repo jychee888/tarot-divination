@@ -23,23 +23,21 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
   const pathname = usePathname()
 
   return (
-    <div className="relative p-8 min-h-screen bg-[rgb(23,17,17)] text-[#F9ECDC] relative overflow-hidden">
+    <div className="relative p-[50px] min-h-screen bg-[rgb(23,17,17)] text-[#F9ECDC] relative overflow-hidden">
       
-      {/* Golden Borders */}
-      <div className="fixed inset-0 pointer-events-none z-50">
-        {/* Outer Border */}
-        <div className="absolute inset-4 border-2 border-[#C99041]/30 rounded-3xl"></div>
-        {/* Inner Border */}
-        <div className="absolute inset-8 border-2 border-[#C99041]/30 rounded-xl"></div>
-        
-        {/* Corner Decorations */}
-        <CornerDecoration position="top-left" className="top-4 left-4" />
-        <CornerDecoration position="top-right" className="top-4 right-4" />
-        <CornerDecoration position="bottom-right" className="bottom-4 left-4 scale-x-[-1]" />
-        <CornerDecoration position="bottom-left" className="bottom-4 right-4 scale-y-[-1]" />
-      </div>
+      {/* Outer Border */}
+      <div className="absolute z-50 inset-2 sm:inset-4 border border-[#C99041] rounded-3xl pointer-events-none"></div>
+      {/* Inner Border */}
+      <div className="absolute z-50 inset-4 sm:inset-8 border border-[#C99041] rounded-xl pointer-events-none"></div>
+      <div className="absolute z-10 inset-0 sm:inset-0 sm:border-[40px] border-[20px] border-[#171111] rounded-xl pointer-events-none"></div>
+      {/* Corner Decorations */}
+      <CornerDecoration position="top-left" className="z-50 top-2 left-2 sm:top-4 sm:left-4" />
+      <CornerDecoration position="top-right" className="z-50 top-2 right-2 sm:top-4 sm:right-4" />
+      <CornerDecoration position="bottom-right" className="z-50 bottom-2 left-2 sm:bottom-4 sm:left-4 scale-x-[-1]" />
+      <CornerDecoration position="bottom-left" className="z-50 bottom-2 right-2 sm:bottom-4 sm:right-4 scale-y-[-1]" />
 
-      <div className="container mx-auto px-4 py-8 relative z-20">
+
+      <div className="container mx-auto p-2 relative z-20">
         <div className="md:flex md:gap-8">
           <aside className="md:w-64 mb-8 md:mb-0 flex-shrink-0">
             <div className="bg-amber-900/20 backdrop-blur-sm p-6 rounded-lg border border-[#C99041]/20 shadow-lg">
