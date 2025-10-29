@@ -1,9 +1,13 @@
 import React from 'react';
 
 // This is a mirrored version of LeftSideDecorations
-const RightSideDecorations: React.FC = () => {
+interface RightSideDecorationsProps {
+  className?: string;
+}
+
+const RightSideDecorations: React.FC<RightSideDecorationsProps> = ({ className = '' }) => {
   return (
-    <div className="fixed -right-[50%] top-0 h-full w-1/2 pointer-events-none z-10">
+    <div className={`fixed -right-[50%] top-0 h-full w-1/2 pointer-events-none z-10 ${className}`}>
       {/* Stars Container - Mirrored */}
       <div className="absolute -top-[50px] -right-[15%] w-[400px] h-full">
        

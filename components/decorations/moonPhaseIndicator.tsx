@@ -9,7 +9,7 @@ export const MoonPhaseIndicator: React.FC<MoonPhaseIndicatorProps> = ({ position
   const positionClass = position === 'top' ? '-top-3.5' : '-bottom-3.5';
   
   return (
-    <div className={`absolute left-1/2 -translate-x-1/2 w-[40%] ${positionClass} ${className}`}>
+    <div className={`absolute left-1/2 -translate-x-1/2 sm:w-[40%] w-[80%] ${positionClass} ${className}`}>
       <div className="w-full h-7 flex items-center justify-center">
           <svg width="100%"  viewBox="0 0 223 22" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
             <path d="M201.327 10.8234C201.327 4.98657 206.061 0.250122 211.9 0.250123C217.74 0.250123 222.474 4.98658 222.474 10.8234C222.474 16.6663 217.74 21.3967 211.9 21.3967C206.061 21.3967 201.327 16.6663 201.327 10.8234Z" stroke="#C99041" strokeWidth="0.5" strokeMiterlimit="10"/>

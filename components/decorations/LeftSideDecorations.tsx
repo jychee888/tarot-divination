@@ -1,8 +1,12 @@
 import React from 'react';
 
-export const LeftSideDecorations: React.FC = () => {
+interface LeftSideDecorationsProps {
+  className?: string;
+}
+
+export const LeftSideDecorations: React.FC<LeftSideDecorationsProps> = ({ className = '' }) => {
   return (
-    <div className="fixed -left-[50%] top-0 h-full w-1/2 pointer-events-none z-0">
+    <div className={`fixed -left-[50%] top-0 h-full w-1/2 pointer-events-none z-0 ${className}`}>
       {/* Stars Container */}
       <div className="absolute top-[10px] -left-[15%] w-[400px] h-full">
         <svg width="100%" viewBox="0 0 240 443" fill="none" xmlns="http://www.w3.org/2000/svg">
