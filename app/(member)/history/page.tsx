@@ -29,6 +29,7 @@ export default function HistoryPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [selectedReading, setSelectedReading] = useState<DivinationRecord | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [modalStyle, setModalStyle] = useState<React.CSSProperties>({})
   
   // Filter and sort states
   const [dateFilter, setDateFilter] = useState<'all' | 'today' | 'week' | 'month' | 'year'>('all')
@@ -78,7 +79,31 @@ export default function HistoryPage() {
     // Reset to first page when filters change
     setCurrentPage(1);
   }, [filteredAndSortedHistory]);
-  
+
+  // Update modal position when modal opens/closes or window resizes
+  useEffect(() => {
+    if (isModalOpen) {
+      const updateModalPosition = () => {
+        const viewportHeight = window.innerHeight;
+        const modalHeight = 600; // Modal height in pixels
+        const top = Math.max(20, (viewportHeight - modalHeight) / 2);
+        setModalStyle({
+          position: 'fixed',
+          top: `${top}px`,
+          left: '50%',
+          transform: 'translateX(-50%)',
+        });
+      };
+
+      // Initial position
+      updateModalPosition();
+      
+      // Update on window resize
+      window.addEventListener('resize', updateModalPosition);
+      return () => window.removeEventListener('resize', updateModalPosition);
+    }
+  }, [isModalOpen]);
+
   // Calculate pagination
   const totalItems = filteredAndSortedHistory.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
@@ -197,9 +222,13 @@ export default function HistoryPage() {
 
       {/* Reading Details Modal */}
       {isModalOpen && selectedReading && (
-        <div className="fixed top-0 inset-0 z-[99] flex justify-center  bg-black/70 backdrop-blur-sm" onClick={() => setIsModalOpen(false)}>
+        <div 
+          className="fixed inset-0 z-[99] bg-black/70 backdrop-blur-sm overflow-y-auto"
+          onClick={() => setIsModalOpen(false)}
+        >
           <div 
-            className="relative w-full max-w-[70%] mt-[100px] h-[600px] flex flex-col bg-amber-900/95 border border-amber-700/50 rounded-xl shadow-2xl overflow-hidden"
+            className="relative w-full max-w-[70%] h-[600px] flex flex-col bg-amber-900/95 border border-amber-700/50 rounded-xl shadow-2xl overflow-hidden"
+            style={modalStyle}
             onClick={e => e.stopPropagation()}
           >
             <div className="flex-shrink-0 p-6 pb-0">
@@ -257,12 +286,13 @@ export default function HistoryPage() {
                           </p>
                           
                           <h4 className="font-medium text-amber-100 mb-2">詳細含義</h4>
-                          <ul className="space-y-1.5 text-sm text-amber-200/80">
+                          <ul className="space-y-1.5 text-xs text-amber-200/80">
                             {(card.isReversed ? meaning?.reversed?.details : meaning?.upright?.details)?.map((detail, i) => (
                               <li key={i} className="flex">
                                 <span className="text-amber-400 mr-2">•</span>
+                                <span>{detail}</span>
                               </li>
-                            ))}
+                            )) || <li className="text-amber-400/70">暫無詳細解釋</li>}
                           </ul>
                         </div>
                       </div>
