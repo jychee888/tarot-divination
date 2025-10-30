@@ -306,7 +306,7 @@ export default function HistoryPage() {
       )}
       
       {/* Main content area */}
-      <div className="space-y-6">
+      <div className="space-y-4">
         {/* Loading state */}
         {isLoading || status === 'loading' ? (
           <div className="text-center">

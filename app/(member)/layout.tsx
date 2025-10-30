@@ -23,7 +23,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
   const pathname = usePathname()
 
   return (
-    <div className="relative p-[50px] min-h-screen bg-[rgb(23,17,17)] text-[#F9ECDC] relative overflow-hidden">
+    <div className="relative p-[20px] sm:p-[50px] min-h-screen bg-[rgb(23,17,17)] text-[#F9ECDC] relative overflow-hidden">
       
       {/* Outer Border */}
       <div className="absolute z-50 inset-2 sm:inset-4 border border-[#C99041] rounded-3xl pointer-events-none"></div>
@@ -71,7 +71,7 @@ export default function MemberLayout({ children }: { children: React.ReactNode }
               </nav>
             </div>
           </aside>
-          <main className="flex-1 bg-amber-900/10 backdrop-blur-sm p-8 rounded-lg border border-[#C99041]/20 shadow-lg">
+          <main className="flex-1 bg-amber-900/10 backdrop-blur-sm sm:p-8 p-4 rounded-lg border border-[#C99041]/20 shadow-lg">
             {children}
           </main>
         </div>
