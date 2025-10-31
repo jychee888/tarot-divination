@@ -6,8 +6,12 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import tarotCards from '@/data/tarot-cards'
+import Pagination from '@/components/Pagination'
+import ModalPortal from '@/components/ui/ModalPortal'
 
 interface Card {
+    id?: string;  // 可能是可選的
+    cardId?: string;  // 新增這個欄位
     name: string;
     isReversed: boolean;
     meaning: string;
@@ -116,6 +120,13 @@ export default function HistoryPage() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  const handleOpenModal = (reading: DivinationRecord) => {
+    console.log('Selected reading:', JSON.stringify(reading, null, 2));
+    console.log('Cards in reading:', reading.cards);
+    setSelectedReading(reading);
+    setIsModalOpen(true);
+  }
+
   // Prevent body scroll when modal is open
   useEffect(() => {
     if (isModalOpen) {
@@ -222,87 +233,97 @@ export default function HistoryPage() {
 
       {/* Reading Details Modal */}
       {isModalOpen && selectedReading && (
-        <div 
-          className="fixed inset-0 z-[99] bg-black/70 backdrop-blur-sm overflow-y-auto"
-          onClick={() => setIsModalOpen(false)}
-        >
+        <ModalPortal>
           <div 
-            className="relative w-full max-w-[70%] h-[600px] flex flex-col bg-amber-900/95 border border-amber-700/50 rounded-xl shadow-2xl overflow-hidden"
-            style={modalStyle}
-            onClick={e => e.stopPropagation()}
+            className="fixed inset-0 z-[99] bg-black/70 backdrop-blur-sm overflow-y-auto flex items-start justify-center p-4"
+            onClick={() => setIsModalOpen(false)}
           >
-            <div className="flex-shrink-0 p-6 pb-0">
-              <div className="flex justify-between items-start mb-4">
-                <div>
-                  <h2 className="text-2xl font-bold text-amber-100 mb-1">{selectedReading.theme}</h2>
-                  <p className="text-amber-300/80 text-sm">{selectedReading.spreadType} • {new Date(selectedReading.createdAt).toLocaleString('zh-TW')}</p>
+            <div 
+              className="relative w-full max-w-4xl max-h-[90vh] my-8 flex flex-col bg-amber-900/95 border border-amber-700/50 rounded-xl shadow-2xl overflow-hidden"
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="flex-shrink-0 p-6 pb-0">
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <h2 className="text-2xl font-bold text-amber-100 mb-1">{selectedReading.theme}</h2>
+                    <p className="text-amber-300/80 text-sm">{selectedReading.spreadType} • {new Date(selectedReading.createdAt).toLocaleString('zh-TW')}</p>
+                  </div>
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsModalOpen(false);
+                    }}
+                    className="text-amber-200 hover:text-white transition-colors p-1 -m-1"
+                    aria-label="關閉"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
                 </div>
-                <button 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIsModalOpen(false);
-                  }}
-                  className="text-amber-200 hover:text-white transition-colors p-1 -m-1"
-                  aria-label="關閉"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
               </div>
-            </div>
-            <div className="flex-1 overflow-y-auto p-6 pt-4">
-              <div className="space-y-6 pb-2">
-                {selectedReading.cards.map((card, index) => {
-                  const cardData = tarotCards.find(t => t.name === card.name);
-                  const meaning = cardData?.meanings[selectedReading.theme] || cardData?.meanings['default'];
-                  
-                  return (
-                    <div key={index} className="bg-amber-900/50 rounded-lg p-4 border border-amber-800/50">
-                      <div className="flex flex-col md:flex-row gap-4 mb-3">
-                        <div className="w-full md:w-1/6">
-                          <div className={`relative aspect-[2.5/4.5] rounded-lg overflow-hidden border-2 ${card.isReversed ? 'border-red-500/50' : 'border-amber-500/50'}`}>
-                            <img 
-                              src={cardData?.image || '/images/card-back.jpg'} 
-                              alt={card.name}
-                              className={`w-full h-full object-cover ${card.isReversed ? 'transform rotate-180' : ''}`}
-                            />
-                            {card.isReversed && (
-                              <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-                                <span className="bg-red-500/80 text-white text-xs px-2 py-1 rounded">逆位</span>
-                              </div>
-                            )}
+              <div className="flex-1 overflow-y-auto p-6 pt-4">
+                <div className="space-y-6 pb-2">
+                  {selectedReading.cards.map((card, index) => {
+                    const cardData = tarotCards.find(t => 
+                      t.id === card.id || 
+                      t.name === card.name ||
+                      t.id.toLowerCase() === card.name?.toLowerCase().replace(/\s+/g, '_')
+                    ) || {} as any;
+                    // 確保 cardData 和 meanings 存在
+                    const meanings = cardData?.meanings || {};
+                    // 先嘗試獲取當前主題的解釋，如果沒有則使用第一個可用的主題，最後使用空物件
+                    const themeKey = Object.keys(meanings).find(key => key === selectedReading.theme) || 
+                                  Object.keys(meanings)[0];
+                    const meaning = themeKey ? meanings[themeKey] : {};
+                    
+                    return (
+                      <div key={index} className="bg-amber-900/50 rounded-lg p-4 border border-amber-800/50">
+                        <div className="flex flex-col md:flex-row gap-4 mb-3">
+                          <div className="w-full md:w-1/6">
+                            <div className={`relative aspect-[2.5/4.5] rounded-lg overflow-hidden border-2 ${card.isReversed ? 'border-red-500/50' : 'border-amber-500/50'}`}>
+                              <img 
+                                src={cardData?.image || '/images/card-back.jpg'} 
+                                alt={card.name}
+                                className={`w-full h-full object-cover ${card.isReversed ? 'transform rotate-180' : ''}`}
+                              />
+                              {card.isReversed && (
+                                <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                                  <span className="bg-red-500/80 text-white text-xs px-2 py-1 rounded">逆位</span>
+                                </div>
+                              )}
+                            </div>
+                            <h3 className="mt-2 text-center font-medium text-amber-100">
+                              {card.name}
+                              {card.isReversed && <span className="text-red-400 ml-1">(逆位)</span>}
+                            </h3>
                           </div>
-                          <h3 className="mt-2 text-center font-medium text-amber-100">
-                            {card.name}
-                            {card.isReversed && <span className="text-red-400 ml-1">(逆位)</span>}
-                          </h3>
-                        </div>
-                        
-                        <div className="flex-1">
-                          <h4 className="font-medium text-amber-100 mb-2">牌義解讀</h4>
-                          <p className="text-amber-200/90 text-sm mb-3">
-                            {card.isReversed ? (meaning?.reversed?.summary || '暫無逆位解釋') : (meaning?.upright?.summary || '暫無解釋')}
-                          </p>
                           
-                          <h4 className="font-medium text-amber-100 mb-2">詳細含義</h4>
-                          <ul className="space-y-1.5 text-xs text-amber-200/80">
-                            {(card.isReversed ? meaning?.reversed?.details : meaning?.upright?.details)?.map((detail, i) => (
-                              <li key={i} className="flex">
-                                <span className="text-amber-400 mr-2">•</span>
-                                <span>{detail}</span>
-                              </li>
-                            )) || <li className="text-amber-400/70">暫無詳細解釋</li>}
-                          </ul>
+                          <div className="flex-1">
+                            <h4 className="font-medium text-amber-100 mb-2">牌義解讀</h4>
+                            <p className="text-amber-200/90 text-sm mb-3">
+                              {card.isReversed ? (meaning?.reversed?.summary || '暫無逆位解釋') : (meaning?.upright?.summary || '暫無解釋')}
+                            </p>
+                            
+                            <h4 className="font-medium text-amber-100 mb-2">詳細含義</h4>
+                            <ul className="space-y-1.5 text-xs text-amber-200/80">
+                              {(card.isReversed ? meaning?.reversed?.details : meaning?.upright?.details)?.map((detail: string, i: number) => (
+                                <li key={i} className="flex">
+                                  <span className="text-amber-400 mr-2">•</span>
+                                  <span>{detail}</span>
+                                </li>
+                              )) || <li className="text-amber-400/70">暫無詳細解釋</li>}
+                            </ul>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </ModalPortal>
       )}
       
       {/* Main content area */}
@@ -448,73 +469,13 @@ export default function HistoryPage() {
           </div>
           
           {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4 border-t border-amber-800/30">
-              <div className="text-sm text-amber-100/70">
-                顯示 {Math.min(startIndex + 1, totalItems)}-{Math.min(startIndex + itemsPerPage, totalItems)} 筆，共 {totalItems} 筆
-              </div>
-              <div className="flex gap-1">
-                <button
-                  onClick={() => handlePageChange(1)}
-                  disabled={currentPage === 1}
-                  className="px-3 py-1.5 rounded-l-md bg-amber-900/30 text-amber-100 disabled:opacity-30 disabled:cursor-not-allowed"
-                >
-                  &laquo;
-                </button>
-                <button
-                  onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
-                  disabled={currentPage === 1}
-                  className="px-3 py-1.5 bg-amber-900/30 text-amber-100 disabled:opacity-30 disabled:cursor-not-allowed"
-                >
-                  &lsaquo;
-                </button>
-                
-                {/* Page numbers */}
-                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                  // Show pages around current page
-                  let pageNum;
-                  if (totalPages <= 5) {
-                    pageNum = i + 1;
-                  } else if (currentPage <= 3) {
-                    pageNum = i + 1;
-                  } else if (currentPage >= totalPages - 2) {
-                    pageNum = totalPages - 4 + i;
-                  } else {
-                    pageNum = currentPage - 2 + i;
-                  }
-                  
-                  return (
-                    <button
-                      key={pageNum}
-                      onClick={() => handlePageChange(pageNum)}
-                      className={`w-10 h-10 rounded-md ${
-                        currentPage === pageNum 
-                          ? 'bg-amber-500/30 text-amber-100 border border-amber-500/50' 
-                          : 'bg-amber-900/30 text-amber-100/70 hover:bg-amber-800/30'
-                      }`}
-                    >
-                      {pageNum}
-                    </button>
-                  );
-                })}
-                
-                <button
-                  onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
-                  disabled={currentPage === totalPages}
-                  className="px-3 py-1.5 bg-amber-900/30 text-amber-100 disabled:opacity-30 disabled:cursor-not-allowed"
-                >
-                  &rsaquo;
-                </button>
-                <button
-                  onClick={() => handlePageChange(totalPages)}
-                  disabled={currentPage === totalPages}
-                  className="px-3 py-1.5 rounded-r-md bg-amber-900/30 text-amber-100 disabled:opacity-30 disabled:cursor-not-allowed"
-                >
-                  &raquo;
-                </button>
-              </div>
-            </div>
-          )}
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={totalItems}
+            itemsPerPage={itemsPerPage}
+            onPageChange={handlePageChange}
+          />
           </div>
         )}
       </div>

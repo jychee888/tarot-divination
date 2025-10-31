@@ -39,6 +39,9 @@ const imagePathMap: { [id: string]: string } = (imageMapData as ImageMapItem[]).
   {} as { [id: string]: string }
 );
 
+// Debug: Log the first few image paths
+console.log('Image path map sample:', Object.entries(imagePathMap).slice(0, 3));
+
 // 5. 合併資料：遍歷牌義資料，並從 imagePathMap 中找到對應的圖片路徑
 const tarotCards: TarotCard[] = (tarotData as TarotMeaningData[]).map(card => ({
   ...card,
