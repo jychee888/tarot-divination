@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -34,6 +34,9 @@ export default function HistoryPage() {
   const [selectedReading, setSelectedReading] = useState<DivinationRecord | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalStyle, setModalStyle] = useState<React.CSSProperties>({})
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false)
+  const [recordToDelete, setRecordToDelete] = useState<string | null>(null)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
   
   // Filter and sort states
   const [dateFilter, setDateFilter] = useState<'all' | 'today' | 'week' | 'month' | 'year'>('all')
@@ -119,6 +122,46 @@ export default function HistoryPage() {
     setCurrentPage(page);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+
+  // Handle delete record
+  const handleDelete = useCallback(async (id: string) => {
+    setDeleteError(null); // Reset error state
+    try {
+      const response = await fetch(`/api/divinations/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || '刪除失敗');
+      }
+
+      // Update local state to remove the deleted record
+      setHistory(prev => prev.filter(record => record.id !== id));
+      setFilteredHistory(prev => prev.filter(record => record.id !== id));
+      
+      // Close the confirmation dialog
+      setIsDeleteConfirmOpen(false);
+      setRecordToDelete(null);
+      
+    } catch (error) {
+      console.error('刪除失敗:', error);
+      setDeleteError(error instanceof Error ? error.message : '刪除失敗，請稍後再試');
+    }
+  }, []);
+
+  // Confirm delete
+  const confirmDelete = (id: string) => {
+    setRecordToDelete(id);
+    setIsDeleteConfirmOpen(true);
+  };
+
+  // Cancel delete
+  const cancelDelete = () => {
+    setIsDeleteConfirmOpen(false);
+    setRecordToDelete(null);
+    setDeleteError(null);
+  };
 
   const handleOpenModal = (reading: DivinationRecord) => {
     console.log('Selected reading:', JSON.stringify(reading, null, 2));
@@ -212,7 +255,6 @@ export default function HistoryPage() {
               今年
             </button>
           </div>
-          
           <div className="flex items-center gap-2">
             <span className="text-sm text-amber-100/70">排序：</span>
             <button
@@ -425,14 +467,25 @@ export default function HistoryPage() {
                   setIsModalOpen(true);
                 }}
               >
+                {/* Delete button */}
+                <button 
+                  className="absolute top-3 right-3 p-1.5 text-amber-100/40 hover:text-red-400 transition-colors z-10"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    confirmDelete(record.id);
+                  }}
+                  aria-label="刪除此筆記錄"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
                 <div className="flex justify-between items-start mb-3">
                   <div>
                     <h3 className="font-medium text-amber-100 capitalize">{record.theme}</h3>
                     <p className="text-xs text-amber-400/60">{record.spreadType}</p>
                   </div>
-                  <span className="text-xs px-2 py-1 bg-amber-400/10 text-amber-400/80 rounded-full">
-                    {new Date(record.createdAt).toLocaleDateString('zh-TW', { month: 'short', day: 'numeric' })}
-                  </span>
+
                 </div>
                 
                 <div className="flex flex-wrap gap-2 mb-4">
@@ -452,6 +505,15 @@ export default function HistoryPage() {
                 
                 <div className="text-xs text-amber-100/60 mt-3 pt-3 border-t border-[#C99041]/10">
                   <div className="flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    {new Date(record.createdAt).toLocaleDateString('zh-TW', { 
+                      year: 'numeric', 
+                      month: '2-digit', 
+                      day: '2-digit',
+                    }).replace(/\//g, '.')}
+                    <span className="mx-1.5">•</span>
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
@@ -479,6 +541,41 @@ export default function HistoryPage() {
           </div>
         )}
       </div>
+      
+      {/* Delete Confirmation Modal */}
+      {isDeleteConfirmOpen && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="bg-amber-800/95 backdrop-blur-sm rounded-lg p-6 max-w-md w-full border border-amber-700/50">
+            <h3 className="text-xl font-medium text-amber-100 mb-4">確認刪除</h3>
+            <p className="text-amber-100/80 mb-6">確定要刪除此筆占卜記錄嗎？此操作無法復原。</p>
+            <div className="space-y-4">
+              {deleteError && (
+                <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-sm p-3 rounded-md flex items-start">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span>{deleteError}</span>
+                </div>
+              )}
+              <div className="flex justify-end space-x-3">
+                <button
+                  onClick={cancelDelete}
+                  className="px-4 py-2 text-sm rounded-md bg-amber-900/50 text-amber-100 hover:bg-amber-800/60 transition-colors"
+                >
+                  取消
+                </button>
+                <button
+                  onClick={() => recordToDelete && handleDelete(recordToDelete)}
+                  className="px-4 py-2 text-sm rounded-md bg-red-600/90 text-white hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={!!deleteError}
+                >
+                  確認刪除
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
