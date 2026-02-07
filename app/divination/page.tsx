@@ -3,7 +3,7 @@
 export const dynamic = "force-dynamic";
 
 // React & Next.js
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, Suspense } from "react";
 import { useSession, signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import ReactMarkdown from "react-markdown";
@@ -134,7 +134,7 @@ const themeQuestions: Record<DivinationTheme, string[]> = {
   ],
 };
 
-export default function TarotDivination() {
+function DivinationContent() {
   const { data: session } = useSession();
   const searchParams = useSearchParams();
   const [selectedTheme, setSelectedTheme] = useState<DivinationTheme>("love");
@@ -1093,5 +1093,22 @@ export default function TarotDivination() {
         </DialogContent>
       </Dialog>
     </div>
+  );
+}
+
+export default function TarotDivination() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-[#171111] flex items-center justify-center text-amber-100">
+          <div className="animate-pulse flex flex-col items-center gap-4">
+            <div className="w-12 h-12 rounded-full border-4 border-amber-500/30 border-t-amber-500 animate-spin" />
+            <p className="font-serif tracking-widest">啟動占卜儀式...</p>
+          </div>
+        </div>
+      }
+    >
+      <DivinationContent />
+    </Suspense>
   );
 }
