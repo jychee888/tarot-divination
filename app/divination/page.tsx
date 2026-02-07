@@ -4,7 +4,7 @@ export const dynamic = "force-dynamic";
 
 // React & Next.js
 import { useState, useRef, useEffect } from "react";
-import { useSession } from "next-auth/react";
+import { useSession, signIn } from "next-auth/react";
 import ReactMarkdown from "react-markdown";
 import Header from "@/components/layout/Header";
 
@@ -874,7 +874,18 @@ export default function TarotDivination() {
                           /* 初始按鈕狀態 */
                           <div className="flex flex-col gap-4">
                             <Button
-                              onClick={() => setShowSoulSignature(true)}
+                              onClick={() => {
+                                if (session) {
+                                  setShowSoulSignature(true);
+                                } else {
+                                  toast({
+                                    title: "請先登入",
+                                    description:
+                                      "AI 深度解讀需要連結您的靈魂印記，請先登入。",
+                                  });
+                                  signIn("google");
+                                }
+                              }}
                               className="w-full bg-amber-500/5 hover:bg-amber-500/10 text-amber-200 border border-[#C99041]/40 rounded-[2.5rem] py-16 h-auto flex flex-col items-center group transition-all duration-700 hover:border-amber-400 hover:text-amber-100 shadow-inner relative overflow-hidden"
                             >
                               <div className="absolute inset-0 bg-radial-gradient from-amber-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
@@ -886,19 +897,9 @@ export default function TarotDivination() {
                                   啟動 AI 深度靈魂解讀
                                 </span>
                                 <span className="text-xs text-amber-100/40 font-serif uppercase tracking-[0.3em] group-hover:text-amber-100/60">
-                                  結合時空座標與全牌面綜合共振
+                                  需登入以連結您的獨特靈魂印記
                                 </span>
                               </div>
-                            </Button>
-
-                            {/* 直接略過按鈕 */}
-                            <Button
-                              variant="ghost"
-                              onClick={fetchAiReading}
-                              disabled={isAiLoading}
-                              className="self-center text-amber-500/30 hover:text-amber-500/80 hover:bg-amber-500/5 font-serif tracking-[0.2em] transition-all"
-                            >
-                              直接開始 (不使用個人參數)
                             </Button>
                           </div>
                         )}
