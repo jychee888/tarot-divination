@@ -5,6 +5,7 @@ export const dynamic = "force-dynamic";
 // React & Next.js
 import { useState, useRef, useEffect } from "react";
 import { useSession, signIn } from "next-auth/react";
+import { useSearchParams } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import Header from "@/components/layout/Header";
 
@@ -98,7 +99,6 @@ const themes = [
 const spreads = [
   { id: "single" as SpreadType, label: "單張牌", count: 1 },
   { id: "three" as SpreadType, label: "三張牌", count: 3 },
-  { id: "celtic-cross" as SpreadType, label: "十字牌", count: 10 },
 ];
 
 const themeQuestions: Record<DivinationTheme, string[]> = {
@@ -136,6 +136,7 @@ const themeQuestions: Record<DivinationTheme, string[]> = {
 
 export default function TarotDivination() {
   const { data: session } = useSession();
+  const searchParams = useSearchParams();
   const [selectedTheme, setSelectedTheme] = useState<DivinationTheme>("love");
   const [selectedSpread, setSelectedSpread] = useState<SpreadType>("three");
   const [selectedQuestion, setSelectedQuestion] = useState<string>("");
@@ -167,6 +168,19 @@ export default function TarotDivination() {
 
   const resultsTitleRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+
+  // Handle URL theme parameter
+  useEffect(() => {
+    const themeParam = searchParams.get("theme");
+    if (
+      themeParam &&
+      ["love", "career", "relationship", "health", "self-exploration"].includes(
+        themeParam,
+      )
+    ) {
+      setSelectedTheme(themeParam as DivinationTheme);
+    }
+  }, [searchParams]);
 
   const startDivination = () => {
     const spreadCount =
@@ -454,7 +468,7 @@ export default function TarotDivination() {
                   <h2 className="sm:text-3xl text-[16px] font-bold text-amber-100 mb-6 text-center font-serif tracking-wider">
                     牌陣選擇
                   </h2>
-                  <div className="grid grid-cols-3 md:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-2 md:grid-cols-2 gap-4">
                     {spreads.map((spread) => (
                       <Button
                         key={spread.id}

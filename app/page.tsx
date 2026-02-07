@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Sparkles, Moon, Star, ArrowRight } from "lucide-react";
+import { Sparkles, Moon, Star, ArrowRight, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CornerDecoration } from "@/components/decorations/corner-decoration";
 import BackgroundStars from "@/components/decorations/background-stars";
@@ -78,6 +78,16 @@ export default function Home() {
             <Link href="/divination">
               <Button className="chinese-title-bakudai border border-[#C99041] bg-transparent hover:bg-amber-500/20 text-amber-300 hover:text-amber-200 text-lg px-8 py-6 rounded-full transition-all duration-300 transform hover:scale-105 backdrop-blur-sm">
                 開始占卜 <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
+
+            <Link href="/love-tarot">
+              <Button
+                variant="outline"
+                className="chinese-title-bakudai border border-pink-500/50 bg-pink-950/20 hover:bg-pink-500/10 text-pink-200 hover:text-pink-100 text-lg px-8 py-6 rounded-full transition-all duration-300 transform hover:scale-105 backdrop-blur-sm"
+              >
+                <Heart className="mr-2 h-5 w-5" />
+                愛情塔羅
               </Button>
             </Link>
 
