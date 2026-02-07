@@ -34,6 +34,13 @@ interface DivinationRecord {
   id: string;
   theme: string;
   spreadType: string;
+  question?: string;
+  aiReading?: string;
+  userContext?: {
+    birthday?: string;
+    birthTime?: string;
+    gender?: string;
+  };
   cards: Card[];
   createdAt: string;
 }
@@ -349,16 +356,16 @@ export default function HistoryPage() {
               onClick={(e) => e.stopPropagation()}
             >
               {/* Modal Header */}
-              <div className="p-6 md:p-8 border-b border-[#C99041]/10 flex items-start justify-between bg-gradient-to-b from-amber-900/20 to-transparent">
-                <div className="space-y-2">
-                  <h2 className="text-2xl font-bold text-amber-100 font-serif tracking-tight">
+              <div className="px-6 py-4 md:px-8 md:py-5 border-b border-[#C99041]/10 flex items-center justify-between bg-gradient-to-b from-amber-900/10 to-transparent">
+                <div className="flex items-center gap-6">
+                  <h2 className="text-xl font-bold text-amber-100 font-serif tracking-tight">
                     {getThemeLabel(selectedReading.theme)}
                   </h2>
-                  <div className="flex flex-wrap gap-4 text-xs text-amber-500/60 font-medium tracking-widest uppercase">
-                    <span className="flex items-center gap-1.5 bg-amber-500/10 px-2 py-1 rounded-md">
+                  <div className="flex items-center gap-4 text-[10px] text-amber-500/60 font-medium tracking-widest uppercase border-l border-[#C99041]/20 pl-6">
+                    <span className="bg-amber-500/10 px-2 py-0.5 rounded text-amber-400">
                       {getSpreadLabel(selectedReading.spreadType)}
                     </span>
-                    <span className="flex items-center gap-1.5 px-2 py-1 text-amber-100/40">
+                    <span className="text-amber-100/40 hidden sm:inline">
                       {new Date(selectedReading.createdAt).toLocaleString(
                         "zh-TW",
                       )}
@@ -367,15 +374,15 @@ export default function HistoryPage() {
                 </div>
                 <button
                   onClick={() => setIsModalOpen(false)}
-                  className="p-2 hover:bg-white/10 rounded-full transition-colors text-amber-100/40 hover:text-amber-100"
+                  className="p-1.5 hover:bg-white/10 rounded-full transition-colors text-amber-100/30 hover:text-amber-100"
                 >
-                  <X className="w-6 h-6" />
+                  <X className="w-5 h-5" />
                 </button>
               </div>
 
               {/* Modal Content - Scrollable */}
               <div className="flex-1 overflow-y-auto p-6 md:p-10 space-y-12 pb-24 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                <div className="grid grid-cols-1 gap-8">
+                <div className="grid grid-cols-1 gap-10">
                   {selectedReading.cards.map((card, index) => {
                     const cardData =
                       tarotCards.find(
@@ -390,75 +397,133 @@ export default function HistoryPage() {
                     const isCardReversed = card.isReversed;
 
                     return (
-                      <div
-                        key={index}
-                        className="flex flex-col md:flex-row gap-8 md:gap-12 animate-in slide-in-from-bottom-8 duration-700 delay-100 group"
-                      >
-                        {/* Card Side */}
-                        <div className="w-full md:w-56 shrink-0 flex flex-col items-center gap-4">
-                          <div
-                            className={`relative aspect-[2/3.5] w-full max-w-[200px] rounded-2xl overflow-hidden shadow-2xl transition-transform duration-700 group-hover:scale-105 border-2 ${isCardReversed ? "border-red-500/40" : "border-amber-500/40"}`}
-                          >
-                            <img
-                              src={cardData?.image || "/images/card-back.jpg"}
-                              alt={card.name}
-                              className={`w-full h-full object-cover ${isCardReversed ? "rotate-180" : ""}`}
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                          </div>
-                          <div className="text-center space-y-1">
-                            <h3 className="text-xl font-bold text-amber-100 font-serif">
-                              {card.name}
-                            </h3>
-                            <p
-                              className={`text-xs font-bold uppercase tracking-tighter ${isCardReversed ? "text-red-400" : "text-amber-500"}`}
+                      <>
+                        <div
+                          key={index}
+                          className="flex flex-col md:flex-row gap-8 md:gap-12 animate-in slide-in-from-bottom-8 duration-700 delay-100 group"
+                        >
+                          {/* Card Side */}
+                          <div className="w-full md:w-56 shrink-0 flex flex-col items-center gap-4">
+                            <div
+                              className={`relative aspect-[2/3.5] w-full max-w-[200px] rounded-2xl overflow-hidden shadow-2xl transition-transform duration-700 group-hover:scale-105 border-2 ${isCardReversed ? "border-red-500/40" : "border-amber-500/40"}`}
                             >
-                              {isCardReversed ? "✦ 逆位 ✦" : "✦ 正位 ✦"}
-                            </p>
+                              <img
+                                src={cardData?.image || "/images/card-back.jpg"}
+                                alt={card.name}
+                                className={`w-full h-full object-cover ${isCardReversed ? "rotate-180" : ""}`}
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                            </div>
+                            <div className="text-center space-y-1">
+                              <h3 className="text-xl font-bold text-amber-100 font-serif">
+                                {card.name}
+                              </h3>
+                              <p
+                                className={`text-xs font-bold uppercase tracking-tighter ${isCardReversed ? "text-red-400" : "text-amber-500"}`}
+                              >
+                                {isCardReversed ? "✦ 逆位 ✦" : "✦ 正位 ✦"}
+                              </p>
+                            </div>
                           </div>
-                        </div>
 
-                        {/* Text Side */}
-                        <div className="flex-1 space-y-8">
-                          <div className="space-y-4">
-                            <h4 className="flex items-center gap-2 text-amber-400/40 text-xs font-bold uppercase tracking-[0.2em] font-serif">
-                              <div className="w-6 h-px bg-amber-500/20"></div>
-                              星象解讀
-                            </h4>
-                            <p className="text-amber- account-100/90 text-lg leading-relaxed font-serif">
-                              {isCardReversed
-                                ? meaning?.reversed?.summary || "暫無逆位解釋"
-                                : meaning?.upright?.summary || "暫無解釋"}
-                            </p>
-                          </div>
+                          {/* Text Side */}
+                          <div className="flex-1 space-y-8">
+                            <div className="space-y-4">
+                              <h4 className="flex items-center gap-2 text-amber-500/50 text-[10px] font-bold uppercase tracking-[0.3em] font-serif">
+                                <div className="w-8 h-px bg-amber-500/30"></div>
+                                星象解讀
+                              </h4>
+                              <p className="text-amber-100/90 text-lg md:text-xl leading-relaxed font-serif italic">
+                                {isCardReversed
+                                  ? meaning?.reversed?.summary || "暫無逆位解釋"
+                                  : meaning?.upright?.summary || "暫無解釋"}
+                              </p>
+                            </div>
 
-                          <div className="space-y-4">
-                            <h4 className="flex items-center gap-2 text-amber-400/40 text-xs font-bold uppercase tracking-[0.2em] font-serif">
-                              <div className="w-6 h-px bg-amber-500/20"></div>
-                              核心啟示
-                            </h4>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                              {(isCardReversed
-                                ? meaning?.reversed?.details
-                                : meaning?.upright?.details
-                              )?.map((detail: string, i: number) => (
-                                <div
-                                  key={i}
-                                  className="flex gap-3 bg-white/5 p-4 rounded-xl border border-white/5 hover:border-amber-500/20 transition-all"
-                                >
-                                  <Sparkles className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
-                                  <span className="text-sm text-amber-100/70 leading-relaxed font-serif">
-                                    {detail}
-                                  </span>
-                                </div>
-                              ))}
+                            <div className="space-y-6">
+                              <h4 className="flex items-center gap-2 text-amber-500/50 text-[10px] font-bold uppercase tracking-[0.3em] font-serif">
+                                <div className="w-8 h-px bg-amber-500/30"></div>
+                                核心啟示
+                              </h4>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                {(isCardReversed
+                                  ? meaning?.reversed?.details
+                                  : meaning?.upright?.details
+                                )?.map((detail: string, i: number) => (
+                                  <div
+                                    key={i}
+                                    className="flex gap-4 bg-amber-900/10 p-5 rounded-2xl border border-amber-500/10 hover:border-amber-500/30 transition-all duration-500 group/item"
+                                  >
+                                    <Sparkles className="w-4 h-4 text-amber-500 shrink-0 mt-1 opacity-40 group-hover/item:opacity-100 transition-opacity" />
+                                    <span className="text-[15px] text-amber-100/80 leading-relaxed font-serif">
+                                      {detail}
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
+                        {index < selectedReading.cards.length - 1 && (
+                          <div className="pt-10 border-b border-amber-900/20 w-full" />
+                        )}
+                      </>
                     );
                   })}
                 </div>
+
+                {/* AI Reading Section in History */}
+                {selectedReading.aiReading && (
+                  <div className="mt-12 pt-10 border-t border-[#C99041]/10 space-y-8 mb-6">
+                    <div className="bg-[#C99041]/5 border border-[#C99041]/30 rounded-[2rem] p-8 md:p-10 shadow-inner relative overflow-hidden group">
+                      <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
+                        <Sparkles className="w-24 h-24 text-[#C99041]" />
+                      </div>
+
+                      <div className="relative z-10 space-y-6">
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 bg-[#C99041]/20 rounded-lg">
+                            <Sparkles className="w-5 h-5 text-[#C99041]" />
+                          </div>
+                          <div>
+                            <h4 className="text-xl font-bold text-amber-100 font-serif tracking-tight">
+                              星辰啟讀報告
+                            </h4>
+                            {selectedReading.question && (
+                              <p className="text-xs text-amber-500/60 font-medium tracking-wide mt-1">
+                                核心焦點：{selectedReading.question}
+                              </p>
+                            )}
+                            {selectedReading.userContext && (
+                              <p className="text-[10px] text-amber-500/40 font-medium tracking-widest mt-0.5 uppercase">
+                                靈魂簽名：
+                                {selectedReading.userContext.birthday ||
+                                  "未知誕辰"}
+                                {selectedReading.userContext.birthTime
+                                  ? ` ${selectedReading.userContext.birthTime}`
+                                  : ""}{" "}
+                                /{" "}
+                                {selectedReading.userContext.gender === "male"
+                                  ? "陽性能量"
+                                  : selectedReading.userContext.gender ===
+                                      "female"
+                                    ? "陰性能量"
+                                    : selectedReading.userContext.gender ===
+                                        "non-binary"
+                                      ? "多元能量"
+                                      : "宇宙能量"}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="prose prose-invert max-w-none text-amber-50/90 leading-relaxed font-serif whitespace-pre-wrap border-l-2 border-[#C99041]/20 pl-6">
+                          {selectedReading.aiReading}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Modal Blur Gradient Footer */}

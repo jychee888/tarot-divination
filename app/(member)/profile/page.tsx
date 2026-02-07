@@ -24,6 +24,14 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function ProfilePage() {
   const { data: session, status, update } = useSession();
@@ -32,7 +40,21 @@ export default function ProfilePage() {
 
   const [nickname, setNickname] = useState("");
   const [bio, setBio] = useState("");
+  const [birthYear, setBirthYear] = useState<string>("");
+  const [birthMonth, setBirthMonth] = useState<string>("");
+  const [birthDay, setBirthDay] = useState<string>("");
+  const [birthHour, setBirthHour] = useState<string>("");
+  const [birthMinute, setBirthMinute] = useState<string>("");
+  const [gender, setGender] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
+
+  // Derived variables
+  const birthday =
+    birthYear && birthMonth && birthDay
+      ? `${birthYear}-${birthMonth}-${birthDay}`
+      : "";
+  const birthTime =
+    birthHour && birthMinute ? `${birthHour}:${birthMinute}` : "";
 
   useEffect(() => {
     if (session?.user) {
@@ -40,6 +62,23 @@ export default function ProfilePage() {
       setNickname(session.user.nickname || "");
       // @ts-ignore
       setBio(session.user.bio || "");
+      // @ts-ignore
+      if (session.user.birthday) {
+        // @ts-ignore
+        const [y, m, d] = session.user.birthday.split("-");
+        if (y) setBirthYear(y);
+        if (m) setBirthMonth(m);
+        if (d) setBirthDay(d);
+      }
+      // @ts-ignore
+      if (session.user.birthTime) {
+        // @ts-ignore
+        const [h, min] = session.user.birthTime.split(":");
+        if (h) setBirthHour(h);
+        if (min) setBirthMinute(min);
+      }
+      // @ts-ignore
+      setGender(session.user.gender || "");
     }
   }, [session?.user?.id]);
 
@@ -57,7 +96,7 @@ export default function ProfilePage() {
       const response = await fetch("/api/user", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nickname, bio }),
+        body: JSON.stringify({ nickname, bio, birthday, birthTime, gender }),
       });
 
       if (!response.ok) {
@@ -77,6 +116,9 @@ export default function ProfilePage() {
           ...session?.user,
           nickname,
           bio,
+          birthday,
+          birthTime,
+          gender,
         },
       });
 
@@ -141,10 +183,10 @@ export default function ProfilePage() {
                     type="text"
                     value={nickname}
                     onChange={(e) => setNickname(e.target.value)}
-                    className="h-12 bg-black/20 border border-[#C99041] focus:border-[#C99041] focus:ring-0 text-amber-50 pl-10 transition-all rounded-full placeholder:text-amber-100/10"
+                    className="h-12 bg-black/40 border border-amber-500/30 focus:border-amber-400 focus:ring-0 text-amber-100 pl-10 transition-all rounded-2xl placeholder:text-amber-100/20 font-serif"
                     placeholder="在此輸入您的靈魂代號"
                   />
-                  <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#C99041]/40 group-focus-within:text-[#C99041] transition-colors" />
+                  <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-amber-500/40 group-focus-within:text-amber-400 transition-colors" />
                 </div>
               </div>
 
@@ -156,9 +198,137 @@ export default function ProfilePage() {
                 <Textarea
                   value={bio}
                   onChange={(e) => setBio(e.target.value)}
-                  className="min-h-[160px] bg-black/20 border border-[#C99041] focus:border-[#C99041] focus:ring-0 text-amber-50 p-6 transition-all rounded-[2rem] resize-none leading-relaxed placeholder:text-amber-100/10"
+                  className="min-h-[120px] bg-black/40 border border-amber-500/30 focus:border-amber-400 focus:ring-0 text-amber-100 p-6 transition-all rounded-2xl resize-none leading-relaxed placeholder:text-amber-100/20 font-serif"
                   placeholder="簡單描述您的內在旅程..."
                 />
+              </div>
+
+              {/* Soul Signature Section */}
+              <div className="pt-6 border-t border-amber-500/10 space-y-6">
+                <h3 className="text-sm font-bold text-amber-400 font-serif tracking-[0.2em] flex items-center gap-2">
+                  <Sparkles className="w-4 h-4" />
+                  靈魂印記參數
+                </h3>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Birth Date */}
+                  <div className="space-y-3">
+                    <Label className="text-xs text-amber-500/70 uppercase tracking-widest ml-1 font-serif">
+                      出生日期
+                    </Label>
+                    <div className="grid grid-cols-3 gap-2">
+                      <Select value={birthYear} onValueChange={setBirthYear}>
+                        <SelectTrigger className="bg-black/40 border-amber-500/30 text-amber-100 rounded-2xl h-12 px-2 text-sm justify-center font-serif">
+                          <SelectValue placeholder="年" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-amber-950 border-amber-500/40 text-amber-100 max-h-[300px]">
+                          {Array.from({ length: 107 }).map((_, i) => {
+                            const year = (2026 - i).toString();
+                            return (
+                              <SelectItem key={year} value={year}>
+                                {year}
+                              </SelectItem>
+                            );
+                          })}
+                        </SelectContent>
+                      </Select>
+                      <Select value={birthMonth} onValueChange={setBirthMonth}>
+                        <SelectTrigger className="bg-black/40 border-amber-500/30 text-amber-100 rounded-2xl h-12 px-2 text-sm justify-center font-serif">
+                          <SelectValue placeholder="月" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-amber-950 border-amber-500/40 text-amber-100">
+                          {Array.from({ length: 12 }).map((_, i) => {
+                            const month = (i + 1).toString().padStart(2, "0");
+                            return (
+                              <SelectItem key={month} value={month}>
+                                {month}
+                              </SelectItem>
+                            );
+                          })}
+                        </SelectContent>
+                      </Select>
+                      <Select value={birthDay} onValueChange={setBirthDay}>
+                        <SelectTrigger className="bg-black/40 border-amber-500/30 text-amber-100 rounded-2xl h-12 px-2 text-sm justify-center font-serif">
+                          <SelectValue placeholder="日" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-amber-950 border-amber-500/40 text-amber-100 max-h-[300px]">
+                          {Array.from({ length: 31 }).map((_, i) => {
+                            const day = (i + 1).toString().padStart(2, "0");
+                            return (
+                              <SelectItem key={day} value={day}>
+                                {day}
+                              </SelectItem>
+                            );
+                          })}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  {/* Birth Time */}
+                  <div className="space-y-3">
+                    <Label className="text-xs text-amber-500/70 uppercase tracking-widest ml-1 font-serif">
+                      出生時間
+                    </Label>
+                    <div className="grid grid-cols-2 gap-2">
+                      <Select value={birthHour} onValueChange={setBirthHour}>
+                        <SelectTrigger className="bg-black/40 border-amber-500/30 text-amber-100 rounded-2xl h-12 font-serif">
+                          <SelectValue placeholder="時" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-amber-950 border-amber-500/40 text-amber-100 max-h-[300px]">
+                          {Array.from({ length: 24 }).map((_, i) => (
+                            <SelectItem
+                              key={i}
+                              value={i.toString().padStart(2, "0")}
+                            >
+                              {i.toString().padStart(2, "0")} 時
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <Select
+                        value={birthMinute}
+                        onValueChange={setBirthMinute}
+                      >
+                        <SelectTrigger className="bg-black/40 border-amber-500/30 text-amber-100 rounded-2xl h-12 font-serif">
+                          <SelectValue placeholder="分" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-amber-950 border-amber-500/40 text-amber-100 max-h-[300px]">
+                          {Array.from({ length: 60 }).map((_, i) => (
+                            <SelectItem
+                              key={i}
+                              value={i.toString().padStart(2, "0")}
+                            >
+                              {i.toString().padStart(2, "0")} 分
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  {/* Gender */}
+                  <div className="md:col-span-2 space-y-3">
+                    <Label className="text-xs text-amber-500/70 uppercase tracking-widest ml-1 font-serif">
+                      能量屬性
+                    </Label>
+                    <Select value={gender} onValueChange={setGender}>
+                      <SelectTrigger className="bg-black/40 border-amber-500/30 text-amber-100 rounded-2xl h-12 focus:border-amber-400 font-serif">
+                        <SelectValue placeholder="請選擇您的能量屬性" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-amber-950 border-amber-500/40 text-amber-100 rounded-xl">
+                        <SelectItem value="male">陽性能量 / 男性</SelectItem>
+                        <SelectItem value="female">陰性能量 / 女性</SelectItem>
+                        <SelectItem value="non-binary">
+                          多元能量 / 非二元
+                        </SelectItem>
+                        <SelectItem value="prefer-not-to-say">
+                          宇宙能量 / 不提供
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
               </div>
 
               <div className="pt-2">
@@ -253,12 +423,46 @@ export default function ProfilePage() {
                     <div className="h-px bg-gradient-to-r from-transparent via-[#C99041]/30 to-transparent w-full"></div>
 
                     <div className="space-y-2">
-                      <h4 className="text-[10px] uppercase tracking-[0.2em] text-amber-500/60 font-medium">
-                        靈魂語錄
-                      </h4>
-                      <p className="text-amber-100/80 text-sm leading-relaxed italic line-clamp-4 min-h-[4rem]">
+                      <p className="text-amber-100/80 text-sm leading-relaxed italic line-clamp-2 min-h-[2.5rem]">
                         「{bio || "此位占卜者尚未寫下他的靈魂語錄..."}」
                       </p>
+                    </div>
+
+                    <div className="h-px bg-gradient-to-r from-transparent via-[#C99041]/30 to-transparent w-full"></div>
+
+                    <div className="grid grid-cols-2 gap-4 text-left">
+                      <div className="space-y-1">
+                        <h4 className="text-[9px] uppercase tracking-widest text-amber-500/50">
+                          靈魂誕辰
+                        </h4>
+                        <p className="text-amber-100/90 text-[11px] font-serif">
+                          {birthday || "尚未顯化"}
+                        </p>
+                      </div>
+                      <div className="space-y-1">
+                        <h4 className="text-[9px] uppercase tracking-widest text-amber-500/50">
+                          星時座標
+                        </h4>
+                        <p className="text-amber-100/90 text-[11px] font-serif">
+                          {birthTime || "尚未顯化"}
+                        </p>
+                      </div>
+                      <div className="space-y-1 col-span-2">
+                        <h4 className="text-[9px] uppercase tracking-widest text-amber-500/50">
+                          能量本質
+                        </h4>
+                        <p className="text-amber-100/90 text-[11px] font-serif">
+                          {gender === "male"
+                            ? "陽性能量"
+                            : gender === "female"
+                              ? "陰性能量"
+                              : gender === "non-binary"
+                                ? "多元能量"
+                                : gender === "prefer-not-to-say"
+                                  ? "宇宙能量"
+                                  : "觀測中..."}
+                        </p>
+                      </div>
                     </div>
 
                     <div className="pt-4 flex justify-center gap-3">

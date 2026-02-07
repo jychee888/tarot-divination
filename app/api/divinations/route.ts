@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { theme, spreadType, cards } = await req.json()
+    const { theme, spreadType, cards, question, aiReading, userContext } = await req.json()
     const userId = session.user.id
 
     if (!theme || !spreadType || !cards) {
@@ -24,9 +24,35 @@ export async function POST(req: NextRequest) {
         theme,
         spreadType,
         cards,
+        question,
+        aiReading,
+        userContext,
         userId,
-      },
+      } as any,
     })
+
+    // 動態更新用戶個人資料 (如果尚未設置)
+    if (userContext && userId) {
+      try {
+        const user = await (prisma.user as any).findUnique({
+          where: { id: userId },
+          select: { birthday: true, birthTime: true, gender: true }
+        });
+
+        if (user && (!user.birthday || !user.birthTime || !user.gender)) {
+          await (prisma.user as any).update({
+            where: { id: userId },
+            data: {
+              birthday: user.birthday || userContext.birthday,
+              birthTime: user.birthTime || userContext.birthTime,
+              gender: user.gender || userContext.gender,
+            }
+          });
+        }
+      } catch (profileError) {
+        console.warn("Failed to update user profile:", profileError);
+      }
+    }
 
     return NextResponse.json(newRecord, { status: 201 })
   } catch (error) {

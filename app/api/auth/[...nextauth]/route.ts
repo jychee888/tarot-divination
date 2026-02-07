@@ -53,6 +53,12 @@ export const authOptions: NextAuthOptions = {
         session.user.nickname = user.nickname;
         // @ts-ignore
         session.user.bio = user.bio;
+        // @ts-ignore
+        session.user.birthday = user.birthday;
+        // @ts-ignore
+        session.user.birthTime = user.birthTime;
+        // @ts-ignore
+        session.user.gender = user.gender;
         return session;
       } catch (error) {
         console.error('[NextAuth][session] 會話處理失敗', { 

@@ -47,6 +47,9 @@ model User {
   // Custom fields for user profile
   nickname      String?   @unique
   bio           String?   
+  birthday      String?   // Format: YYYY-MM-DD
+  birthTime     String?   // Format: HH:mm
+  gender        String?   // e.g., "Male", "Female", "Non-binary", etc.
 }
 
 model VerificationToken {
@@ -62,6 +65,9 @@ model DivinationRecord {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
   theme       String
   spreadType  String
+  question    String?
+  aiReading   String?
+  userContext Json?    // Store birthday/birthTime/gender info used during reading
   cards       Json     // Store card details as JSON
   createdAt   DateTime @default(now())
   userId      String   @db.ObjectId

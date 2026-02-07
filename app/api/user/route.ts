@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { nickname, bio } = await req.json()
+    const { nickname, bio, birthday, birthTime, gender } = await req.json()
     const userId = session.user.id
 
     // Check if nickname is already taken by another user
@@ -33,7 +33,10 @@ export async function POST(req: NextRequest) {
       data: {
         nickname: nickname,
         bio: bio,
-      },
+        birthday: birthday,
+        birthTime: birthTime,
+        gender: gender,
+      } as any,
     })
 
     return NextResponse.json(updatedUser)

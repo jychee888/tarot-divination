@@ -1,40 +1,69 @@
-"use client"
+"use client";
 
 // React & Next.js
-import { useState, useRef, useEffect } from "react"
-import { useSession, signIn, signOut } from "next-auth/react"
-import Link from 'next/link'
+import { useState, useRef, useEffect } from "react";
+import { useSession } from "next-auth/react";
+import ReactMarkdown from "react-markdown";
+import Header from "@/components/layout/Header";
 
 // UI Components
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import CardBack from "@/components/CardBack"
-import CardFront from "@/components/CardFront"
-import { Badge } from "@/components/ui/badge"
-import Header from "@/components/layout/Header"
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import CardBack from "@/components/CardBack";
+import CardFront from "@/components/CardFront";
+import { Badge } from "@/components/ui/badge";
 
 // Icons
-import { Sparkles, Moon, Heart, Briefcase, Users, Activity, Eye } from "lucide-react"
+import {
+  Sparkles,
+  Heart,
+  Briefcase,
+  Users,
+  Activity,
+  Eye,
+  ChevronDown,
+  ChevronUp,
+} from "lucide-react";
 
 // Custom Hooks
-import { useToast } from "@/hooks/use-toast"
+import { useToast } from "@/hooks/use-toast";
 
 // Data
-import tarotCards from "@/data/tarot-cards"
+import tarotCards from "@/data/tarot-cards";
 
 // Custom Components - Decorations
-import { DecorativeCorner } from "@/components/decorations/decorative-corner"
-import { MoonPhaseIndicator } from '@/components/decorations/moonPhaseIndicator'
-import { CloudDecoration } from '@/components/decorations/CloudDecoration'
-import { MoonFaceDecoration } from '@/components/decorations/MoonFaceDecoration'
-import { Start01decoration } from '@/components/decorations/Start01decoration'
-import { CornerDecoration } from "@/components/decorations/corner-decoration"
-import { TarotDecorativeElements } from "@/components/decorations/decorative-elements"
-import LeftSideDecorations from "@/components/decorations/LeftSideDecorations"
-import RightSideDecorations from "@/components/decorations/RightSideDecorations"
+import { DecorativeCorner } from "@/components/decorations/decorative-corner";
+import { MoonPhaseIndicator } from "@/components/decorations/moonPhaseIndicator";
+import { CloudDecoration } from "@/components/decorations/CloudDecoration";
+import { MoonFaceDecoration } from "@/components/decorations/MoonFaceDecoration";
+import { Start01decoration } from "@/components/decorations/Start01decoration";
+import { CornerDecoration } from "@/components/decorations/corner-decoration";
+import { TarotDecorativeElements } from "@/components/decorations/decorative-elements";
+import LeftSideDecorations from "@/components/decorations/LeftSideDecorations";
+import RightSideDecorations from "@/components/decorations/RightSideDecorations";
 
-type DivinationTheme = "love" | "career" | "relationship" | "health" | "self-exploration"
-type SpreadType = "single" | "three" | "celtic-cross"
+type DivinationTheme =
+  | "love"
+  | "career"
+  | "relationship"
+  | "health"
+  | "self-exploration";
+type SpreadType = "single" | "three" | "celtic-cross";
 
 interface TarotCard {
   id: string;
@@ -51,115 +80,205 @@ const themes = [
   { id: "relationship" as DivinationTheme, label: "人際", icon: Users },
   { id: "health" as DivinationTheme, label: "健康", icon: Activity },
   { id: "self-exploration" as DivinationTheme, label: "自我探索", icon: Eye },
-]
+];
 
 const spreads = [
   { id: "single" as SpreadType, label: "單張牌", count: 1 },
   { id: "three" as SpreadType, label: "三張牌", count: 3 },
   { id: "celtic-cross" as SpreadType, label: "十字牌", count: 10 },
-]
+];
+
+const themeQuestions: Record<DivinationTheme, string[]> = {
+  love: [
+    "我們未來的發展趨勢如何？",
+    "目前關係中潛在的挑戰是什麼？",
+    "該如何提升彼此的感情？",
+    "對方的真實心意與想法？",
+  ],
+  career: [
+    "目前的計畫是否合適？",
+    "事業發展中的貴人在哪裡？",
+    "面臨的職場阻礙該如何克服？",
+    "下一個階段的成長建議？",
+  ],
+  relationship: [
+    "如何改善與他人的緊繃關係？",
+    "目前人際圈中需要注意的人事物？",
+    "該如何建立更深層的社交連結？",
+    "這段關係對我的生命意義？",
+  ],
+  health: [
+    "目前的心理壓力來源是什麼？",
+    "如何平衡生活與健康的關係？",
+    "什麼樣的放鬆方式最適合我？",
+    "如何提升內在的能量狀態？",
+  ],
+  "self-exploration": [
+    "我目前未被察覺的潛能是什麼？",
+    "未來的靈魂成長課題是什麼？",
+    "如何突破目前的內在瓶頸？",
+    "我真正渴望的生活方向是什麼？",
+  ],
+};
 
 export default function TarotDivination() {
-  const { data: session } = useSession()
-  const [selectedTheme, setSelectedTheme] = useState<DivinationTheme>("love")
-  const [selectedSpread, setSelectedSpread] = useState<SpreadType>("three")
-  const [isReading, setIsReading] = useState(false)
-  const [cards, setCards] = useState<TarotCard[]>([])
-  const [showResults, setShowResults] = useState(false)
-  const [isSaving, setIsSaving] = useState(false)
-  const [isSaved, setIsSaved] = useState(false)
-  const resultsTitleRef = useRef<HTMLDivElement>(null)
-  const { toast } = useToast()
+  const { data: session } = useSession();
+  const [selectedTheme, setSelectedTheme] = useState<DivinationTheme>("love");
+  const [selectedSpread, setSelectedSpread] = useState<SpreadType>("three");
+  const [selectedQuestion, setSelectedQuestion] = useState<string>("");
+  const [isReading, setIsReading] = useState(false);
+  const [cards, setCards] = useState<TarotCard[]>([]);
+  const [showResults, setShowResults] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
+  const [aiReading, setAiReading] = useState<string>("");
+  const [isAiLoading, setIsAiLoading] = useState(false);
+
+  // Soul Signature States
+  const [birthYear, setBirthYear] = useState<string>("");
+  const [birthMonth, setBirthMonth] = useState<string>("");
+  const [birthDay, setBirthDay] = useState<string>("");
+  const [birthHour, setBirthHour] = useState<string>("");
+  const [birthMinute, setBirthMinute] = useState<string>("");
+  const [gender, setGender] = useState<string>("");
+  const [showSoulSignature, setShowSoulSignature] = useState(false);
+
+  // Derived variables for API and records
+  const birthday =
+    birthYear && birthMonth && birthDay
+      ? `${birthYear}-${birthMonth}-${birthDay}`
+      : "";
+  const birthTime =
+    birthHour && birthMinute ? `${birthHour}:${birthMinute}` : "";
+
+  const resultsTitleRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
 
   const startDivination = () => {
-    const spreadCount = spreads.find((s) => s.id === selectedSpread)?.count || 3
-    const newCards: TarotCard[] = []
-    
-    // Create a copy of the tarot cards array to avoid mutating the original
-    const availableCards = [...tarotCards]
-    
+    const spreadCount =
+      spreads.find((s) => s.id === selectedSpread)?.count || 3;
+    const newCards: TarotCard[] = [];
+    const availableCards = [...tarotCards];
+
     for (let i = 0; i < spreadCount && availableCards.length > 0; i++) {
-      // Get a random index from the remaining cards
-      const randomIndex = Math.floor(Math.random() * availableCards.length)
-      const selectedCard = availableCards.splice(randomIndex, 1)[0]
-      const isReversed = Math.random() > 0.5
+      const randomIndex = Math.floor(Math.random() * availableCards.length);
+      const selectedCard = availableCards.splice(randomIndex, 1)[0];
+      const isReversed = Math.random() > 0.5;
 
-            // 安全地獲取主題牌義，如果不存在則提供預設值
-            const themeMeaning = selectedCard.meanings[selectedTheme] || { 
-              upright: { summary: '暫無牌義', details: [] }, 
-              reversed: { summary: '暫無牌義', details: [] } 
-            };
+      const themeMeaning = selectedCard.meanings[selectedTheme] || {
+        upright: { summary: "暫無牌義", details: [] },
+        reversed: { summary: "暫無牌義", details: [] },
+      };
 
-            const meaning = isReversed
-              ? themeMeaning.reversed
-              : themeMeaning.upright;
-
-      // Ensure meaning is in the new format
-      const structuredMeaning = typeof meaning === 'string' 
-        ? { summary: meaning, details: [] } 
-        : meaning;
+      const meaning = isReversed ? themeMeaning.reversed : themeMeaning.upright;
+      const structuredMeaning =
+        typeof meaning === "string"
+          ? { summary: meaning, details: [] }
+          : meaning;
 
       newCards.push({
-        id: selectedCard.id, // 使用正確的 string ID
+        id: selectedCard.id,
         name: selectedCard.name,
         isReversed,
         isRevealed: false,
         meaning: structuredMeaning,
-        image: selectedCard.image
+        image: selectedCard.image,
       });
     }
 
-    setCards(newCards)
-    setIsReading(true)
-    setShowResults(false)
-    setIsSaved(false) // Reset save status for new divination
-  }
+    setCards(newCards);
+    setAiReading("");
+    setIsReading(true);
+    setShowResults(false);
+    setIsSaved(false);
+  };
 
-  // 當 showResults 變為 true 時，滾動邏輯已移至 revealCard 函數中
+  useEffect(() => {
+    if (session?.user) {
+      // 優先從 Session 中獲取，避免額外的 API 請求
+      const u = session.user as any;
+
+      if (u.birthday) {
+        const [y, m, d] = u.birthday.split("-");
+        if (y) setBirthYear(y);
+        if (m) setBirthMonth(m);
+        if (d) setBirthDay(d);
+      }
+      if (u.birthTime) {
+        const [h, min] = u.birthTime.split(":");
+        if (h) setBirthHour(h);
+        if (min) setBirthMinute(min);
+      }
+      if (u.gender) setGender(u.gender);
+
+      // 如果 Session 中沒有這些資料（可能是剛登入），則進行 API 請求作為備案
+      if (!u.birthday && !u.gender) {
+        const fetchProfile = async () => {
+          try {
+            const res = await fetch("/api/user/profile");
+            const data = await res.json();
+            if (data) {
+              if (data.birthday) {
+                const [y, m, d] = data.birthday.split("-");
+                if (y) setBirthYear(y);
+                if (m) setBirthMonth(m);
+                if (d) setBirthDay(d);
+              }
+              if (data.birthTime) {
+                const [h, m] = data.birthTime.split(":");
+                if (h) setBirthHour(h);
+                if (m) setBirthMinute(m);
+              }
+              if (data.gender) setGender(data.gender);
+            }
+          } catch (e) {
+            console.warn("備案獲取失敗", e);
+          }
+        };
+        fetchProfile();
+      }
+    }
+  }, [session]);
 
   const revealCard = (cardId: string) => {
     setCards((prev) => {
-      const updatedCards = prev.map((card) => 
-        card.id === cardId ? { ...card, isRevealed: true } : card
+      const updatedCards = prev.map((card) =>
+        card.id === cardId ? { ...card, isRevealed: true } : card,
       );
-      
-      // 檢查是否所有牌都翻開了
-      const allRevealed = updatedCards.every(card => card.isRevealed);
+
+      const allRevealed = updatedCards.every((card) => card.isRevealed);
       if (allRevealed) {
-        // 先等待翻牌動畫完成 (500ms)
         setTimeout(() => {
           setShowResults(true);
-          // 再等待短暫延遲後平滑滾動到結果 (額外500ms)
           setTimeout(() => {
             if (resultsTitleRef.current) {
-              const yOffset = -50; // 向上偏移50px
-              const y = resultsTitleRef.current.getBoundingClientRect().top + window.pageYOffset + yOffset;
-              window.scrollTo({ top: y, behavior: 'smooth' });
+              const yOffset = -50;
+              const y =
+                resultsTitleRef.current.getBoundingClientRect().top +
+                window.pageYOffset +
+                yOffset;
+              window.scrollTo({ top: y, behavior: "smooth" });
             }
           }, 1000);
         }, 1000);
       }
-      
       return updatedCards;
     });
-  }
+  };
 
   const resetReading = () => {
-    setIsReading(false)
-    setShowResults(false)
-    setCards([])
-    setIsSaved(false) // Reset save status for re-reading
-  }
+    setIsReading(false);
+    setShowResults(false);
+    setCards([]);
+    setIsSaved(false);
+    setAiReading("");
+  };
 
   const getSpreadLayout = () => {
-    if (selectedSpread === "single") {
-      return "grid-cols-1 place-items-center"
-    } else if (selectedSpread === "three") {
-      return "grid-cols-1 md:grid-cols-3 gap-6"
-    } else {
-      return "grid-cols-2 md:grid-cols-4 gap-4"
-    }
-  }
+    if (selectedSpread === "single") return "grid-cols-1 place-items-center";
+    if (selectedSpread === "three") return "grid-cols-1 md:grid-cols-3 gap-6";
+    return "grid-cols-2 md:grid-cols-4 gap-4";
+  };
 
   const saveDivination = async () => {
     if (!session) {
@@ -167,238 +286,264 @@ export default function TarotDivination() {
         title: "請先登入",
         description: "登入後才能儲存您的占卜紀錄。",
         variant: "destructive",
-      })
-      return
+      });
+      return;
     }
 
-    setIsSaving(true)
+    setIsSaving(true);
     try {
-      const response = await fetch('/api/divinations', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      const response = await fetch("/api/divinations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           theme: selectedTheme,
           spreadType: selectedSpread,
-          cards: cards.map(c => ({ name: c.name, isReversed: c.isReversed, meaning: c.meaning })),
+          cards: cards.map((c) => ({
+            name: c.name,
+            isReversed: c.isReversed,
+            meaning: c.meaning,
+          })),
+          question: selectedQuestion,
+          aiReading: aiReading || null,
+          userContext: { birthday, birthTime, gender },
         }),
-      })
+      });
 
-      if (!response.ok) {
-        throw new Error('儲存失敗')
-      }
-
-      setIsSaved(true) // Mark as saved
-
-      toast({
-        title: "儲存成功！",
-        description: "您的占卜紀錄已儲存。",
-      })
+      if (!response.ok) throw new Error("儲存失敗");
+      setIsSaved(true);
+      toast({ title: "儲存成功！", description: "您的占卜紀錄已儲存。" });
     } catch (error) {
-      console.error('Failed to save divination:', error)
       toast({
         title: "儲存失敗",
         description: "無法儲存您的占卜紀錄，請稍後再試。",
         variant: "destructive",
-      })
+      });
     } finally {
-      setIsSaving(false)
+      setIsSaving(false);
     }
-  }
+  };
+
+  const fetchAiReading = async () => {
+    if (isAiLoading) return;
+    setIsAiLoading(true);
+    try {
+      const response = await fetch("/api/ai/reading", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          theme: themes.find((t) => t.id === selectedTheme)?.label,
+          spread: spreads.find((s) => s.id === selectedSpread)?.label,
+          cards: cards,
+          question: selectedQuestion,
+          userContext: { birthday, birthTime, gender },
+        }),
+      });
+      const data = await response.json();
+      if (data.reading) {
+        setAiReading(data.reading);
+      } else if (data.error) {
+        toast({
+          title: "AI 解讀失敗",
+          description: data.error,
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "連線錯誤",
+        description: "無法連線至 AI 伺服器",
+        variant: "destructive",
+      });
+    } finally {
+      setIsAiLoading(false);
+    }
+  };
 
   return (
-    <div className="relative remin-h-screen bg-[#171111] text-[#F9ECDC] relative overflow-hidden p-4">
-
-      {/* Outer Border */}
+    <div className="relative min-h-screen bg-[#171111] text-[#F9ECDC] overflow-hidden p-4">
       <div className="absolute z-50 inset-2 sm:inset-4 border border-[#C99041] rounded-3xl pointer-events-none"></div>
-      {/* Inner Border */}
       <div className="absolute z-50 inset-4 sm:inset-8 border border-[#C99041] rounded-xl pointer-events-none"></div>
       <div className="absolute z-10 inset-0 sm:inset-0 sm:border-[40px] border-[20px] border-[#171111] rounded-xl pointer-events-none"></div>
-      {/* Corner Decorations */}
-      <CornerDecoration position="top-left" className="z-50 top-2 left-2 sm:top-4 sm:left-4" />
-      <CornerDecoration position="top-right" className="z-50 top-2 right-2 sm:top-4 sm:right-4" />
-      <CornerDecoration position="bottom-right" className="z-50 bottom-2 left-2 sm:bottom-4 sm:left-4 scale-x-[-1]" />
-      <CornerDecoration position="bottom-left" className="z-50 bottom-2 right-2 sm:bottom-4 sm:right-4 scale-y-[-1]" />
 
-      {/* Header Section */}
+      <CornerDecoration
+        position="top-left"
+        className="z-50 top-2 left-2 sm:top-4 sm:left-4"
+      />
+      <CornerDecoration
+        position="top-right"
+        className="z-50 top-2 right-2 sm:top-4 sm:right-4"
+      />
+      <CornerDecoration
+        position="bottom-right"
+        className="z-50 bottom-2 left-2 sm:bottom-4 sm:left-4 scale-x-[-1]"
+      />
+      <CornerDecoration
+        position="bottom-left"
+        className="z-50 bottom-2 right-2 sm:bottom-4 sm:right-4 scale-y-[-1]"
+      />
+
       <Header />
 
-      <div className="container mx-auto px-4 py-8 sm:pd-0 sm:pb-[100px] relative">
-       
-        {/* 主視覺 */}
+      <div className="container mx-auto px-4 py-8 relative">
         <TarotDecorativeElements className="w-[200%] sm:w-full sm:top-0 top-[20px] h-full mb-20 -left-1/2 sm:left-0" />
-      
+
         {!isReading ? (
-          /* 設定區塊 */
-          <main>
-            <div className="relative max-w-2xl mx-auto">
-                {/* 占卜設定 */}
-              <Card className="bg-[rgba(23, 17, 17, 0.2)] border border-[#C99041] backdrop-blur-sm rounded-none relative overflow-visible">
-                <MoonPhaseIndicator position="top" />
-                <CloudDecoration className="w-full hidden sm:block" position="top" />
-                <Start01decoration className="w-full hidden sm:block" position="top" />
-                <MoonFaceDecoration className="w-full -mt-4 hidden sm:block" position="top" size="md" />
-                
-                <DecorativeCorner position="top-left" className="left-0 top-0" />
-                <DecorativeCorner position="top-right" className="right-0 top-0" />
-                <CardContent className="space-y-8 p-8 mt-4 mb-8 relative">
-                  {/* 占卜主題選擇 */}
-                  <section>
-                    <h2 className="sm:text-3xl text-[16px] font-bold text-amber-100 mb-6 text-center font-serif tracking-wider">占卜主題</h2>
-                    <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                      {themes.map((theme) => {
-                        const Icon = theme.icon
-                        return (
-                          <Button
-                            key={theme.id}
-                            variant={selectedTheme === theme.id ? "default" : "outline"}
-                            className={`
-                              /* 字體與文字 */
-                              font-serif 
-                              sm:text-md
-                              text-[14px]
-                              text-amber-300 
-                              hover:text-amber-200 
-                              
-                              /* 背景與邊框 */
-                              bg-transparent 
-                              hover:bg-amber-500/20 
-                              border 
-                              border-[#C99041] 
-                              
-                              /* 間距與尺寸 */
-                              sm:py-6 
-                              rounded-full 
-                              
-                              /* 動畫與過渡 */
-                              transition-all 
-                              duration-300 
-                              transform
-                              ${
-                                selectedTheme === theme.id 
-                                  ? 'scale-105 bg-amber-500/10' 
-                                  : 'hover:scale-105'
-                              }
-                            `}
-                            onClick={() => setSelectedTheme(theme.id)}
-                            aria-pressed={selectedTheme === theme.id}
-                          >
-                            <Icon className="w-5 h-5" />
-                            {theme.label}
-                          </Button>
-                        )
-                      })}
-                    </div>
-                  </section>
+          <main className="relative max-w-2xl mx-auto">
+            <Card className="bg-[rgba(23,17,17,0.2)] border border-[#C99041] backdrop-blur-sm rounded-none relative overflow-visible shadow-[0_0_50px_rgba(0,0,0,0.5)]">
+              <MoonPhaseIndicator position="top" />
+              <CloudDecoration
+                className="w-full hidden sm:block"
+                position="top"
+              />
+              <Start01decoration
+                className="w-full hidden sm:block"
+                position="top"
+              />
+              <MoonFaceDecoration
+                className="w-full -mt-4 hidden sm:block"
+                position="top"
+                size="md"
+              />
 
-                  {/* 牌陣選擇 */}
-                  <section>
-                    <h2 className="sm:text-3xl text-[16px] font-bold text-amber-100 mb-6 text-center font-serif tracking-wider">牌陣選擇</h2>
-                    <div className="grid grid-cols-3 md:grid-cols-3 gap-4">
-                      {spreads.map((spread) => (
+              <DecorativeCorner position="top-left" className="left-0 top-0" />
+              <DecorativeCorner
+                position="top-right"
+                className="right-0 top-0"
+              />
+
+              <CardContent className="space-y-8 p-8 mt-4 mb-8">
+                <section>
+                  <h2 className="sm:text-3xl text-[16px] font-bold text-amber-100 mb-6 text-center font-serif tracking-wider">
+                    占卜主題
+                  </h2>
+                  <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                    {themes.map((theme) => {
+                      const Icon = theme.icon;
+                      return (
                         <Button
-                          key={spread.id}
-                          variant={selectedSpread === spread.id ? "default" : "outline"}
-                          className={`
-                            /* 字體與文字 */
-                            font-serif 
-                            sm:text-md
-                            text-[14px]
-                            text-amber-300 
-                            hover:text-amber-200 
-                            
-                            /* 背景與邊框 */
-                            bg-transparent 
-                            hover:bg-amber-500/20 
-                            border 
-                            border-[#C99041] 
-                            
-                            /* 間距與尺寸 */
-                            sm:py-6 
-                            rounded-full 
-                            
-                            /* 動畫與過渡 */
-                            transition-all 
-                            duration-300 
-                            transform
-                            ${
-                              selectedSpread === spread.id 
-                                ? 'scale-105 bg-amber-500/10' 
-                                : 'hover:scale-105'
-                            }
-                          `}
-                          onClick={() => setSelectedSpread(spread.id)}
-                          aria-pressed={selectedSpread === spread.id}
+                          key={theme.id}
+                          variant={
+                            selectedTheme === theme.id ? "default" : "outline"
+                          }
+                          className={`font-serif sm:text-md text-[14px] text-amber-300 hover:text-amber-200 bg-transparent hover:bg-amber-500/20 border border-[#C99041] sm:py-6 rounded-full transition-all duration-300 transform ${selectedTheme === theme.id ? "scale-105 bg-amber-500/10 border-amber-400 shadow-[0_0_15px_rgba(251,191,36,0.2)]" : "hover:scale-105"}`}
+                          onClick={() => setSelectedTheme(theme.id)}
                         >
-                          {spread.label}
+                          <Icon className="w-5 h-5 mr-1" />
+                          {theme.label}
                         </Button>
-                      ))}
-                    </div>
-                  </section>
-
-                  {/* 開始占卜按鈕 */}
-                  <div className="text-center pt-6">
-                    <Button
-                      size="lg"
-                      className=" 
-                          /* 字體與文字 */
-                          font-serif 
-                          sm:text-md
-                          text-[14px]
-                          text-amber-300 
-                          hover:text-amber-200 
-                          
-                          /* 背景與邊框 */
-                          bg-transparent 
-                          hover:bg-amber-500/20 
-                          border 
-                          border-[#C99041] 
-                          
-                          /* 間距與尺寸 */
-                          sm:py-6 
-                          rounded-full 
-                          
-                          /* 動畫與過渡 */
-                          transition-all 
-                          duration-300 
-                          transform
-                          "
-                      onClick={startDivination}
-                    >
-                      <Sparkles className="w-5 h-5 mr-2 text-amber-200" />
-                      <span className="drop-shadow-sm">開始占卜</span>
-                    </Button>
+                      );
+                    })}
                   </div>
-                </CardContent>
-                <DecorativeCorner position="bottom-left" className="left-0 bottom-0" />
-                <DecorativeCorner position="bottom-right" className="right-0 bottom-0" />
-                
-                <MoonPhaseIndicator position="bottom" />
-              </Card>
-            </div>
+                </section>
+
+                <section>
+                  <h2 className="sm:text-3xl text-[16px] font-bold text-amber-100 mb-6 text-center font-serif tracking-wider">
+                    牌陣選擇
+                  </h2>
+                  <div className="grid grid-cols-3 md:grid-cols-3 gap-4">
+                    {spreads.map((spread) => (
+                      <Button
+                        key={spread.id}
+                        variant={
+                          selectedSpread === spread.id ? "default" : "outline"
+                        }
+                        className={`font-serif sm:text-md text-[14px] text-amber-300 hover:text-amber-200 bg-transparent hover:bg-amber-500/20 border border-[#C99041] sm:py-6 rounded-full transition-all duration-300 transform ${selectedSpread === spread.id ? "scale-105 bg-amber-500/10 border-amber-400 shadow-[0_0_15px_rgba(251,191,36,0.2)]" : "hover:scale-105"}`}
+                        onClick={() => setSelectedSpread(spread.id)}
+                      >
+                        {spread.label}
+                      </Button>
+                    ))}
+                  </div>
+                </section>
+
+                <section>
+                  <h2 className="sm:text-3xl text-[16px] font-bold text-amber-100 mb-6 text-center font-serif tracking-wider">
+                    心靈聚焦
+                  </h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {themeQuestions[selectedTheme].map((q, idx) => (
+                      <Button
+                        key={idx}
+                        variant={selectedQuestion === q ? "default" : "outline"}
+                        className={`font-serif sm:text-sm text-[12px] text-left justify-start px-6 py-6 h-auto whitespace-normal text-amber-100/80 hover:text-amber-100 bg-transparent hover:bg-amber-500/10 border border-[#C99041]/30 hover:border-[#C99041] rounded-xl transition-all duration-300 ${selectedQuestion === q ? "bg-[#C99041]/10 border-[#C99041] text-amber-100 shadow-[0_0_10px_rgba(201,144,65,0.1)]" : ""}`}
+                        onClick={() => setSelectedQuestion(q)}
+                      >
+                        <Sparkles
+                          className={`w-3.5 h-3.5 mr-2 shrink-0 ${selectedQuestion === q ? "text-amber-400" : "text-amber-400/30"}`}
+                        />
+                        {q}
+                      </Button>
+                    ))}
+                  </div>
+                </section>
+
+                <div className="text-center pt-6">
+                  <Button
+                    size="lg"
+                    className={`font-serif sm:text-md text-[14px] text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 border-2 border-[#C99041] sm:py-8 sm:px-12 rounded-full shadow-[0_0_20px_rgba(201,144,65,0.2)] transition-all duration-300 transform ${!selectedQuestion ? "opacity-50 cursor-not-allowed grayscale" : "hover:scale-105 hover:border-amber-400 hover:shadow-[0_0_30px_rgba(201,144,65,0.4)]"}`}
+                    onClick={startDivination}
+                    disabled={!selectedQuestion}
+                  >
+                    <Sparkles
+                      className={`w-5 h-5 mr-2 ${selectedQuestion ? "text-amber-300" : "text-amber-300/30"}`}
+                    />
+                    <span className="drop-shadow-sm font-bold tracking-widest text-lg">
+                      {selectedQuestion ? "開啟命運之門" : "請選擇心靈聚焦議題"}
+                    </span>
+                  </Button>
+                </div>
+              </CardContent>
+
+              <DecorativeCorner
+                position="bottom-left"
+                className="left-0 bottom-0"
+              />
+              <DecorativeCorner
+                position="bottom-right"
+                className="right-0 bottom-0"
+              />
+              <MoonPhaseIndicator position="bottom" />
+            </Card>
           </main>
         ) : (
           <main className="max-w-2xl mx-auto">
-            {/* 抽牌區塊 */}
-            <Card className="bg-[rgba(23, 17, 17, 0.2)] pb-[50px] border border-[#C99041] backdrop-blur-sm rounded-none relative ">
+            <Card className="bg-[rgba(23,17,17,0.2)] pb-[50px] border border-[#C99041] backdrop-blur-sm rounded-none relative shadow-[0_0_50px_rgba(0,0,0,0.5)]">
               <MoonPhaseIndicator position="top" />
-              <CloudDecoration className="w-full hidden sm:block" position="top" />
-              <Start01decoration className="w-full hidden sm:block" position="top" />
-              <MoonFaceDecoration className="w-full hidden sm:block" position="top" size="md" />  
-              
-              <DecorativeCorner position="top-left" className="left-0 top-0 hidden sm:block" />
-              <DecorativeCorner position="top-right" className="right-0 top-0 hidden sm:block" />
-              
+              <CloudDecoration
+                className="w-full hidden sm:block"
+                position="top"
+              />
+              <Start01decoration
+                className="w-full hidden sm:block"
+                position="top"
+              />
+              <MoonFaceDecoration
+                className="w-full hidden sm:block"
+                position="top"
+                size="md"
+              />
+
+              <DecorativeCorner
+                position="top-left"
+                className="left-0 top-0 hidden sm:block"
+              />
+              <DecorativeCorner
+                position="top-right"
+                className="right-0 top-0 hidden sm:block"
+              />
+
               <CardHeader className="text-center sm:mt-[50px] mt-[10px]">
                 <CardTitle className="text-2xl md:text-3xl text-amber-100 font-serif tracking-wider">
                   {themes.find((t) => t.id === selectedTheme)?.label} -{" "}
                   {spreads.find((s) => s.id === selectedSpread)?.label}
                 </CardTitle>
                 <CardDescription className="text-amber-200/90 text-sm md:text-base mt-2">
-                  <span className="inline-block border-b border-[#C99041]/50 pb-1">點擊卡片來揭示你的命運</span>
+                  <span className="inline-block border-b border-[#C99041]/50 pb-1">
+                    點擊卡片來揭示你的命運
+                  </span>
                 </CardDescription>
               </CardHeader>
+
               <CardContent>
                 <div className={`grid ${getSpreadLayout()} max-w-3xl mx-auto`}>
                   {cards.map((card) => (
@@ -406,179 +551,452 @@ export default function TarotDivination() {
                       key={card.id}
                       className="relative group cursor-pointer"
                       onClick={() => !card.isRevealed && revealCard(card.id)}
-                      role="button"
-                      tabIndex={0}
-                      aria-label={`塔羅牌 ${card.id + 1}${card.isRevealed ? ` - ${card.name}` : " - 點擊翻開"}`}
-                      onKeyDown={(e) => {
-                        if ((e.key === "Enter" || e.key === " ") && !card.isRevealed) {
-                          e.preventDefault()
-                          revealCard(card.id)
-                        }
-                      }}
                     >
-                      {/* Card Title and Badge - Only shown when revealed */}
-                      <div className={`mb-1 text-center w-full z-10  ${card.isRevealed ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
-                        <h3 className=" font-bold pb-2 text-amber-100 text-sm truncate px-1 font-serif">
+                      <div
+                        className={`mb-1 text-center w-full z-10 transition-opacity duration-500 ${card.isRevealed ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+                      >
+                        <h3 className="font-bold pb-2 text-amber-100 text-sm truncate px-1 font-serif">
                           {card.name}
                         </h3>
-                        <Badge 
-                          variant={card.isReversed ? "destructive" : "default"} 
-                          className="text-xs mb-1 bg-amber-700 hover:bg-amber-800 text-amber-50 border-amber-600/50"
+                        <Badge
+                          variant={card.isReversed ? "destructive" : "default"}
+                          className="text-xs mb-1 bg-amber-700/80 text-amber-50 border-amber-600"
                         >
                           {card.isReversed ? "逆位" : "正位"}
                         </Badge>
                       </div>
                       <div
-                        className={`
-                        relative w-[200px] h-0 pb-[300px] mx-auto
-                        transform transition-all duration-700 preserve-3d flex flex-col
-                        ${card.isRevealed ? "rotate-y-180" : "hover:scale-105 group-hover:shadow-2xl"}
-                      `}
-                        style={{
-                          transformStyle: "preserve-3d",
-                        }}
+                        className={`relative w-[200px] h-[300px] mx-auto transform transition-all duration-700 ${card.isRevealed ? "rotate-y-180" : "hover:scale-105 shadow-2xl"}`}
+                        style={{ transformStyle: "preserve-3d" }}
                       >
-                        {/* 卡片背面 */}
                         <div
-                          className={`
-                          absolute inset-0 w-full h-full
-                          transition-opacity duration-300
-                          ${card.isRevealed ? "opacity-0 pointer-events-none" : "opacity-100"}
-                        `}
-                          style={{
-                            backfaceVisibility: "hidden",
-                          }}
+                          className={`absolute inset-0 w-full h-full transition-opacity duration-300 ${card.isRevealed ? "opacity-0" : "opacity-100"}`}
+                          style={{ backfaceVisibility: "hidden" }}
                         >
                           <CardBack />
                         </div>
-
-                        {/* 卡片正面 */}
                         <div
-                          className={`
-                          absolute inset-0 w-full h-full
-                          flex flex-col items-center justify-center 
-                          transition-opacity duration-300 overflow-hidden shadow-inner
-                          ${card.isRevealed ? "opacity-100" : "opacity-0 pointer-events-none"}
-                        `}
+                          className={`absolute inset-0 w-full h-full flex flex-col items-center justify-center transition-opacity duration-300 overflow-hidden ${card.isRevealed ? "opacity-100" : "opacity-0"}`}
                           style={{
                             backfaceVisibility: "hidden",
                             transform: "rotateY(180deg)",
                           }}
                         >
-                        
-                            <img 
-                              src={card.image} 
-                              alt={card.name}
-                              className={`h-[80%] w-auto ${card.isReversed ? 'transform scale-y-[-1]' : ''} rounded-lg`}
-                              style={{ maxWidth: '100%' }}
-                            />
-                            <div className="absolute inset-0 w-full h-full -z-10">
-                              <CardFront />
-                            </div>
-                            
-                          
+                          <img
+                            src={card.image}
+                            alt={card.name}
+                            className={`h-[80%] w-auto ${card.isReversed ? "transform scale-y-[-1]" : ""} rounded-lg shadow-inner`}
+                          />
+                          <div className="absolute inset-0 w-full h-full -z-10">
+                            <CardFront />
+                          </div>
                         </div>
-                        
                       </div>
                     </div>
                   ))}
                 </div>
               </CardContent>
-              <DecorativeCorner position="bottom-left" className="left-0 bottom-0" />
-              <DecorativeCorner position="bottom-right" className="right-0 bottom-0" />
-              
+
+              <DecorativeCorner
+                position="bottom-left"
+                className="left-0 bottom-0"
+              />
+              <DecorativeCorner
+                position="bottom-right"
+                className="right-0 bottom-0"
+              />
               <MoonPhaseIndicator position="bottom" />
             </Card>
 
-            {/* 解牌區塊 */}
             {showResults && (
-              <Card ref={resultsTitleRef} className="bg-[rgba(23, 17, 17, 0.2)] mt-[80px] pb-[50px] border-2 border-[#C99041]/50 backdrop-blur-sm rounded-none relative">
+              <Card
+                ref={resultsTitleRef}
+                className="bg-[rgba(23,17,17,0.2)] mt-[80px] pb-[50px] border-2 border-[#C99041]/50 backdrop-blur-sm rounded-none relative shadow-[0_0_60px_rgba(0,0,0,0.6)] animate-in fade-in slide-in-from-bottom duration-1000"
+              >
                 <MoonPhaseIndicator position="top" />
                 <LeftSideDecorations className="hidden sm:block" />
                 <RightSideDecorations className="hidden sm:block" />
-                
-                <DecorativeCorner position="top-left" className="left-0 top-0" />
-                <DecorativeCorner position="top-right" className="right-0 top-0" />
+                <DecorativeCorner
+                  position="top-left"
+                  className="left-0 top-0"
+                />
+                <DecorativeCorner
+                  position="top-right"
+                  className="right-0 top-0"
+                />
 
                 <CardHeader className="text-center sm:mt-[50px] mt-[10px]">
-                  <CardTitle className="text-2xl md:text-3xl text-amber-100 font-serif tracking-wider">占卜結果</CardTitle>
+                  <CardTitle className="text-2xl md:text-3xl text-amber-100 font-serif tracking-wider">
+                    占卜結果
+                  </CardTitle>
                   <CardDescription className="text-amber-200/90 text-sm md:text-base mt-1">
-                    <span className="inline-block border-b border-amber-500/50 pb-1">以下是你的塔羅牌解讀</span>
+                    <span className="inline-block border-b border-amber-500/50 pb-1">
+                      以下是你的塔羅牌解讀
+                    </span>
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  {cards.map((card, index) => (
-                    <article
-                      key={card.id}
-                      className="pb-12 animate-in slide-in-from-bottom duration-500 backdrop-blur-sm shadow-inner"
-                      style={{ animationDelay: `${index * 100}ms` }}
-                    >
-                      <header className="flex items-center gap-4 mb-4">
-                        <div className="w-8 h-8 bg-amber-400/10 hover:bg-amber-500/20 text-amber-50 border-[#C99041]/50 rounded-full flex items-center justify-center text-amber-50 font-bold">
-                          {index + 1}
+
+                <CardContent className="px-8 sm:px-12">
+                  <div className="space-y-12">
+                    {cards.map((card, index) => (
+                      <article
+                        key={card.id}
+                        className="pb-8 border-b border-amber-500/10 last:border-0 animate-in slide-in-from-bottom duration-500"
+                        style={{ animationDelay: `${index * 150}ms` }}
+                      >
+                        <header className="flex items-center gap-4 mb-6">
+                          <div className="w-10 h-10 bg-amber-400/10 text-amber-200 border border-amber-500/30 rounded-full flex items-center justify-center font-bold font-serif shadow-inner">
+                            {index + 1}
+                          </div>
+                          <h3 className="text-2xl font-semibold text-amber-100 font-serif tracking-wider">
+                            {card.name}
+                          </h3>
+                          <Badge
+                            variant={
+                              card.isReversed ? "destructive" : "default"
+                            }
+                            className={`ml-auto px-3 py-1 ${card.isReversed ? "bg-amber-900/40 text-amber-400 border-amber-800" : "bg-amber-600/40 text-amber-100 border-amber-500"}`}
+                          >
+                            {card.isReversed ? "逆位" : "正位"}
+                          </Badge>
+                        </header>
+                        <div className="text-amber-100/90 space-y-4 ml-2 border-l-2 border-amber-500/20 pl-6">
+                          <p className="leading-relaxed font-medium text-amber-50 text-lg italic">
+                            {card.meaning.summary}
+                          </p>
+                          {card.meaning.details &&
+                            card.meaning.details.length > 0 && (
+                              <ul className="list-disc list-outside space-y-3 text-sm text-amber-100/80 pl-4 py-2">
+                                {card.meaning.details.map((detail, i) => (
+                                  <li key={i}>{detail}</li>
+                                ))}
+                              </ul>
+                            )}
                         </div>
-                        <h3 className="text-xl font-semibold text-amber-100 font-serif tracking-wider">{card.name}</h3>
-                        <Badge 
-                          variant={card.isReversed ? "destructive" : "default"} 
-                          className={`ml-auto font-medium transition-all duration-300 ${
-                            card.isReversed 
-                              ? 'bg-amber-900/50 hover:bg-amber-900/70 text-amber-300 border-amber-700/50 hover:border-amber-600/60' 
-                              : 'bg-amber-500/80 hover:bg-amber-400/90 text-amber-50 border-[#C99041]/80 hover:border-amber-300/90 shadow-[0_0_10px_rgba(245,158,11,0.3)]'
-                          }`}
-                        >
-                          {card.isReversed ? "逆位" : "正位"}
-                        </Badge>
-                      </header>
-                      <div className="text-amber-100 space-y-3">
-                        <p className="leading-relaxed font-medium text-amber-50">{card.meaning.summary}</p>
-                        {card.meaning.details && card.meaning.details.length > 0 && (
-                          <ul className="list-disc list-outside space-y-2 text-sm text-amber-100/90 pl-5 -ml-1">
-                            {card.meaning.details.map((detail, i) => (
-                              <li key={i} className="pl-2">
-                                {detail}
-                              </li>
-                            ))}
-                          </ul>
+                      </article>
+                    ))}
+                  </div>
+
+                  {/* AI 深度解讀區塊 */}
+                  <div className="mt-16 pt-12 border-t border-[#C99041]/30">
+                    {!aiReading ? (
+                      <div className="max-w-2xl mx-auto relative">
+                        {/* 靈魂簽名表單 - 只有點擊按鈕後才會「長」出來 */}
+                        {showSoulSignature ? (
+                          <div className="bg-amber-950/40 p-8 rounded-[2.5rem] border border-amber-500/30 shadow-[0_0_40px_rgba(0,0,0,0.4)] animate-in slide-in-from-top fade-in duration-700 mb-8 relative group">
+                            <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-[#171111] px-4 border border-amber-500/30 rounded-full py-1 text-[10px] text-amber-500 uppercase tracking-widest font-serif">
+                              Soul Signature
+                            </div>
+
+                            <h4 className="text-xl font-bold text-amber-100 mb-6 flex items-center justify-center gap-3 font-serif">
+                              <Sparkles className="w-5 h-5 text-amber-400" />
+                              靈魂共鳴參數
+                            </h4>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                              <div className="space-y-2">
+                                <Label className="text-xs text-amber-500/70 uppercase tracking-widest ml-1 font-serif">
+                                  出生日期 (選填)
+                                </Label>
+                                <div className="grid grid-cols-3 gap-2">
+                                  <Select
+                                    value={birthYear}
+                                    onValueChange={setBirthYear}
+                                  >
+                                    <SelectTrigger className="bg-black/40 border-amber-500/30 text-amber-100 rounded-2xl h-12 px-2 text-sm justify-center font-serif">
+                                      <SelectValue placeholder="年" />
+                                    </SelectTrigger>
+                                    <SelectContent className="bg-amber-950 border-amber-500/40 text-amber-100 max-h-[300px]">
+                                      {Array.from({ length: 107 }).map(
+                                        (_, i) => {
+                                          const year = (2026 - i).toString();
+                                          return (
+                                            <SelectItem key={year} value={year}>
+                                              {year}
+                                            </SelectItem>
+                                          );
+                                        },
+                                      )}
+                                    </SelectContent>
+                                  </Select>
+                                  <Select
+                                    value={birthMonth}
+                                    onValueChange={setBirthMonth}
+                                  >
+                                    <SelectTrigger className="bg-black/40 border-amber-500/30 text-amber-100 rounded-2xl h-12 px-2 text-sm justify-center font-serif">
+                                      <SelectValue placeholder="月" />
+                                    </SelectTrigger>
+                                    <SelectContent className="bg-amber-950 border-amber-500/40 text-amber-100">
+                                      {Array.from({ length: 12 }).map(
+                                        (_, i) => {
+                                          const month = (i + 1)
+                                            .toString()
+                                            .padStart(2, "0");
+                                          return (
+                                            <SelectItem
+                                              key={month}
+                                              value={month}
+                                            >
+                                              {month}
+                                            </SelectItem>
+                                          );
+                                        },
+                                      )}
+                                    </SelectContent>
+                                  </Select>
+                                  <Select
+                                    value={birthDay}
+                                    onValueChange={setBirthDay}
+                                  >
+                                    <SelectTrigger className="bg-black/40 border-amber-500/30 text-amber-100 rounded-2xl h-12 px-2 text-sm justify-center font-serif">
+                                      <SelectValue placeholder="日" />
+                                    </SelectTrigger>
+                                    <SelectContent className="bg-amber-950 border-amber-500/40 text-amber-100 max-h-[300px]">
+                                      {Array.from({ length: 31 }).map(
+                                        (_, i) => {
+                                          const day = (i + 1)
+                                            .toString()
+                                            .padStart(2, "0");
+                                          return (
+                                            <SelectItem key={day} value={day}>
+                                              {day}
+                                            </SelectItem>
+                                          );
+                                        },
+                                      )}
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                              </div>
+                              <div className="space-y-2">
+                                <Label className="text-xs text-amber-500/70 uppercase tracking-widest ml-1 font-serif">
+                                  出生時間 (選填)
+                                </Label>
+                                <div className="grid grid-cols-2 gap-2">
+                                  <Select
+                                    value={birthHour}
+                                    onValueChange={setBirthHour}
+                                  >
+                                    <SelectTrigger className="bg-black/40 border-amber-500/30 text-amber-100 rounded-2xl h-12 font-serif">
+                                      <SelectValue placeholder="時" />
+                                    </SelectTrigger>
+                                    <SelectContent className="bg-amber-950 border-amber-500/40 text-amber-100 max-h-[300px]">
+                                      {Array.from({ length: 24 }).map(
+                                        (_, i) => (
+                                          <SelectItem
+                                            key={i}
+                                            value={i
+                                              .toString()
+                                              .padStart(2, "0")}
+                                          >
+                                            {i.toString().padStart(2, "0")} 時
+                                          </SelectItem>
+                                        ),
+                                      )}
+                                    </SelectContent>
+                                  </Select>
+                                  <Select
+                                    value={birthMinute}
+                                    onValueChange={setBirthMinute}
+                                  >
+                                    <SelectTrigger className="bg-black/40 border-amber-500/30 text-amber-100 rounded-2xl h-12 font-serif">
+                                      <SelectValue placeholder="分" />
+                                    </SelectTrigger>
+                                    <SelectContent className="bg-amber-950 border-amber-500/40 text-amber-100 max-h-[300px]">
+                                      {Array.from({ length: 60 }).map(
+                                        (_, i) => (
+                                          <SelectItem
+                                            key={i}
+                                            value={i
+                                              .toString()
+                                              .padStart(2, "0")}
+                                          >
+                                            {i.toString().padStart(2, "0")} 分
+                                          </SelectItem>
+                                        ),
+                                      )}
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                              </div>
+                              <div className="md:col-span-2 space-y-2">
+                                <Label className="text-xs text-amber-500/70 uppercase tracking-widest ml-1 font-serif">
+                                  能量認同 (選填)
+                                </Label>
+                                <Select
+                                  value={gender}
+                                  onValueChange={setGender}
+                                >
+                                  <SelectTrigger className="bg-black/40 border-amber-500/30 text-amber-100 rounded-2xl h-12 focus:border-amber-400 font-serif">
+                                    <SelectValue placeholder="請選擇您的能量屬性" />
+                                  </SelectTrigger>
+                                  <SelectContent className="bg-amber-950 border-amber-500/40 text-amber-100 rounded-xl">
+                                    <SelectItem value="male">
+                                      陽性能量 / 男性
+                                    </SelectItem>
+                                    <SelectItem value="female">
+                                      陰性能量 / 女性
+                                    </SelectItem>
+                                    <SelectItem value="non-binary">
+                                      多元能量 / 非二元
+                                    </SelectItem>
+                                    <SelectItem value="prefer-not-to-say">
+                                      宇宙能量 / 不提供
+                                    </SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            </div>
+
+                            <div className="mt-8 flex flex-col gap-4">
+                              <Button
+                                onClick={fetchAiReading}
+                                disabled={isAiLoading}
+                                className="w-full bg-amber-600 hover:bg-amber-500 text-amber-50 rounded-2xl py-7 font-serif text-lg tracking-widest shadow-[0_0_20px_rgba(217,119,6,0.2)] transition-all hover:scale-[1.02] active:scale-95"
+                              >
+                                {isAiLoading
+                                  ? "共鳴解讀中..."
+                                  : "確認並啟動深度解讀"}
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setShowSoulSignature(false)}
+                                className="text-xs text-amber-500/60 hover:text-amber-400 hover:bg-amber-500/5 uppercase tracking-widest font-serif transition-colors"
+                              >
+                                點擊收合此區塊
+                              </Button>
+                            </div>
+                          </div>
+                        ) : (
+                          /* 初始按鈕狀態 */
+                          <div className="flex flex-col gap-4">
+                            <Button
+                              onClick={() => setShowSoulSignature(true)}
+                              className="w-full bg-amber-500/5 hover:bg-amber-500/10 text-amber-200 border border-[#C99041]/40 rounded-[2.5rem] py-16 h-auto flex flex-col items-center group transition-all duration-700 hover:border-amber-400 hover:text-amber-100 shadow-inner relative overflow-hidden"
+                            >
+                              <div className="absolute inset-0 bg-radial-gradient from-amber-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
+                              <div className="flex flex-col items-center relative z-10 transition-transform duration-700 group-hover:scale-105">
+                                <div className="w-16 h-16 mb-8 bg-amber-500/10 rounded-full flex items-center justify-center border border-amber-500/20 group-hover:bg-amber-500/20 group-hover:border-amber-500/40 transition-all duration-700 shadow-lg">
+                                  <Sparkles className="w-8 h-8 text-amber-400 group-hover:rotate-12 transition-transform duration-700" />
+                                </div>
+                                <span className="text-2xl font-serif tracking-[0.2em] mb-4">
+                                  啟動 AI 深度靈魂解讀
+                                </span>
+                                <span className="text-xs text-amber-100/40 font-serif uppercase tracking-[0.3em] group-hover:text-amber-100/60">
+                                  結合時空座標與全牌面綜合共振
+                                </span>
+                              </div>
+                            </Button>
+
+                            {/* 直接略過按鈕 */}
+                            <Button
+                              variant="ghost"
+                              onClick={fetchAiReading}
+                              disabled={isAiLoading}
+                              className="self-center text-amber-500/30 hover:text-amber-500/80 hover:bg-amber-500/5 font-serif tracking-[0.2em] transition-all"
+                            >
+                              直接開始 (不使用個人參數)
+                            </Button>
+                          </div>
                         )}
                       </div>
-                    </article>
-                  ))}
+                    ) : (
+                      /* AI 結果顯示 */
+                      <div className="bg-[#C99041]/5 border border-[#C99041]/30 rounded-[3rem] p-10 animate-in fade-in zoom-in duration-1000 shadow-[0_0_40px_rgba(0,0,0,0.3)] relative overflow-hidden min-h-[400px]">
+                        <div className="absolute -top-20 -right-20 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl"></div>
+                        <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl"></div>
 
-                  <div className="flex flex-col sm:flex-row gap-4 pt-6 w-full justify-center">
+                        <div className="flex items-center justify-center gap-4 mb-10">
+                          <div className="w-1.5 h-1.5 bg-amber-500/40 rounded-full"></div>
+                          <Sparkles className="w-6 h-6 text-amber-400" />
+                          <h4 className="text-2xl font-bold text-amber-100 font-serif tracking-widest text-center">
+                            命運深度啟示錄
+                          </h4>
+                          <Sparkles className="w-6 h-6 text-amber-400" />
+                          <div className="w-1.5 h-1.5 bg-amber-500/40 rounded-full"></div>
+                        </div>
+
+                        <div className="prose prose-invert max-w-none text-md text-amber-50/90 leading-[2.2] font-serif tracking-wide text-justify transition-all duration-1000">
+                          <ReactMarkdown
+                            components={{
+                              h3: ({ node, ...props }) => (
+                                <h3
+                                  className="text-2xl font-bold text-amber-300 mt-12 mb-8 flex items-center gap-3 border-b border-amber-500/20 pb-4 font-serif tracking-widest italic"
+                                  {...props}
+                                />
+                              ),
+                              p: ({ node, ...props }) => (
+                                <p
+                                  className="mb-10 drop-shadow-sm leading-[2.4]"
+                                  {...props}
+                                />
+                              ),
+                              strong: ({ node, ...props }) => (
+                                <strong
+                                  className="text-amber-200 font-bold drop-shadow-[0_0_10px_rgba(251,191,36,0.4)] px-1"
+                                  {...props}
+                                />
+                              ),
+                              blockquote: ({ node, ...props }) => (
+                                <blockquote
+                                  className="border-l-4 border-amber-500/40 pl-8 py-6 my-12 italic text-amber-200/90 bg-amber-500/5 rounded-r-3xl border-double"
+                                  {...props}
+                                />
+                              ),
+                            }}
+                          >
+                            {aiReading}
+                          </ReactMarkdown>
+                        </div>
+
+                        <div className="mt-12 flex justify-center">
+                          <div className="h-px w-32 bg-gradient-to-r from-transparent via-amber-500/30 to-transparent"></div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* 底部按鈕 */}
+                  <div className="flex flex-col sm:flex-row gap-6 pt-16 w-full justify-center">
                     {session && (
-                      <Button 
-                        onClick={saveDivination} 
-                        disabled={isSaving || isSaved} 
-                        variant="outline" 
-                        className="chinese-title-bakudai border-2 border-[#C99041]/50 bg-transparent hover:bg-amber-500/20 text-amber-300 hover:text-amber-200 text-lg px-8 py-6 rounded-full transition-all duration-300 transform hover:scale-105 disabled:cursor-not-allowed"
-                        >
-                        {isSaving ? "儲存中..." : (isSaved ? "已儲存" : "儲存本次占卜")}
+                      <Button
+                        onClick={saveDivination}
+                        disabled={isSaving || isSaved}
+                        variant="outline"
+                        className={`min-w-[200px] border-2 border-amber-500/40 bg-transparent text-amber-200 text-lg px-10 py-7 rounded-full transition-all hover:bg-amber-500/20 hover:border-amber-400 hover:text-amber-100 transform hover:scale-105 font-serif ${isSaved ? "opacity-60 cursor-default" : ""}`}
+                      >
+                        {isSaving
+                          ? "紀錄典藏中..."
+                          : isSaved
+                            ? "已納入私人秘藏"
+                            : "儲存本次啟示"}
                       </Button>
                     )}
-
                     <Button
                       variant="outline"
-                      className="chinese-title-bakudai border-2 border-[#C99041]/50 bg-transparent hover:bg-amber-500/20 text-amber-300 hover:text-amber-200 text-lg px-8 py-6 rounded-full transition-all duration-300 transform hover:scale-105"
-                      size="lg"
+                      className="min-w-[200px] border-2 border-amber-500/40 bg-transparent text-amber-200 text-lg px-10 py-7 rounded-full transition-all hover:bg-amber-500/20 hover:border-amber-400 hover:text-amber-100 transform hover:scale-105 font-serif"
                       onClick={resetReading}
                     >
-                      重新占卜
+                      再次探詢星辰
                     </Button>
                   </div>
                 </CardContent>
 
-                
-                <DecorativeCorner position="bottom-left" className="left-0 bottom-0" />
-                <DecorativeCorner position="bottom-right" className="right-0 bottom-0" />
-                
+                <DecorativeCorner
+                  position="bottom-left"
+                  className="left-0 bottom-0"
+                />
+                <DecorativeCorner
+                  position="bottom-right"
+                  className="right-0 bottom-0"
+                />
                 <MoonPhaseIndicator position="bottom" />
               </Card>
             )}
           </main>
         )}
       </div>
-
     </div>
-     
-  )
+  );
 }
