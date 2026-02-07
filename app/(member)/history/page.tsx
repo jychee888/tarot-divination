@@ -1,536 +1,331 @@
-'use client'
+"use client";
 
-import { useState, useEffect, useMemo, useCallback } from 'react'
-import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
-import Link from 'next/link'
-import dynamic from 'next/dynamic'
-import tarotCards from '@/data/tarot-cards'
-import Pagination from '@/components/Pagination'
-import ModalPortal from '@/components/ui/ModalPortal'
+import { useState, useEffect, useMemo, useCallback } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import {
+  Clock,
+  Calendar,
+  SortDesc,
+  SortAsc,
+  Trash2,
+  ChevronRight,
+  X,
+  Sparkles,
+  AlertCircle,
+  Search,
+} from "lucide-react";
+import tarotCards from "@/data/tarot-cards";
+import Pagination from "@/components/Pagination";
+import ModalPortal from "@/components/ui/ModalPortal";
+import { Button } from "@/components/ui/button";
+import { MoonPhaseIndicator } from "@/components/decorations/moonPhaseIndicator";
 
 interface Card {
-    id?: string;  // 可能是可選的
-    cardId?: string;  // 新增這個欄位
-    name: string;
-    isReversed: boolean;
-    meaning: string;
+  id?: string;
+  cardId?: string;
+  name: string;
+  isReversed: boolean;
+  meaning: string;
 }
 
 interface DivinationRecord {
-  id: string
-  theme: string
-  spreadType: string
-  cards: Card[]
-  createdAt: string
+  id: string;
+  theme: string;
+  spreadType: string;
+  cards: Card[];
+  createdAt: string;
 }
 
 export default function HistoryPage() {
-  const { status } = useSession()
-  const router = useRouter()
-  const [history, setHistory] = useState<DivinationRecord[]>([])
-  const [filteredHistory, setFilteredHistory] = useState<DivinationRecord[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [selectedReading, setSelectedReading] = useState<DivinationRecord | null>(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [modalStyle, setModalStyle] = useState<React.CSSProperties>({})
-  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false)
-  const [recordToDelete, setRecordToDelete] = useState<string | null>(null)
-  const [deleteError, setDeleteError] = useState<string | null>(null)
-  
+  const { status } = useSession();
+  const router = useRouter();
+  const [history, setHistory] = useState<DivinationRecord[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [selectedReading, setSelectedReading] =
+    useState<DivinationRecord | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+  const [recordToDelete, setRecordToDelete] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+
   // Filter and sort states
-  const [dateFilter, setDateFilter] = useState<'all' | 'today' | 'week' | 'month' | 'year'>('all')
-  const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest')
-  const [currentPage, setCurrentPage] = useState(1)
-  const itemsPerPage = 12
-  
+  const [dateFilter, setDateFilter] = useState<
+    "all" | "today" | "week" | "month" | "year"
+  >("all");
+  const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 9;
+
+  // Mappings for Chinese display
+  const themeMap: Record<string, string> = {
+    love: "愛情",
+    career: "事業",
+    relationship: "人際",
+    health: "健康",
+    "self-exploration": "自我探索",
+  };
+
+  const spreadMap: Record<string, string> = {
+    single: "單張牌",
+    three: "三張牌",
+    "celtic-cross": "十字牌",
+  };
+
+  const getThemeLabel = (theme: string) => themeMap[theme] || theme;
+  const getSpreadLabel = (spread: string) => spreadMap[spread] || spread;
+
   // Filter and sort the history
   const filteredAndSortedHistory = useMemo(() => {
-    // Apply date filter
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     let filtered = [...history];
-    
-    if (dateFilter !== 'all') {
+
+    if (dateFilter !== "all") {
       let startDate = new Date(today);
-      
       switch (dateFilter) {
-        case 'today':
-          // Already set to today
+        case "today":
           break;
-        case 'week':
+        case "week":
           startDate.setDate(today.getDate() - 7);
           break;
-        case 'month':
+        case "month":
           startDate.setMonth(today.getMonth() - 1);
           break;
-        case 'year':
+        case "year":
           startDate.setFullYear(today.getFullYear() - 1);
           break;
       }
-      
-      filtered = filtered.filter(record => new Date(record.createdAt) >= startDate);
+      filtered = filtered.filter(
+        (record) => new Date(record.createdAt) >= startDate,
+      );
     }
-    
-    // Apply sorting
+
     return [...filtered].sort((a, b) => {
       const dateA = new Date(a.createdAt).getTime();
       const dateB = new Date(b.createdAt).getTime();
-      return sortOrder === 'newest' ? dateB - dateA : dateA - dateB;
+      return sortOrder === "newest" ? dateB - dateA : dateA - dateB;
     });
   }, [history, dateFilter, sortOrder]);
-  
-  // Update filteredHistory state when filteredAndSortedHistory changes
+
+  // Reset page when filters change
   useEffect(() => {
-    setFilteredHistory(filteredAndSortedHistory);
-    // Reset to first page when filters change
     setCurrentPage(1);
-  }, [filteredAndSortedHistory]);
+  }, [dateFilter, sortOrder]);
 
-  // Update modal position when modal opens/closes or window resizes
-  useEffect(() => {
-    if (isModalOpen) {
-      const updateModalPosition = () => {
-        const viewportHeight = window.innerHeight;
-        const modalHeight = 600; // Modal height in pixels
-        const top = Math.max(20, (viewportHeight - modalHeight) / 2);
-        setModalStyle({
-          position: 'fixed',
-          top: `${top}px`,
-          left: '50%',
-          transform: 'translateX(-50%)',
-        });
-      };
-
-      // Initial position
-      updateModalPosition();
-      
-      // Update on window resize
-      window.addEventListener('resize', updateModalPosition);
-      return () => window.removeEventListener('resize', updateModalPosition);
-    }
-  }, [isModalOpen]);
-
-  // Calculate pagination
   const totalItems = filteredAndSortedHistory.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedItems = filteredAndSortedHistory.slice(startIndex, startIndex + itemsPerPage);
-  
-  // Handle page change
+  const paginatedItems = filteredAndSortedHistory.slice(
+    startIndex,
+    startIndex + itemsPerPage,
+  );
+
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
-  // Handle delete record
   const handleDelete = useCallback(async (id: string) => {
-    setDeleteError(null); // Reset error state
+    setDeleteError(null);
     try {
       const response = await fetch(`/api/divinations/${id}`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || '刪除失敗');
-      }
-
-      // Update local state to remove the deleted record
-      setHistory(prev => prev.filter(record => record.id !== id));
-      setFilteredHistory(prev => prev.filter(record => record.id !== id));
-      
-      // Close the confirmation dialog
+      if (!response.ok) throw new Error("刪除失敗");
+      setHistory((prev) => prev.filter((record) => record.id !== id));
       setIsDeleteConfirmOpen(false);
       setRecordToDelete(null);
-      
     } catch (error) {
-      console.error('刪除失敗:', error);
-      setDeleteError(error instanceof Error ? error.message : '刪除失敗，請稍後再試');
+      setDeleteError(error instanceof Error ? error.message : "刪除失敗");
     }
   }, []);
 
-  // Confirm delete
-  const confirmDelete = (id: string) => {
-    setRecordToDelete(id);
-    setIsDeleteConfirmOpen(true);
-  };
-
-  // Cancel delete
-  const cancelDelete = () => {
-    setIsDeleteConfirmOpen(false);
-    setRecordToDelete(null);
-    setDeleteError(null);
-  };
-
-  const handleOpenModal = (reading: DivinationRecord) => {
-    console.log('Selected reading:', JSON.stringify(reading, null, 2));
-    console.log('Cards in reading:', reading.cards);
-    setSelectedReading(reading);
-    setIsModalOpen(true);
-  }
-
-  // Prevent body scroll when modal is open
   useEffect(() => {
-    if (isModalOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'auto';
-    }
-    
-    // Cleanup function to reset body overflow when component unmounts
+    if (isModalOpen) document.body.style.overflow = "hidden";
+    else document.body.style.overflow = "auto";
     return () => {
-      document.body.style.overflow = 'auto';
+      document.body.style.overflow = "auto";
     };
   }, [isModalOpen]);
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/')
-    }
-
-    if (status === 'authenticated') {
+    if (status === "unauthenticated") router.push("/");
+    if (status === "authenticated") {
       const fetchHistory = async () => {
         try {
-          const response = await fetch('/api/divinations')
-          if (!response.ok) {
-            throw new Error('Failed to fetch history')
-          }
-          const data = await response.json()
-          setHistory(data)
-          setFilteredHistory(data)
+          const response = await fetch("/api/divinations");
+          if (!response.ok) throw new Error("Failed to fetch");
+          const data = await response.json();
+          setHistory(data);
         } catch (error) {
-          console.error(error)
+          console.error(error);
         } finally {
-          setIsLoading(false)
+          setIsLoading(false);
         }
-      }
-
-      fetchHistory()
+      };
+      fetchHistory();
     }
-  }, [status, router, isModalOpen])
-
-  // Loading state is now handled within the main content
+  }, [status, router]);
 
   return (
-    <div className="relative ">
-      <div className="space-y-4">
-        {/* Header */}
-        <div className="border-b border-[#C99041]/30 pb-4">
-          <h1 className="text-2xl font-medium text-amber-100">我的占卜紀錄</h1>
-          <p className="text-amber-100/60 text-sm mt-1">回顧你的每一次探索與啟示</p>
+    <div className="relative space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      {/* Header Section */}
+      <div className="relative pb-6 border-b border-[#C99041] flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div>
+          <div className="flex items-center gap-3 mb-2">
+            <div className="p-2 bg-white/5 rounded-lg border border-white/10">
+              <Clock className="w-6 h-6 text-[#C99041]/60" />
+            </div>
+            <h1 className="text-2xl font-bold text-amber-100 font-serif tracking-tight">
+              占卜歷史
+            </h1>
+          </div>
+          <p className="text-amber-100/60 mt-2 font-serif uppercase tracking-widest text-xs">
+            回顧過去，洞見未來
+          </p>
         </div>
-        
-        {/* Filter and Sort Controls */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 py-2">
-          <div className="flex flex-wrap gap-2">
-            <button
-              onClick={() => setDateFilter('all')}
-              className={`px-3 py-1.5 text-sm rounded-full ${dateFilter === 'all' ? 'bg-amber-500/20 text-amber-100 border border-amber-500/50' : 'bg-amber-900/30 text-amber-100/70 hover:bg-amber-800/30'}`}
-            >
-              全部時間
-            </button>
-            <button
-              onClick={() => setDateFilter('today')}
-              className={`px-3 py-1.5 text-sm rounded-full ${dateFilter === 'today' ? 'bg-amber-500/20 text-amber-100 border border-amber-500/50' : 'bg-amber-900/30 text-amber-100/70 hover:bg-amber-800/30'}`}
-            >
-              今天
-            </button>
-            <button
-              onClick={() => setDateFilter('week')}
-              className={`px-3 py-1.5 text-sm rounded-full ${dateFilter === 'week' ? 'bg-amber-500/20 text-amber-100 border border-amber-500/50' : 'bg-amber-900/30 text-amber-100/70 hover:bg-amber-800/30'}`}
-            >
-              本週
-            </button>
-            <button
-              onClick={() => setDateFilter('month')}
-              className={`px-3 py-1.5 text-sm rounded-full ${dateFilter === 'month' ? 'bg-amber-500/20 text-amber-100 border border-amber-500/50' : 'bg-amber-900/30 text-amber-100/70 hover:bg-amber-800/30'}`}
-            >
-              本月
-            </button>
-            <button
-              onClick={() => setDateFilter('year')}
-              className={`px-3 py-1.5 text-sm rounded-full ${dateFilter === 'year' ? 'bg-amber-500/20 text-amber-100 border border-amber-500/50' : 'bg-amber-900/30 text-amber-100/70 hover:bg-amber-800/30'}`}
-            >
-              今年
-            </button>
+
+        {/* Filters and Sorting Controls */}
+        <div className="flex flex-col sm:items-end gap-3 min-w-0">
+          <div className="flex flex-wrap gap-1.5 p-1 bg-black/40 backdrop-blur-md rounded-xl border border-[#C99041]">
+            {(["all", "today", "week", "month"] as const).map((f) => (
+              <button
+                key={f}
+                onClick={() => setDateFilter(f)}
+                className={`px-4 py-1.5 text-xs rounded-full transition-all duration-300 font-medium ${
+                  dateFilter === f
+                    ? "bg-[#C99041]/20 text-amber-50"
+                    : "text-amber-100/40 hover:text-amber-100 hover:bg-white/5"
+                }`}
+              >
+                {f === "all"
+                  ? "全部"
+                  : f === "today"
+                    ? "今日"
+                    : f === "week"
+                      ? "本週"
+                      : "本月"}
+              </button>
+            ))}
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-sm text-amber-100/70">排序：</span>
             <button
-              onClick={() => setSortOrder('newest')}
-              className={`px-3 py-1.5 text-sm rounded-l-full ${sortOrder === 'newest' ? 'bg-amber-500/20 text-amber-100 border border-amber-500/50' : 'bg-amber-900/30 text-amber-100/70 hover:bg-amber-800/30 border border-amber-500/20'}`}
+              onClick={() =>
+                setSortOrder(sortOrder === "newest" ? "oldest" : "newest")
+              }
+              className="flex items-center gap-2 px-4 py-2 text-xs font-medium bg-amber-950/40 border border-[#C99041]/20 text-amber-100/60 hover:text-amber-100 hover:border-[#C99041]/50 rounded-full transition-all font-serif"
             >
-              最新
-            </button>
-            <button
-              onClick={() => setSortOrder('oldest')}
-              className={`px-3 py-1.5 text-sm rounded-r-full ${sortOrder === 'oldest' ? 'bg-amber-500/20 text-amber-100 border border-amber-500/50' : 'bg-amber-900/30 text-amber-100/70 hover:bg-amber-800/30 border border-amber-500/20 border-l-0'}`}
-            >
-              最舊
+              {sortOrder === "newest" ? (
+                <SortDesc className="w-3.5 h-3.5" />
+              ) : (
+                <SortAsc className="w-3.5 h-3.5" />
+              )}
+              {sortOrder === "newest" ? "最新優先" : "由舊到新"}
             </button>
           </div>
         </div>
       </div>
 
-      {/* Reading Details Modal */}
-      {isModalOpen && selectedReading && (
-        <ModalPortal>
-          <div 
-            className="fixed inset-0 z-[99] bg-black/70 backdrop-blur-sm overflow-y-auto flex items-start justify-center p-4"
-            onClick={() => setIsModalOpen(false)}
-          >
-            <div 
-              className="relative w-full max-w-4xl max-h-[90vh] my-8 flex flex-col bg-amber-900/95 border border-amber-700/50 rounded-xl shadow-2xl overflow-hidden"
-              onClick={e => e.stopPropagation()}
+      {/* Main Content Area */}
+      {isLoading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(6)].map((_, i) => (
+            <div
+              key={i}
+              className="h-64 rounded-2xl bg-amber-900/5 border border-amber-500/5 animate-pulse overflow-hidden relative"
             >
-              <div className="flex-shrink-0 p-6 pb-0">
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <h2 className="text-2xl font-bold text-amber-100 mb-1">{selectedReading.theme}</h2>
-                    <p className="text-amber-300/80 text-sm">{selectedReading.spreadType} • {new Date(selectedReading.createdAt).toLocaleString('zh-TW')}</p>
-                  </div>
-                  <button 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setIsModalOpen(false);
-                    }}
-                    className="text-amber-200 hover:text-white transition-colors p-1 -m-1"
-                    aria-label="關閉"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-              <div className="flex-1 overflow-y-auto p-6 pt-4">
-                <div className="space-y-6 pb-2">
-                  {selectedReading.cards.map((card, index) => {
-                    const cardData = tarotCards.find(t => 
-                      t.id === card.id || 
-                      t.name === card.name ||
-                      t.id.toLowerCase() === card.name?.toLowerCase().replace(/\s+/g, '_')
-                    ) || {} as any;
-                    // 確保 cardData 和 meanings 存在
-                    const meanings = cardData?.meanings || {};
-                    // 先嘗試獲取當前主題的解釋，如果沒有則使用第一個可用的主題，最後使用空物件
-                    const themeKey = Object.keys(meanings).find(key => key === selectedReading.theme) || 
-                                  Object.keys(meanings)[0];
-                    const meaning = themeKey ? meanings[themeKey] : {};
-                    
-                    return (
-                      <div key={index} className="bg-amber-900/50 rounded-lg p-4 border border-amber-800/50">
-                        <div className="flex flex-col md:flex-row gap-4 mb-3">
-                          <div className="w-full md:w-1/6">
-                            <div className={`relative aspect-[2.5/4.5] rounded-lg overflow-hidden border-2 ${card.isReversed ? 'border-red-500/50' : 'border-amber-500/50'}`}>
-                              <img 
-                                src={cardData?.image || '/images/card-back.jpg'} 
-                                alt={card.name}
-                                className={`w-full h-full object-cover ${card.isReversed ? 'transform rotate-180' : ''}`}
-                              />
-                              {card.isReversed && (
-                                <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-                                  <span className="bg-red-500/80 text-white text-xs px-2 py-1 rounded">逆位</span>
-                                </div>
-                              )}
-                            </div>
-                            <h3 className="mt-2 text-center font-medium text-amber-100">
-                              {card.name}
-                              {card.isReversed && <span className="text-red-400 ml-1">(逆位)</span>}
-                            </h3>
-                          </div>
-                          
-                          <div className="flex-1">
-                            <h4 className="font-medium text-amber-100 mb-2">牌義解讀</h4>
-                            <p className="text-amber-200/90 text-sm mb-3">
-                              {card.isReversed ? (meaning?.reversed?.summary || '暫無逆位解釋') : (meaning?.upright?.summary || '暫無解釋')}
-                            </p>
-                            
-                            <h4 className="font-medium text-amber-100 mb-2">詳細含義</h4>
-                            <ul className="space-y-1.5 text-xs text-amber-200/80">
-                              {(card.isReversed ? meaning?.reversed?.details : meaning?.upright?.details)?.map((detail: string, i: number) => (
-                                <li key={i} className="flex">
-                                  <span className="text-amber-400 mr-2">•</span>
-                                  <span>{detail}</span>
-                                </li>
-                              )) || <li className="text-amber-400/70">暫無詳細解釋</li>}
-                            </ul>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-500/5 to-transparent animate-[shimmer_2s_infinite]"></div>
             </div>
+          ))}
+        </div>
+      ) : totalItems === 0 ? (
+        <div className="flex flex-col items-center justify-center py-20 text-center space-y-6 bg-amber-900/5 border border-dashed border-amber-500/20 rounded-3xl">
+          <div className="p-5 bg-amber-500/5 rounded-full ring-1 ring-amber-500/10">
+            <Search className="w-10 h-10 text-amber-500/30" />
           </div>
-        </ModalPortal>
-      )}
-      
-      {/* Main content area */}
-      <div className="space-y-4">
-        {/* Loading state */}
-        {isLoading || status === 'loading' ? (
-          <div className="text-center">
-            <div className="space-y-0">
-              
-              {/* Additional loading cards with staggered animation */}
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {[...Array(6)].map((_, index) => (
-                  <div 
-                    key={index}
-                    className="h-48 bg-amber-900/5 border border-amber-800/10 rounded-lg overflow-hidden relative"
-                    style={{
-                      animation: `fadeIn 0.5s ease-out ${index * 0.1}s forwards`,
-                      opacity: 0,
-                    }}
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-500/5 to-transparent animate-[shimmer_2s_infinite]" style={{
-                      transform: 'translateX(-100%)',
-                      backgroundImage: 'linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(251,191,36,0.05) 20%, rgba(251,191,36,0.02) 60%, rgba(255,255,255,0) 100%)',
-                    }}></div>
-                  </div>
-                ))}
-              </div>
-              <div className="flex flex-col items-center pt-4">              
-                {/* Loading dots */}
-                <div className="flex space-x-2 pt-2">
-                  {[...Array(3)].map((_, i) => (
-                    <div 
-                      key={i}
-                      className="w-2 h-2 bg-amber-400/50 rounded-full"
-                      style={{
-                        animation: `bounce 1.5s infinite ${i * 0.2}s`,
-                      }}
-                    ></div>
-                  ))}
-                </div>
-              </div>
-            </div>
-            
-            {/* Add keyframes for animations */}
-            <style jsx global>{`
-              @keyframes shimmer {
-                100% {
-                  transform: translateX(100%);
-                }
-              }
-              @keyframes bounce {
-                0%, 100% { transform: translateY(0); }
-                50% { transform: translateY(-6px); }
-              }
-              @keyframes fadeIn {
-                to { opacity: 1; }
-              }
-              @keyframes pulse {
-                0%, 100% { opacity: 0.6; }
-                50% { opacity: 1; }
-              }
-            `}</style>
+          <div className="space-y-2">
+            <h3 className="text-xl font-bold text-amber-100/80 font-serif">
+              尚未發現星象紀錄
+            </h3>
+            <p className="text-amber-100/40 max-w-xs mx-auto text-sm leading-relaxed">
+              您的命運之書目前尚為空白。現在就開啟您的第一次靈魂對話吧。
+            </p>
           </div>
-        ) : totalItems === 0 ? (
-          <div className="text-center py-16 rounded-lg border-2 border-dashed border-[#C99041]/20 bg-amber-900/10">
-            <div className="max-w-md mx-auto">
-              <div className="text-amber-400/50 mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-medium text-amber-100 mb-2">尚未有占卜紀錄</h3>
-              <p className="text-amber-100/60 mb-6">開始你的第一次占卜，記錄下重要的時刻</p>
-              <Link 
-                href="/divination" 
-                className="inline-flex items-center px-6 py-2.5 bg-amber-500/30 border border-[#C99041]/60 text-amber-100 rounded-md 
-                        hover:bg-amber-500/40 hover:shadow-[0_0_10px_rgba(251,191,36,0.2)]
-                        focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:ring-offset-2 focus:ring-offset-amber-900/50
-                        transition-all duration-200"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                </svg>
-                開始占卜
-              </Link>
-            </div>
-          </div>
-        ) : (
-        <div className="space-y-6">
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <Link href="/divination">
+            <Button className="bg-amber-500/20 hover:bg-amber-500/30 text-amber-100 border border-[#C99041]/50 rounded-full px-8 h-12 shadow-lg transition-all group">
+              <Sparkles className="w-4 h-4 mr-2 group-hover:animate-pulse" />
+              立即開始占卜
+            </Button>
+          </Link>
+        </div>
+      ) : (
+        <div className="space-y-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {paginatedItems.map((record) => (
-              <div 
-                key={record.id} 
-                className="group relative bg-amber-900/10 border border-[#C99041]/20 rounded-lg p-5 hover:border-[#C99041]/40 
-                        hover:bg-amber-900/20 transition-all duration-300 hover:shadow-[0_0_20px_rgba(251,191,36,0.1)]
-                        cursor-pointer"
+              <div
+                key={record.id}
+                className="group relative bg-[#1a1414] border border-[#C99041] rounded-2xl p-6 hover:bg-[#251c1c] hover:border-[#F5AD4F] hover:shadow-[0_0_30px_rgba(201,144,65,0.15)] transition-all duration-300 cursor-pointer flex flex-col justify-between overflow-hidden shadow-lg"
                 onClick={() => {
                   setSelectedReading(record);
                   setIsModalOpen(true);
                 }}
               >
-                {/* Delete button */}
-                <button 
-                  className="absolute top-3 right-3 p-1.5 text-amber-100/40 hover:text-red-400 transition-colors z-10"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    confirmDelete(record.id);
-                  }}
-                  aria-label="刪除此筆記錄"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
-                </button>
-                <div className="flex justify-between items-start mb-3">
-                  <div>
-                    <h3 className="font-medium text-amber-100 capitalize">{record.theme}</h3>
-                    <p className="text-xs text-amber-400/60">{record.spreadType}</p>
+                <div>
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="space-y-1 min-w-0">
+                      <h3 className="text-base font-bold text-amber-50 group-hover:text-amber-300 transition-colors tracking-tight font-serif">
+                        {getThemeLabel(record.theme)}
+                      </h3>
+                      <div className="flex items-center gap-1.5 text-[10px] text-[#C99041] font-bold uppercase tracking-[0.15em]">
+                        <Calendar className="w-3 h-3" />
+                        {new Date(record.createdAt).toLocaleDateString("zh-TW")}
+                      </div>
+                    </div>
+                    <button
+                      className="p-2 text-red-500/40 hover:text-red-400 hover:bg-red-400/10 rounded-full transition-all z-10"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setRecordToDelete(record.id);
+                        setIsDeleteConfirmOpen(true);
+                      }}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </div>
 
-                </div>
-                
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {record.cards.map((card, index) => (
-                    <span 
-                      key={index} 
-                      className={`px-2.5 py-1 text-xs font-medium rounded-full ${
-                        card.isReversed 
-                          ? 'bg-red-500/10 text-red-300 border border-red-500/20' 
-                          : 'bg-amber-500/10 text-amber-300 border border-amber-500/20'
-                      }`}
-                    >
-                      {card.name}{card.isReversed && <span className="opacity-80"> (逆)</span>}
-                    </span>
-                  ))}
-                </div>
-                
-                <div className="text-xs text-amber-100/60 mt-3 pt-3 border-t border-[#C99041]/10">
-                  <div className="flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    {new Date(record.createdAt).toLocaleDateString('zh-TW', { 
-                      year: 'numeric', 
-                      month: '2-digit', 
-                      day: '2-digit',
-                    }).replace(/\//g, '.')}
-                    <span className="mx-1.5">•</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    {new Date(record.createdAt).toLocaleTimeString('zh-TW', { 
-                      hour: '2-digit', 
-                      minute: '2-digit',
-                      hour12: false
-                    })}
+                  <div className="flex flex-wrap gap-2 mb-6">
+                    {record.cards.slice(0, 3).map((card, idx) => (
+                      <div
+                        key={idx}
+                        className={`px-3 py-1 rounded-full text-[10px] border font-bold ${card.isReversed ? "bg-red-500/10 border-red-500/40 text-red-400" : "bg-amber-500/10 border-[#C99041]/40 text-amber-200"}`}
+                      >
+                        {card.name}
+                        {card.isReversed && "(逆)"}
+                      </div>
+                    ))}
+                    {record.cards.length > 3 && (
+                      <span className="text-[10px] text-amber-100/30 flex items-center">
+                        +{record.cards.length - 3}
+                      </span>
+                    )}
                   </div>
                 </div>
-                
-                <div className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none border border-[#C99041]/30"></div>
+
+                <div className="pt-4 border-t border-amber-500/5 flex items-center justify-between">
+                  <span className="text-[10px] text-[#C99041] font-serif font-medium tracking-wider uppercase">
+                    {getSpreadLabel(record.spreadType)}
+                  </span>
+                  <div className="p-1 px-4 flex items-center gap-1.5 text-[10px] text-amber-200 bg-amber-500/20 rounded-full border border-[#C99041]/50 font-bold group-hover:bg-[#C99041] group-hover:text-amber-950 transition-all">
+                    詳細啟示
+                    <ChevronRight className="w-3 h-3" />
+                  </div>
+                </div>
               </div>
             ))}
           </div>
-          
-          {/* Pagination */}
+
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
@@ -538,44 +333,191 @@ export default function HistoryPage() {
             itemsPerPage={itemsPerPage}
             onPageChange={handlePageChange}
           />
-          </div>
-        )}
-      </div>
-      
-      {/* Delete Confirmation Modal */}
-      {isDeleteConfirmOpen && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-          <div className="bg-amber-800/95 backdrop-blur-sm rounded-lg p-6 max-w-md w-full border border-amber-700/50">
-            <h3 className="text-xl font-medium text-amber-100 mb-4">確認刪除</h3>
-            <p className="text-amber-100/80 mb-6">確定要刪除此筆占卜記錄嗎？此操作無法復原。</p>
-            <div className="space-y-4">
-              {deleteError && (
-                <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-sm p-3 rounded-md flex items-start">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <span>{deleteError}</span>
+        </div>
+      )}
+
+      {/* Reading Details Modal */}
+      {isModalOpen && selectedReading && (
+        <ModalPortal>
+          <div
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 lg:p-8 animate-in fade-in duration-300"
+            onClick={() => setIsModalOpen(false)}
+          >
+            <div className="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
+            <div
+              className="relative w-full max-w-5xl h-[90vh] bg-amber-950/95 border border-[#C99041]/20 rounded-[2rem] shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col animate-in zoom-in-95 duration-500"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Modal Header */}
+              <div className="p-6 md:p-8 border-b border-[#C99041]/10 flex items-start justify-between bg-gradient-to-b from-amber-900/20 to-transparent">
+                <div className="space-y-2">
+                  <h2 className="text-2xl font-bold text-amber-100 font-serif tracking-tight">
+                    {getThemeLabel(selectedReading.theme)}
+                  </h2>
+                  <div className="flex flex-wrap gap-4 text-xs text-amber-500/60 font-medium tracking-widest uppercase">
+                    <span className="flex items-center gap-1.5 bg-amber-500/10 px-2 py-1 rounded-md">
+                      {getSpreadLabel(selectedReading.spreadType)}
+                    </span>
+                    <span className="flex items-center gap-1.5 px-2 py-1 text-amber-100/40">
+                      {new Date(selectedReading.createdAt).toLocaleString(
+                        "zh-TW",
+                      )}
+                    </span>
+                  </div>
                 </div>
-              )}
-              <div className="flex justify-end space-x-3">
                 <button
-                  onClick={cancelDelete}
-                  className="px-4 py-2 text-sm rounded-md bg-amber-900/50 text-amber-100 hover:bg-amber-800/60 transition-colors"
+                  onClick={() => setIsModalOpen(false)}
+                  className="p-2 hover:bg-white/10 rounded-full transition-colors text-amber-100/40 hover:text-amber-100"
                 >
-                  取消
-                </button>
-                <button
-                  onClick={() => recordToDelete && handleDelete(recordToDelete)}
-                  className="px-4 py-2 text-sm rounded-md bg-red-600/90 text-white hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  disabled={!!deleteError}
-                >
-                  確認刪除
+                  <X className="w-6 h-6" />
                 </button>
               </div>
+
+              {/* Modal Content - Scrollable */}
+              <div className="flex-1 overflow-y-auto p-6 md:p-10 space-y-12 pb-24 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                <div className="grid grid-cols-1 gap-8">
+                  {selectedReading.cards.map((card, index) => {
+                    const cardData =
+                      tarotCards.find(
+                        (t) => t.id === card.id || t.name === card.name,
+                      ) || ({} as any);
+                    const meanings = cardData?.meanings || {};
+                    const themeKey =
+                      Object.keys(meanings).find(
+                        (key) => key === selectedReading.theme,
+                      ) || Object.keys(meanings)[0];
+                    const meaning = themeKey ? meanings[themeKey] : {};
+                    const isCardReversed = card.isReversed;
+
+                    return (
+                      <div
+                        key={index}
+                        className="flex flex-col md:flex-row gap-8 md:gap-12 animate-in slide-in-from-bottom-8 duration-700 delay-100 group"
+                      >
+                        {/* Card Side */}
+                        <div className="w-full md:w-56 shrink-0 flex flex-col items-center gap-4">
+                          <div
+                            className={`relative aspect-[2/3.5] w-full max-w-[200px] rounded-2xl overflow-hidden shadow-2xl transition-transform duration-700 group-hover:scale-105 border-2 ${isCardReversed ? "border-red-500/40" : "border-amber-500/40"}`}
+                          >
+                            <img
+                              src={cardData?.image || "/images/card-back.jpg"}
+                              alt={card.name}
+                              className={`w-full h-full object-cover ${isCardReversed ? "rotate-180" : ""}`}
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                          </div>
+                          <div className="text-center space-y-1">
+                            <h3 className="text-xl font-bold text-amber-100 font-serif">
+                              {card.name}
+                            </h3>
+                            <p
+                              className={`text-xs font-bold uppercase tracking-tighter ${isCardReversed ? "text-red-400" : "text-amber-500"}`}
+                            >
+                              {isCardReversed ? "✦ 逆位 ✦" : "✦ 正位 ✦"}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Text Side */}
+                        <div className="flex-1 space-y-8">
+                          <div className="space-y-4">
+                            <h4 className="flex items-center gap-2 text-amber-400/40 text-xs font-bold uppercase tracking-[0.2em] font-serif">
+                              <div className="w-6 h-px bg-amber-500/20"></div>
+                              星象解讀
+                            </h4>
+                            <p className="text-amber- account-100/90 text-lg leading-relaxed font-serif">
+                              {isCardReversed
+                                ? meaning?.reversed?.summary || "暫無逆位解釋"
+                                : meaning?.upright?.summary || "暫無解釋"}
+                            </p>
+                          </div>
+
+                          <div className="space-y-4">
+                            <h4 className="flex items-center gap-2 text-amber-400/40 text-xs font-bold uppercase tracking-[0.2em] font-serif">
+                              <div className="w-6 h-px bg-amber-500/20"></div>
+                              核心啟示
+                            </h4>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                              {(isCardReversed
+                                ? meaning?.reversed?.details
+                                : meaning?.upright?.details
+                              )?.map((detail: string, i: number) => (
+                                <div
+                                  key={i}
+                                  className="flex gap-3 bg-white/5 p-4 rounded-xl border border-white/5 hover:border-amber-500/20 transition-all"
+                                >
+                                  <Sparkles className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+                                  <span className="text-sm text-amber-100/70 leading-relaxed font-serif">
+                                    {detail}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Modal Blur Gradient Footer */}
+              <div className="absolute bottom-0 inset-x-0 h-24 bg-gradient-to-t from-amber-950 to-transparent pointer-events-none"></div>
             </div>
+          </div>
+        </ModalPortal>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {isDeleteConfirmOpen && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-[110] p-4 animate-in fade-in duration-300">
+          <div className="bg-amber-950 border border-red-500/20 rounded-3xl p-8 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-300">
+            <div className="flex flex-col items-center text-center space-y-4">
+              <div className="p-3 bg-red-500/10 rounded-full">
+                <AlertCircle className="w-8 h-8 text-red-500" />
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-xl font-bold text-amber-100 font-serif">
+                  確定要抹除記錄嗎？
+                </h3>
+                <p className="text-sm text-amber-100/40 font-serif">
+                  這筆星象紀錄將永遠從您的命運之書中消失，此動作無法復原。
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-8 flex flex-col space-y-3">
+              <Button
+                onClick={() => recordToDelete && handleDelete(recordToDelete)}
+                className="w-full bg-red-600/20 hover:bg-red-600/40 text-red-400 border border-red-500/30 rounded-xl h-12 font-medium transition-all"
+              >
+                確認抹除
+              </Button>
+              <Button
+                onClick={() => setIsDeleteConfirmOpen(false)}
+                variant="ghost"
+                className="w-full text-amber-100/40 hover:text-amber-100 hover:bg-white/5 rounded-xl h-12"
+              >
+                保留記錄
+              </Button>
+            </div>
+
+            {deleteError && (
+              <p className="mt-4 text-red-500 text-xs text-center">
+                {deleteError}
+              </p>
+            )}
           </div>
         </div>
       )}
+
+      <style jsx global>{`
+        @keyframes shimmer {
+          100% {
+            transform: translateX(100%);
+          }
+        }
+      `}</style>
     </div>
-  )
+  );
 }

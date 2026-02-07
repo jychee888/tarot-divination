@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
 interface Star {
   id: string;
@@ -10,7 +10,7 @@ interface Star {
   delay: number;
   duration: number;
   depth: number;
-  type: 'filled' | 'outlined';
+  type: "filled" | "outlined";
   rotation: number;
 }
 
@@ -26,49 +26,58 @@ const BackgroundStars = () => {
     const checkIfMobile = () => {
       setIsMobile(window.innerWidth <= 768);
     };
-    
+
     // Initial check
     checkIfMobile();
-    
+
     // Add event listener for window resize
-    window.addEventListener('resize', checkIfMobile);
-    return () => window.removeEventListener('resize', checkIfMobile);
+    window.addEventListener("resize", checkIfMobile);
+    return () => window.removeEventListener("resize", checkIfMobile);
   }, []);
 
   const stars = React.useMemo(() => {
-    if (typeof window === 'undefined') return []; // 檢查是否在瀏覽器環境
-    
-    const starCount = isMobile ? 70 : 100;
-    const baseSize = isMobile ? 3 : 6;
-    const sizeRange = isMobile ? 9 : 18;
+    if (typeof window === "undefined") return []; // 檢查是否在瀏覽器環境
+
+    const starCount = isMobile ? 40 : 60;
+    const baseSize = isMobile ? 2 : 4;
+    const sizeRange = isMobile ? 6 : 12;
     const stars: Star[] = [];
-    
+
     // 獲取視窗尺寸
-    const viewportWidth = Math.max(document.documentElement.clientWidth, window.innerWidth);
-    const viewportHeight = Math.max(document.documentElement.clientHeight, window.innerHeight);
+    const viewportWidth = Math.max(
+      document.documentElement.clientWidth,
+      window.innerWidth,
+    );
+    const viewportHeight = Math.max(
+      document.documentElement.clientHeight,
+      window.innerHeight,
+    );
     const aspectRatio = viewportWidth / viewportHeight;
-    
+
     // 根據視窗比例計算網格
     const gridCols = Math.ceil(Math.sqrt(starCount * aspectRatio));
     const gridRows = Math.ceil(starCount / gridCols);
     const cellWidth = 100 / gridCols;
     const cellHeight = 100 / gridRows;
-    
+
     // 生成星星
     for (let i = 0; i < gridCols; i++) {
       for (let j = 0; j < gridRows; j++) {
         if (stars.length >= starCount) break;
-        
+
         stars.push({
           id: `star-${i}-${j}`,
-          x: (i * cellWidth) + (Math.random() * cellWidth * 0.8 + cellWidth * 0.1),
-          y: (j * cellHeight) + (Math.random() * cellHeight * 0.8 + cellHeight * 0.1),
+          x:
+            i * cellWidth + (Math.random() * cellWidth * 0.8 + cellWidth * 0.1),
+          y:
+            j * cellHeight +
+            (Math.random() * cellHeight * 0.8 + cellHeight * 0.1),
           size: baseSize + Math.random() * sizeRange,
           delay: Math.random() * 5,
           duration: 2 + Math.random() * 4,
           depth: Math.random(),
-          type: Math.random() > 0.5 ? 'filled' : 'outlined',
-          rotation: Math.floor(Math.random() * 360)
+          type: Math.random() > 0.5 ? "filled" : "outlined",
+          rotation: Math.floor(Math.random() * 360),
         });
       }
     }
@@ -90,7 +99,7 @@ const BackgroundStars = () => {
   };
 
   return (
-    <div 
+    <div
       ref={containerRef}
       className="fixed inset-0 w-full h-full z-10"
       onMouseMove={handleMouseMove}
@@ -98,8 +107,15 @@ const BackgroundStars = () => {
     >
       <style jsx global>{`
         @keyframes twinkle {
-          0%, 100% { opacity: 0.3; transform: scale(0.9); }
-          50% { opacity: 0.8; transform: scale(1.1); }
+          0%,
+          100% {
+            opacity: 0.3;
+            transform: scale(0.9);
+          }
+          50% {
+            opacity: 0.8;
+            transform: scale(1.1);
+          }
         }
         .star-svg {
           position: absolute;
@@ -128,7 +144,7 @@ const BackgroundStars = () => {
               top: `calc(${star.y}% - ${halfSize}px)`,
               width: `${size}px`,
               height: `${size}px`,
-              opacity: 0.3 + (star.depth * 0.7),
+              opacity: 0.1 + star.depth * 0.2,
               animation: `twinkle ${star.duration}s ease-in-out infinite`,
               animationDelay: `${star.delay}s`,
             }}
@@ -138,9 +154,9 @@ const BackgroundStars = () => {
             <path
               transform={`rotate(${star.rotation} 5 5)`}
               d="M5,0.5 L6.5,3.5 L10,4 L7.5,6.5 L8,10 L5,8.5 L2,10 L2.5,6.5 L0,4 L3.5,3.5 Z"
-              fill={star.type === 'filled' ? '#F5AD4F' : 'none'}
+              fill={star.type === "filled" ? "#F5AD4F" : "none"}
               stroke="#F5AD4F"
-              strokeWidth={star.type === 'outlined' ? '1' : '0.1'}
+              strokeWidth={star.type === "outlined" ? "1" : "0.1"}
               strokeLinejoin="round"
               strokeLinecap="round"
             />

@@ -14,6 +14,20 @@ export async function POST(req: NextRequest) {
     const { nickname, bio } = await req.json()
     const userId = session.user.id
 
+    // Check if nickname is already taken by another user
+    if (nickname) {
+      const existingUser = await prisma.user.findFirst({
+        where: {
+          nickname: nickname,
+          NOT: { id: userId },
+        },
+      })
+
+      if (existingUser) {
+        return NextResponse.json({ error: "Nickname already taken" }, { status: 400 })
+      }
+    }
+
     const updatedUser = await prisma.user.update({
       where: { id: userId },
       data: {
