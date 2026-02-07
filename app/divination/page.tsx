@@ -26,6 +26,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import CardBack from "@/components/CardBack";
 import CardFront from "@/components/CardFront";
 import { Badge } from "@/components/ui/badge";
@@ -40,6 +48,7 @@ import {
   Eye,
   ChevronDown,
   ChevronUp,
+  Lock,
 } from "lucide-react";
 
 // Custom Hooks
@@ -144,6 +153,7 @@ export default function TarotDivination() {
   const [birthMinute, setBirthMinute] = useState<string>("");
   const [gender, setGender] = useState<string>("");
   const [showSoulSignature, setShowSoulSignature] = useState(false);
+  const [showLoginDialog, setShowLoginDialog] = useState(false);
 
   // Derived variables for API and records
   const birthday =
@@ -878,12 +888,7 @@ export default function TarotDivination() {
                                 if (session) {
                                   setShowSoulSignature(true);
                                 } else {
-                                  toast({
-                                    title: "請先登入",
-                                    description:
-                                      "AI 深度解讀需要連結您的靈魂印記，請先登入。",
-                                  });
-                                  signIn("google");
+                                  setShowLoginDialog(true);
                                 }
                               }}
                               className="w-full bg-amber-500/5 hover:bg-amber-500/10 text-amber-200 border border-[#C99041]/40 rounded-[2.5rem] py-16 h-auto flex flex-col items-center group transition-all duration-700 hover:border-amber-400 hover:text-amber-100 shadow-inner relative overflow-hidden"
@@ -1000,6 +1005,39 @@ export default function TarotDivination() {
           </main>
         )}
       </div>
+      <Dialog open={showLoginDialog} onOpenChange={setShowLoginDialog}>
+        <DialogContent className="bg-[#171111] border border-[#C99041] text-amber-50 rounded-2xl sm:max-w-md">
+          <DialogHeader className="space-y-4">
+            <div className="mx-auto w-16 h-16 bg-amber-500/10 rounded-full flex items-center justify-center border border-amber-500/20 mb-2">
+              <Lock className="w-8 h-8 text-amber-400" />
+            </div>
+            <DialogTitle className="text-center text-2xl font-serif tracking-wider text-amber-100">
+              開啟靈魂之門
+            </DialogTitle>
+            <DialogDescription className="text-center text-amber-200/80 leading-relaxed font-serif text-base">
+              AI 深度解讀需要連結您的靈魂印記
+              <br />
+              請登入以開啟這段專屬於您的靈性對話
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-3 py-6">
+            <Button
+              onClick={() => signIn("google")}
+              className="w-full bg-amber-600 hover:bg-amber-500 text-white font-serif tracking-widest py-6 rounded-xl text-lg shadow-[0_0_15px_rgba(217,119,6,0.3)] transition-all transform hover:scale-[1.02]"
+            >
+              <Users className="w-5 h-5 mr-3" />
+              使用 Google 帳號登入
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => setShowLoginDialog(false)}
+              className="mt-2 text-amber-500/60 hover:text-amber-400 hover:bg-transparent tracking-widest font-serif"
+            >
+              暫時不要
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
