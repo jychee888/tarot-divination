@@ -51,6 +51,8 @@ import {
   Lock,
 } from "lucide-react";
 
+import { CrystalBall } from "@/components/CrystalBall";
+
 // Custom Hooks
 import { useToast } from "@/hooks/use-toast";
 

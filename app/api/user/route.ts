@@ -3,6 +3,41 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 import { prisma } from "@/lib/prisma"
 import { NextRequest, NextResponse } from "next/server"
 
+export async function GET(req: NextRequest) {
+  const session = await getServerSession(authOptions)
+
+  if (!session || !session.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  }
+
+  try {
+    const userId = session.user.id
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        nickname: true,
+        bio: true,
+        birthday: true,
+        birthTime: true,
+        gender: true,
+      } as any,
+    })
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 })
+    }
+
+    return NextResponse.json(user)
+  } catch (error) {
+    console.error("Request error", error)
+    return NextResponse.json({ error: "Error fetching user" }, { status: 500 })
+  }
+}
+
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions)
 

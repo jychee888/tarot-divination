@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, Fragment } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -72,12 +72,14 @@ export default function HistoryPage() {
     relationship: "人際",
     health: "健康",
     "self-exploration": "自我探索",
+    每日靈感: "每日靈感",
   };
 
   const spreadMap: Record<string, string> = {
     single: "單張牌",
     three: "三張牌",
     "celtic-cross": "十字牌",
+    "daily-draw": "每日靈感",
   };
 
   const getThemeLabel = (theme: string) => themeMap[theme] || theme;
@@ -397,18 +399,15 @@ export default function HistoryPage() {
                     const isCardReversed = card.isReversed;
 
                     return (
-                      <>
-                        <div
-                          key={index}
-                          className="flex flex-col md:flex-row gap-8 md:gap-12 animate-in slide-in-from-bottom-8 duration-700 delay-100 group"
-                        >
+                      <Fragment key={index}>
+                        <div className="flex flex-col md:flex-row gap-8 md:gap-12 animate-in slide-in-from-bottom-8 duration-700 delay-100 group">
                           {/* Card Side */}
                           <div className="w-full md:w-56 shrink-0 flex flex-col items-center gap-4">
                             <div
                               className={`relative aspect-[2/3.5] w-full max-w-[200px] rounded-2xl overflow-hidden shadow-2xl transition-transform duration-700 group-hover:scale-105 border-2 ${isCardReversed ? "border-red-500/40" : "border-amber-500/40"}`}
                             >
                               <img
-                                src={cardData?.image || "/images/card-back.jpg"}
+                                src={cardData?.image || "/images/card-back.svg"}
                                 alt={card.name}
                                 className={`w-full h-full object-cover ${isCardReversed ? "rotate-180" : ""}`}
                               />
@@ -467,7 +466,7 @@ export default function HistoryPage() {
                         {index < selectedReading.cards.length - 1 && (
                           <div className="pt-10 border-b border-amber-900/20 w-full" />
                         )}
-                      </>
+                      </Fragment>
                     );
                   })}
                 </div>
