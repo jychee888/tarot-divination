@@ -29,13 +29,14 @@ export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSettings();
 
   const title =
-    settings.site_title || "心靈之眼 | 塔羅牌占卜 - Soul's Eye Tarot";
+    settings.site_title ||
+    "心靈之眼 Soul's Eye | AI 塔羅占卜 - 洞悉命運的靈魂之窗";
   const description =
     settings.site_description ||
-    "開啟你的內在智慧，讓塔羅牌指引你找到生命的答案。";
+    "結合先端 AI 靈性導師與古老塔羅牌義，為您的愛情、事業與生活提供最深度的啟示。";
   const keywords = settings.site_keywords
     ? settings.site_keywords.split(",").map((k: string) => k.trim())
-    : ["塔羅牌", "占卜", "心靈之眼"];
+    : ["塔羅牌", "占卜", "心靈之眼", "Soul's Eye", "AI 塔羅"];
 
   return {
     title: {
@@ -44,15 +45,19 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     description,
     keywords,
+    metadataBase: new URL("https://your-domain.com"), // 建議在後台設定
+    alternates: {
+      canonical: "/",
+    },
     generator: "Next.js",
-    applicationName: title,
+    applicationName: "心靈之眼 Soul's Eye",
     referrer: "origin-when-cross-origin",
     openGraph: {
       title,
       description,
       type: "website",
       locale: "zh_TW",
-      siteName: title,
+      siteName: "心靈之眼 Soul's Eye",
     },
     twitter: {
       card: "summary_large_image",
