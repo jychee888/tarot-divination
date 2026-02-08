@@ -8,6 +8,8 @@ import { authOptions } from "@/lib/auth"
 export async function getSystemSettings() {
   try {
     const settings = await (prisma as any).systemSettings.findMany()
+    console.log(`[Settings] Fetched ${settings.length} settings from database`);
+    
     // Convert array to searchable object
     const settingsMap = settings.reduce((acc: any, curr: any) => {
       acc[curr.key] = curr.value
@@ -15,8 +17,8 @@ export async function getSystemSettings() {
     }, {})
     
     return { success: true, data: settingsMap }
-  } catch (error) {
-    console.error("Error fetching settings:", error)
+  } catch (error: any) {
+    console.error("[Settings] Error fetching settings:", error.message)
     return { success: false, error: "Failed to fetch settings" }
   }
 }
@@ -26,8 +28,11 @@ export async function updateSystemSettings(settings: Record<string, string>) {
   const isSuperAdmin = session?.user?.email === "jychee888@gmail.com"
   const isAdmin = session?.user?.role === "admin" || isSuperAdmin
 
+  console.log(`[Settings] Update attempt by: ${session?.user?.email}, Role: ${session?.user?.role}, isAdmin: ${isAdmin}`);
+
   if (!isAdmin) {
-    throw new Error("Unauthorized")
+    console.warn(`[Settings] Unauthorized update attempt by ${session?.user?.email}`);
+    return { success: false, error: "權限不足：僅限管理員修改設定" };
   }
 
   try {
@@ -40,10 +45,12 @@ export async function updateSystemSettings(settings: Record<string, string>) {
     })
 
     await Promise.all(upserts)
-    revalidatePath('/') // Revalidate everything to apply SEO/GA changes
+    console.log(`[Settings] Successfully updated ${Object.keys(settings).length} settings`);
+    
+    revalidatePath('/')
     return { success: true }
-  } catch (error) {
-    console.error("Error updating settings:", error)
-    return { success: false, error: "Failed to update settings" }
+  } catch (error: any) {
+    console.error("[Settings] Critical update error:", error)
+    return { success: false, error: `資料庫儲存失敗: ${error.message || "未知錯誤"}` }
   }
 }

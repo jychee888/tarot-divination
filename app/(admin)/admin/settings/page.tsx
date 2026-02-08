@@ -30,11 +30,22 @@ export default function AdminSettingsPage() {
 
   useEffect(() => {
     async function fetchSettings() {
-      const result = await getSystemSettings();
-      if (result.success && result.data) {
-        setSettings((prev) => ({ ...prev, ...result.data }));
+      try {
+        console.log("[Settings] Fetching from server...");
+        const result = await getSystemSettings();
+        if (result.success && result.data) {
+          console.log("[Settings] Data received:", result.data);
+          setSettings((prev) => ({ ...prev, ...result.data }));
+        } else if (!result.success) {
+          console.error("[Settings] Fetch error:", result.error);
+          toast.error("讀取設定失敗：" + result.error);
+        }
+      } catch (e: any) {
+        console.error("[Settings] Connection error:", e);
+        toast.error("連線伺服器失敗，請確認網路與權限");
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     }
     fetchSettings();
   }, []);
