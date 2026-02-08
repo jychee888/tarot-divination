@@ -21,7 +21,7 @@ export const authOptions: NextAuthOptions = {
       return true;
     },
     async jwt({ token, user, account, profile }) {
-      const adminEmails = ["jychee888@gmail.com"];
+      const adminEmails = [process.env.SUPER_ADMIN_EMAIL];
       
       // First time login
       if (user) {
@@ -57,7 +57,7 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     async session({ session, token }) {
-      const adminEmails = ["jychee888@gmail.com"];
+      const adminEmails = [process.env.SUPER_ADMIN_EMAIL];
       if (session.user && token) {
         // @ts-ignore
         session.user.id = token.id;

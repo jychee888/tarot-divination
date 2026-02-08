@@ -116,8 +116,9 @@ export async function updateUserRole(targetUserId: string, newRole: string) {
   const session = await getServerSession(authOptions)
 
   // Verify authorization
-  const isSuperAdmin = session?.user?.email === "jychee888@gmail.com"
-  const isAdmin = session?.user?.role === "admin" || isSuperAdmin
+  const superAdminEmail = process.env.SUPER_ADMIN_EMAIL;
+  const isSuperAdmin = session?.user?.email === superAdminEmail;
+  const isAdmin = session?.user?.role === "admin" || isSuperAdmin;
 
   if (!session || !isAdmin) {
     throw new Error("Unauthorized: Admin access required")
@@ -135,7 +136,7 @@ export async function updateUserRole(targetUserId: string, newRole: string) {
     }
 
     // Protection: Cannot change the role of the super admin
-    if (targetUser.email === "jychee888@gmail.com") {
+    if (targetUser.email === superAdminEmail) {
       return { success: false, error: "Cannot change the role of the super admin" }
     }
 
@@ -161,8 +162,9 @@ export async function updateUserStatus(targetUserId: string, newStatus: string) 
   const session = await getServerSession(authOptions)
 
   // Verify authorization
-  const isSuperAdmin = session?.user?.email === "jychee888@gmail.com"
-  const isAdmin = session?.user?.role === "admin" || isSuperAdmin
+  const superAdminEmail = process.env.SUPER_ADMIN_EMAIL;
+  const isSuperAdmin = session?.user?.email === superAdminEmail;
+  const isAdmin = session?.user?.role === "admin" || isSuperAdmin;
 
   if (!session || !isAdmin) {
     throw new Error("Unauthorized: Admin access required")
@@ -180,7 +182,7 @@ export async function updateUserStatus(targetUserId: string, newStatus: string) 
     }
 
     // Protection: Cannot block the super admin
-    if (targetUser.email === "jychee888@gmail.com" && newStatus === "blocked") {
+    if (targetUser.email === superAdminEmail && newStatus === "blocked") {
       return { success: false, error: "Cannot block the super admin" }
     }
 

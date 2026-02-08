@@ -41,8 +41,9 @@ export async function getSystemSettings() {
 
 export async function updateSystemSettings(settings: Record<string, string>) {
   const session = await getServerSession(authOptions)
-  const isSuperAdmin = session?.user?.email === "jychee888@gmail.com"
-  const isAdmin = session?.user?.role === "admin" || isSuperAdmin
+  const superAdminEmail = process.env.SUPER_ADMIN_EMAIL;
+  const isSuperAdmin = session?.user?.email === superAdminEmail;
+  const isAdmin = session?.user?.role === "admin" || isSuperAdmin;
 
   console.log(`[Settings] Update attempt by: ${session?.user?.email}, Role: ${session?.user?.role}, isAdmin: ${isAdmin}`);
 

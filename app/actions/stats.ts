@@ -7,8 +7,9 @@ import { startOfDay, subDays } from "date-fns"
 
 export async function getAdminStats() {
   const session = await getServerSession(authOptions)
-  const isSuperAdmin = session?.user?.email === "jychee888@gmail.com"
-  const isAdmin = session?.user?.role === "admin" || isSuperAdmin
+  const superAdminEmail = process.env.SUPER_ADMIN_EMAIL;
+  const isSuperAdmin = session?.user?.email === superAdminEmail;
+  const isAdmin = session?.user?.role === "admin" || isSuperAdmin;
 
   if (!isAdmin) {
     throw new Error("Unauthorized")
@@ -33,7 +34,7 @@ export async function getAdminStats() {
         lastActiveAt: {
           gte: subDays(new Date(), 1)
         }
-      }
+      } as any
     })
 
     // 2. 占卜主題分佈 (真實數據)

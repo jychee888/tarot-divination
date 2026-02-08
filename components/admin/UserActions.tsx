@@ -18,12 +18,14 @@ interface UserActionsProps {
   userId: string;
   userEmail: string;
   userStatus: string;
+  isSuperAdmin?: boolean; // New prop to avoid hardcoding
 }
 
 export function UserActions({
   userId,
   userEmail,
   userStatus,
+  isSuperAdmin = false,
 }: UserActionsProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
@@ -31,7 +33,6 @@ export function UserActions({
   const menuRef = useRef<HTMLDivElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
 
-  const isSuperAdmin = userEmail === "jychee888@gmail.com";
   const isBlocked = userStatus === "blocked";
 
   // 點擊外部關閉選單

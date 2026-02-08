@@ -100,8 +100,9 @@ export default async function AdminUsersPage({
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-800">
-            {users.map((user) => {
-              const isSuperAdmin = user.email === "jychee888@gmail.com";
+            {users.map((user: any) => {
+              const superAdminEmail = process.env.SUPER_ADMIN_EMAIL;
+              const isSuperAdmin = user.email === superAdminEmail;
               const isAdmin = user.role === "admin" || isSuperAdmin;
               return (
                 <tr
@@ -185,8 +186,9 @@ export default async function AdminUsersPage({
                     <div className="opacity-0 group-hover:opacity-100 transition-opacity">
                       <UserActions
                         userId={user.id}
-                        userEmail={user.email}
+                        userEmail={user.email || ""}
                         userStatus={user.status || "active"}
+                        isSuperAdmin={isSuperAdmin}
                       />
                     </div>
                   </td>
