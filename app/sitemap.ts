@@ -1,4 +1,5 @@
 import { MetadataRoute } from 'next'
+import { prisma } from '@/lib/prisma'
 
 /**
  * 這是 Next.js 提供的動態 Sitemap 生成功能。
@@ -14,6 +15,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '/daily',
     '/divination',
     '/love-tarot',
+    '/articles',
   ].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date(),
@@ -21,22 +23,28 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: route === '' ? 1 : 0.8,
   }))
 
-  // 2. 如果您未來有動態內容（例如：公開的占卜分析文章或部落格）
-  // 您可以在這裡直接用 Prisma 抓取數據
-  /*
-  const publicRecords = await prisma.divinationRecord.findMany({
-    where: { isPublic: true }, // 假設您有這個欄位
-    select: { id: true, updatedAt: true }
-  })
+  // 2. 獲取所有已發布的文章
+  // 使用 any 繞過類型檢查，確保能抓到 Post 模型
+  const postModel = (prisma as any).post || (prisma as any).Post;
   
-  const dynamicPages = publicRecords.map((record) => ({
-    url: `${baseUrl}/reading/${record.id}`,
-    lastModified: record.updatedAt,
-    changeFrequency: 'monthly' as const,
-    priority: 0.5,
-  }))
-  */
+  let dynamicPages: MetadataRoute.Sitemap = [];
+  
+  try {
+    const posts = await postModel.findMany({
+      where: { published: true },
+      select: { slug: true, updatedAt: true }
+    });
+
+    dynamicPages = posts.map((post: any) => ({
+      url: `${baseUrl}/articles/${post.slug}`,
+      lastModified: post.updatedAt,
+      changeFrequency: 'weekly' as const,
+      priority: 0.7,
+    }));
+  } catch (error) {
+    console.error("Failed to fetch posts for sitemap:", error);
+  }
 
   // 合併並回傳。Next.js 會自動將輸出的物件轉為標準的 sitemap.xml 格式。
-  return [...staticPages]
+  return [...staticPages, ...dynamicPages]
 }
