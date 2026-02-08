@@ -28,36 +28,43 @@ export default function MemberSidebar({ session }: MemberSidebarProps) {
     <aside className="lg:w-56 flex-shrink-0 mb-8 lg:mb-0">
       <div className="lg:sticky lg:top-20 space-y-6">
         {/* User Profile Summary */}
-        <div className="bg-[#1a1414] backdrop-blur-md p-6 rounded-[2rem] border border-[#C99041] shadow-xl relative overflow-hidden group">
+        <div className="p-8 rounded-[2.5rem] relative overflow-hidden group bg-card/40 border border-border shadow-2xl backdrop-blur-sm">
+          {/* Subtle background glow */}
+          <div className="absolute inset-0 bg-gradient-to-b from-primary/10 to-transparent"></div>
+
           <div className="relative z-10 flex flex-col items-center text-center">
-            <div className="relative mb-4 w-20 h-20">
+            <div className="relative mb-6">
+              {/* Avatar Glow Ring */}
+              <div className="absolute inset-[-12px] rounded-full bg-primary/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+
               {session?.user?.image ? (
                 <Image
                   src={session.user.image}
                   alt={session.user.name || "User"}
-                  width={80}
-                  height={80}
+                  width={96}
+                  height={96}
                   priority
                   unoptimized
-                  className="w-full h-full rounded-full object-cover border border-[#C99041]/40 relative z-10"
+                  className="w-24 h-24 rounded-full object-cover border-2 border-primary/30 relative z-10 shadow-2xl shadow-primary/20"
                 />
               ) : (
-                <div className="w-full h-full rounded-full bg-amber-900/20 flex items-center justify-center text-amber-200 text-2xl font-bold border border-[#C99041]/40 relative z-10">
+                <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center text-primary text-3xl font-bold border-2 border-primary/30 relative z-10 shadow-2xl">
                   {session?.user?.name?.[0]?.toUpperCase() || "U"}
                 </div>
               )}
             </div>
-            <h3 className="text-xl font-bold text-amber-100 mb-1 truncate w-full">
+
+            <h3 className="text-2xl font-bold text-foreground mb-1 font-serif tracking-tight">
               {session?.user?.name || "神秘占卜者"}
             </h3>
-            <p className="text-amber-100/60 text-xs truncate w-full italic">
+            <p className="text-primary/40 text-[10px] uppercase tracking-[0.2em] font-medium">
               {session?.user?.email}
             </p>
 
             {/* Membership Badge */}
-            <div className="mt-4 px-3 py-1 bg-[#C99041]/5 border border-[#C99041]/20 rounded-full flex items-center gap-1.5 transition-colors">
-              <div className="w-1.5 h-1.5 bg-[#C99041]/40 rounded-full"></div>
-              <span className="text-[10px] uppercase tracking-widest font-bold text-[#C99041]/80">
+            <div className="mt-5 px-4 py-1.5 bg-primary/10 border border-primary/20 rounded-full flex items-center gap-2">
+              <div className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse shadow-[0_0_8px_rgba(245,173,79,0.6)]"></div>
+              <span className="text-[10px] uppercase tracking-[0.25em] font-bold text-primary/80">
                 靈魂守護者
               </span>
             </div>
@@ -65,7 +72,7 @@ export default function MemberSidebar({ session }: MemberSidebarProps) {
         </div>
 
         {/* Navigation Menu */}
-        <nav className="bg-[#1a1414]/50 backdrop-blur-xl rounded-2xl border border-[#C99041] p-2 shadow-lg">
+        <nav className="p-2 space-y-1">
           {navigation.map((item) => {
             const isActive = pathname === item.href;
             return (
@@ -74,35 +81,36 @@ export default function MemberSidebar({ session }: MemberSidebarProps) {
                 href={item.href}
                 className={classNames(
                   isActive
-                    ? "bg-amber-500/20 text-white border-[#C99041]/40 shadow-[inset_0_0_15px_rgba(201,144,65,0.1)]"
-                    : "text-amber-100/70 hover:bg-amber-500/5 hover:text-white border-transparent",
-                  "group flex items-center px-6 py-3.5 text-sm font-medium rounded-full transition-all duration-300 border mb-2 last:mb-0",
+                    ? "bg-amber-500/10 text-amber-100 border-[#C99041]/30"
+                    : "text-amber-100/40 hover:bg-white/5 hover:text-amber-100 border-transparent",
+                  "group relative flex items-center px-6 py-4 text-sm font-medium rounded-2xl transition-all duration-300 border overflow-hidden",
                 )}
               >
+                {isActive && (
+                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-amber-500 rounded-r-full shadow-[0_0_15px_rgba(251,191,36,0.5)]"></div>
+                )}
+
                 <item.icon
                   className={classNames(
                     isActive
-                      ? "text-amber-400 drop-shadow-[0_0_5px_rgba(251,191,36,0.5)]"
-                      : "text-amber-500/40 group-hover:text-amber-400",
-                    "mr-3 h-5 w-5 transition-all duration-300",
+                      ? "text-amber-400"
+                      : "text-amber-500/20 group-hover:text-amber-500/60",
+                    "mr-4 h-5 w-5 transition-colors",
                   )}
                 />
-                {item.name}
-                {isActive && (
-                  <div className="ml-auto w-1.5 h-1.5 bg-amber-400 rounded-full shadow-[0_0_8px_rgba(251,191,36,0.8)]"></div>
-                )}
+                <span className="tracking-widest font-serif">{item.name}</span>
               </Link>
             );
           })}
 
-          <div className="my-2 border-t border-[#C99041]/10 mx-4"></div>
+          <div className="my-4 border-t border-[#C99041]/5 mx-6"></div>
 
           <button
             onClick={() => signOut({ callbackUrl: "/" })}
-            className="group flex items-center w-full px-6 py-3.5 text-sm font-medium rounded-full transition-all duration-300 border border-transparent hover:border-red-500/30 hover:bg-red-500/10 text-amber-100/50 hover:text-red-300"
+            className="group flex items-center w-full px-6 py-4 text-sm font-medium rounded-2xl transition-all duration-300 border border-transparent hover:bg-red-500/5 text-amber-100/20 hover:text-red-400"
           >
-            <LogOut className="mr-3 h-5 w-5 text-amber-500/30 group-hover:text-red-400 transition-colors" />
-            登出
+            <LogOut className="mr-4 h-5 w-5 text-amber-500/10 group-hover:text-red-500/40 transition-colors" />
+            <span className="tracking-widest font-serif">安全登出</span>
           </button>
         </nav>
       </div>

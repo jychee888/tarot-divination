@@ -58,26 +58,26 @@ export default function Home() {
       {/* Hero Section */}
       <div className="relative top-[100px] sm:top-0 sm:absolute w-full h-full inset-0 px-10 flex flex-col justify-center items-center text-center">
         {/* Title Section */}
-        <div className="relative z-30 w-full">
+        <div className="relative z-50 w-full">
           <div className="flex flex-col items-center justify-center mt-0 sm:mt-0 mb-6 space-y-2 w-full">
             <h2 className="chinese-title-bakudai sm:text-[16px] text-[20px] relative z-20">
               心靈之眼
             </h2>
             <div className="relative flex items-center justify-center w-full">
-              <EyeIcon className="absolute sm:top-0 -top-4 sm:left-[20%] left-[0%] z-20" />
-              <h1 className="im-fell-english-regular sm:text-[6vw] text-[30px] leading-none relative">
+              <EyeIcon className="absolute sm:top-0 -top-4 sm:left-[20%] left-[0%] z-10" />
+              <h1 className="im-fell-english-regular sm:text-[6vw] text-[30px] leading-none relative z-20">
                 Soul's Eye
               </h1>
               <EyeIcon
                 mirror
-                className="absolute sm:top-0 -top-4 sm:right-[20%] right-[0%] z-20"
+                className="absolute sm:top-0 -top-4 sm:right-[20%] right-[0%] z-10"
               />
             </div>
           </div>
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
+          <div className="relative z-50 flex flex-col sm:flex-row justify-center gap-4">
             <Link href="/divination">
               <Button className="chinese-title-bakudai border border-[#C99041] bg-transparent hover:bg-amber-500/20 text-amber-300 hover:text-amber-200 text-lg px-8 py-6 rounded-full transition-all duration-300 transform hover:scale-105 backdrop-blur-sm">
-                開始占卜 <ArrowRight className="ml-2 h-5 w-5" />
+                塔羅運勢 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
 
@@ -104,7 +104,7 @@ export default function Home() {
         </div>
 
         {/* Tarot Visual */}
-        <div className="relative sm:mt-[-10%] -mt-[80px] z-20">
+        <div className="relative sm:mt-[-10%] -mt-[80px] z-10">
           <TarotVisual />
         </div>
 

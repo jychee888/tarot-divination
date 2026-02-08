@@ -103,34 +103,34 @@ const spreads = [
 
 const themeQuestions: Record<DivinationTheme, string[]> = {
   love: [
-    "我們未來的發展趨勢如何？",
-    "目前關係中潛在的挑戰是什麼？",
-    "該如何提升彼此的感情？",
-    "對方的真實心意與想法？",
+    `本年度感情整體的發展趨勢？`,
+    `今年在關係中可能遇到的機會？`,
+    `如何提升今年度的情感能量？`,
+    `年度內的桃花與正緣契機？`,
   ],
   career: [
-    "目前的計畫是否合適？",
-    "事業發展中的貴人在哪裡？",
-    "面臨的職場阻礙該如何克服？",
-    "下一個階段的成長建議？",
+    `本年度事業發展的關鍵轉點？`,
+    `今年事業中的財富流動方向？`,
+    `年度內合適的轉職或晉升時機？`,
+    `如何達成今年的事業核心目標？`,
   ],
   relationship: [
-    "如何改善與他人的緊繃關係？",
-    "目前人際圈中需要注意的人事物？",
-    "該如何建立更深層的社交連結？",
-    "這段關係對我的生命意義？",
+    `本年度貴人運與人脈拓展建議？`,
+    `今年如何化解重要的人際摩擦？`,
+    `年度內值得建立的長久合作？`,
+    `如何平衡今年的社交與自我？`,
   ],
   health: [
-    "目前的心理壓力來源是什麼？",
-    "如何平衡生活與健康的關係？",
-    "什麼樣的放鬆方式最適合我？",
-    "如何提升內在的能量狀態？",
+    `本年度內在能量與身心平衡建議？`,
+    `今年在生活習慣上最需調整之處？`,
+    `年度內釋放壓力的最佳途徑？`,
+    `如何保持整年的內在活力？`,
   ],
   "self-exploration": [
-    "我目前未被察覺的潛能是什麼？",
-    "未來的靈魂成長課題是什麼？",
-    "如何突破目前的內在瓶頸？",
-    "我真正渴望的生活方向是什麼？",
+    `本年度靈魂成長的核心命題？`,
+    `今年值得深入探索的潛能領域？`,
+    `如何在今年達成內在與外在的統一？`,
+    `年度內的智慧開啟與覺醒契機？`,
   ],
 };
 
@@ -442,7 +442,7 @@ function DivinationContent() {
               <CardContent className="space-y-8 p-8 mt-4 mb-8">
                 <section>
                   <h2 className="sm:text-3xl text-[16px] font-bold text-amber-100 mb-6 text-center font-serif tracking-wider">
-                    占卜主題
+                    {new Date().getFullYear()}年度塔羅運勢
                   </h2>
                   <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
                     {themes.map((theme) => {
@@ -486,7 +486,7 @@ function DivinationContent() {
 
                 <section>
                   <h2 className="sm:text-3xl text-[16px] font-bold text-amber-100 mb-6 text-center font-serif tracking-wider">
-                    心靈聚焦
+                    {new Date().getFullYear()} 年度命運聚焦
                   </h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     {themeQuestions[selectedTheme].map((q, idx) => (
@@ -516,7 +516,9 @@ function DivinationContent() {
                       className={`w-5 h-5 mr-2 ${selectedQuestion ? "text-amber-300" : "text-amber-300/30"}`}
                     />
                     <span className="drop-shadow-sm font-bold tracking-widest text-lg">
-                      {selectedQuestion ? "開啟命運之門" : "請選擇心靈聚焦議題"}
+                      {selectedQuestion
+                        ? "開啟命運之門"
+                        : `請選擇 ${new Date().getFullYear()} 年度占卜議題`}
                     </span>
                   </Button>
                 </div>
@@ -973,7 +975,7 @@ function DivinationContent() {
                           <div className="w-1.5 h-1.5 bg-amber-500/40 rounded-full"></div>
                           <Sparkles className="w-6 h-6 text-amber-400" />
                           <h4 className="text-2xl font-bold text-amber-100 font-serif tracking-widest text-center">
-                            命運深度啟示錄
+                            {new Date().getFullYear()} 年度命運啟示錄
                           </h4>
                           <Sparkles className="w-6 h-6 text-amber-400" />
                           <div className="w-1.5 h-1.5 bg-amber-500/40 rounded-full"></div>

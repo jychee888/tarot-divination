@@ -45,14 +45,14 @@ export default async function MemberLayout({
       </div>
 
       <div className="flex-1 container mx-auto px-4 py-12 sm:py-20 relative z-20">
-        <div className="lg:flex lg:gap-8 max-w-6xl mx-auto h-full">
+        <div className="lg:flex lg:gap-12 max-w-7xl mx-auto h-full">
           {/* Pass server-fetched session to Client Component Sidebar */}
           <MemberSidebar session={session} />
 
           {/* Main Content Area - Children can be Server Components */}
-          <main className="flex-1 min-w-0 h-full">
-            <div className="bg-[#1a1414]/30 backdrop-blur-sm sm:p-10 p-6 rounded-[2.5rem] border border-[#C99041] shadow-xl relative min-h-[700px] flex flex-col">
-              <div className="relative z-10 flex-1">{children}</div>
+          <main className="flex-1 min-w-0">
+            <div className="relative animate-in fade-in slide-in-from-right-4 duration-1000">
+              {children}
             </div>
           </main>
         </div>
