@@ -10,8 +10,9 @@ import {
   LogOut,
   Home,
   Sparkles,
-  User,
+  Library,
 } from "lucide-react";
+import { AdminUserMenu } from "@/components/admin/AdminUserMenu";
 
 export default async function AdminLayout({
   children,
@@ -58,6 +59,13 @@ export default async function AdminLayout({
             <History className="w-4 h-4 group-hover:text-blue-400 shrink-0" />
             占卜紀錄彙整
           </Link>
+          <Link
+            href="/admin/posts"
+            className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-800 text-slate-400 hover:text-white transition-all text-sm font-medium group"
+          >
+            <Library className="w-4 h-4 group-hover:text-blue-400 shrink-0" />
+            文章內容管理
+          </Link>
 
           <div className="pt-4 pb-2 px-3">
             <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
@@ -95,27 +103,7 @@ export default async function AdminLayout({
           </div>
 
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-3 pl-4 border-l border-slate-800">
-              <div className="text-right">
-                <div className="text-sm font-semibold text-slate-100 leading-none mb-1">
-                  {session.user.name}
-                </div>
-                <div className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20 uppercase tracking-tighter">
-                  {session.user.role}
-                </div>
-              </div>
-              <div className="w-9 h-9 rounded-full border border-slate-700 overflow-hidden bg-slate-800 flex items-center justify-center shrink-0 ring-2 ring-transparent group-hover:ring-blue-500/20 transition-all">
-                {session.user.image ? (
-                  <img
-                    src={session.user.image}
-                    alt="Avatar"
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <User className="w-5 h-5 text-slate-400" />
-                )}
-              </div>
-            </div>
+            <AdminUserMenu user={session.user} />
           </div>
         </header>
 

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { AuthStatus } from "../auth-status";
+import { useSession } from "next-auth/react";
 
 interface HeaderProps {
   className?: string;
@@ -14,6 +15,7 @@ export default function Header({
   logoText = "Soul's Eye",
 }: HeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false);
+  const { data: session } = useSession();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -45,8 +47,26 @@ export default function Header({
         </span>
       </Link>
 
-      {/* User Profile */}
-      <div className="flex justify-end">
+      {/* Navigation & Profile */}
+      <div className="flex items-center gap-6">
+        <Link
+          href="/articles"
+          className="im-fell-english-regular text-lg text-[#F9ECDC]/80 hover:text-[#C99041] transition-colors relative group"
+        >
+          Tarot Meanings
+          <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#C99041] transition-all duration-300 group-hover:w-full"></span>
+        </Link>
+
+        {session?.user?.role === "admin" && (
+          <Link
+            href="/admin"
+            className="im-fell-english-regular text-lg text-amber-500/80 hover:text-amber-400 transition-colors relative group"
+          >
+            Admin Panel
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-amber-400 transition-all duration-300 group-hover:w-full"></span>
+          </Link>
+        )}
+
         <AuthStatus />
       </div>
     </header>

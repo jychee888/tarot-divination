@@ -12,13 +12,13 @@ import Header from "@/components/layout/Header";
 
 export default function Home() {
   return (
-    <div className="relative min-h-screen bg-[rgb(23,17,17)] text-[#F9ECDC] relative overflow-hidden">
+    <div className="relative min-h-screen bg-[rgb(23,17,17)] text-[#F9ECDC] overflow-hidden">
       <div className="sm:relative absolute h-[100dvh] sm:h-auto">
         <DivinationBackground />
       </div>
 
       {/* Header Section */}
-      <Header />
+      <Header logoText="Soul's Eye" />
 
       <div className="hidden sm:flex absolute inset-0 items-center justify-between px-8 pointer-events-none z-10">
         <div className="relative w-[8%] left-[8%] h-auto">

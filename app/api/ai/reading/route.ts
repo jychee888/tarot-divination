@@ -8,6 +8,7 @@ export async function POST(req: Request) {
     const apiKey = process.env.GEMINI_API_KEY;
 
     if (!apiKey) {
+      console.error("Missing GEMINI_API_KEY");
       return NextResponse.json({ 
         error: "尚未配置 AI API 金鑰。請在 .env 中添加 GEMINI_API_KEY。" 
       }, { status: 500 });
@@ -74,12 +75,15 @@ export async function POST(req: Request) {
          - 總字數約 600-800 字左右，內容要紮實且充滿靈性厚度。
     `;
 
-    // 根據 check-gemini.js 的實測結果，嘗試該 API 金鑰友存取的模型
+    // 隱碼顯示 API Key 末四碼以供確認
+    console.log(`[AI] Using API Key suffix: ...${apiKey.slice(-4)}`);
+
+    // 根據實測結果，優先嘗試穩定版模型
     const attempts = [
-      { version: 'v1beta', model: 'gemini-2.0-flash' },
-      { version: 'v1', model: 'gemini-2.0-flash' },
-      { version: 'v1beta', model: 'gemini-flash-latest' },
-      { version: 'v1beta', model: 'gemini-pro-latest' }
+      { version: 'v1beta', model: 'gemini-1.5-flash' },
+      { version: 'v1beta', model: 'gemini-1.5-pro' },
+      { version: 'v1beta', model: 'gemini-2.0-flash' }, // 若可用
+      { version: 'v1beta', model: 'gemini-pro' }
     ];
 
     let lastError = null;
@@ -105,18 +109,18 @@ export async function POST(req: Request) {
           if (reading) {
             // 在回答最前面補上使用者的問題
             const questionHeader = question ? `> **靈魂之問：${question}**\n\n` : "";
-            reading = questionHeader + reading;
-
+            const finalReading = questionHeader + reading;
+            
             console.log(`Success with: ${attempt.version}/${attempt.model}`);
-            return NextResponse.json({ reading });
+            return NextResponse.json({ reading: finalReading });
           }
         } else {
           lastError = data.error?.message || "Unknown error";
           console.warn(`Gemini API Attempt (${attempt.version}/${attempt.model}) failed:`, lastError);
           
-          // 如果是 API Key 錯誤，直接中斷循環，不需嘗試其他模型
-          if (data.error?.status === 'PERMISSION_DENIED' || data.error?.status === 'UNAUTHENTICATED') {
-            throw new Error(`API 金鑰無效或權限不足：${lastError}`);
+          if (data.error?.code === 403 || data.error?.status === 'PERMISSION_DENIED') {
+             // specific api key error
+             throw new Error(`API Key invalid or permission denied: ${lastError}`);
           }
         }
       } catch (e: any) {

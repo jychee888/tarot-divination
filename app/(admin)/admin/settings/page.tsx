@@ -79,7 +79,7 @@ export default function AdminSettingsPage() {
   }
 
   return (
-    <div className="max-w-4xl space-y-8 animate-in fade-in duration-500">
+    <div className="w-full space-y-8 animate-in fade-in duration-500">
       <div className="flex items-end justify-between">
         <div>
           <h1 className="text-2xl font-bold text-slate-100 tracking-tight">
@@ -103,16 +103,16 @@ export default function AdminSettingsPage() {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* SEO & Global Info */}
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-sm">
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-sm lg:col-span-2">
           <div className="px-6 py-4 border-b border-slate-800 bg-slate-950/50 flex items-center gap-2">
             <Globe className="w-5 h-5 text-blue-400" />
             <h2 className="text-sm font-bold text-slate-200 uppercase tracking-widest">
               SEO 與 站點資訊
             </h2>
           </div>
-          <div className="p-6 space-y-6">
+          <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">
                 網站標題 (Site Title)
@@ -129,6 +129,19 @@ export default function AdminSettingsPage() {
 
             <div className="space-y-2">
               <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">
+                關鍵字 (Keywords, 用逗號分隔)
+              </label>
+              <input
+                type="text"
+                value={settings.site_keywords}
+                onChange={(e) => handleChange("site_keywords", e.target.value)}
+                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 transition-all"
+                placeholder="塔羅, 占卜, AI"
+              />
+            </div>
+
+            <div className="space-y-2 md:col-span-2">
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">
                 網站描述 (Meta Description)
               </label>
               <textarea
@@ -139,19 +152,6 @@ export default function AdminSettingsPage() {
                 rows={3}
                 className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 transition-all resize-none"
                 placeholder="輸入簡短的網站介紹，這會顯示在 Google 搜尋結果中"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">
-                關鍵字 (Keywords, 用逗號分隔)
-              </label>
-              <input
-                type="text"
-                value={settings.site_keywords}
-                onChange={(e) => handleChange("site_keywords", e.target.value)}
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 transition-all"
-                placeholder="塔羅, 占卜, AI"
               />
             </div>
           </div>
