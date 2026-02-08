@@ -30,6 +30,7 @@ import CardFront from "@/components/CardFront";
 import ReactMarkdown from "react-markdown";
 import tarotCards from "@/data/tarot-cards";
 import { useToast } from "@/hooks/use-toast";
+import { CrystalBall } from "@/components/CrystalBall";
 
 type RelationshipStatus = "crush" | "ex" | "current" | null;
 
@@ -41,6 +42,7 @@ interface DrawnCard {
   image: string;
   isRevealed: boolean;
   isReversed?: boolean;
+  meaning: { summary: string; details: string[] };
 }
 
 const LoveTarotCard = ({
@@ -189,15 +191,25 @@ export default function LoveTarotPage() {
     setIsReading(true);
 
     const shuffled = [...tarotCards].sort(() => Math.random() - 0.5);
-    const selected = shuffled.slice(0, 6).map((card, index) => ({
-      id: `${card.id}-${index}`,
-      name: card.name,
-      position: index + 1,
-      positionMeaning: CARD_POSITIONS[index],
-      image: card.image,
-      isRevealed: false,
-      isReversed: Math.random() > 0.5,
-    }));
+    const selected = shuffled.slice(0, 6).map((cardItem, index) => {
+      const isReversed = Math.random() > 0.5;
+      const themeMeaning = cardItem.meanings.love;
+      const meaning = isReversed ? themeMeaning.reversed : themeMeaning.upright;
+
+      return {
+        id: `${cardItem.id}-${index}`,
+        name: cardItem.name,
+        position: index + 1,
+        positionMeaning: CARD_POSITIONS[index],
+        image: cardItem.image,
+        isRevealed: false,
+        isReversed,
+        meaning:
+          typeof meaning === "string"
+            ? { summary: meaning, details: [] }
+            : meaning,
+      };
+    });
 
     setDrawnCards(selected);
     setIsDrawing(false);
@@ -314,7 +326,7 @@ export default function LoveTarotPage() {
   useEffect(() => {
     if (showReadingInput) {
       const timer = setTimeout(() => {
-        const element = document.getElementById("ai-input-section");
+        const element = document.getElementById("initial-insights-section");
         if (element) {
           element.scrollIntoView({ behavior: "smooth", block: "start" });
         }
@@ -322,6 +334,15 @@ export default function LoveTarotPage() {
       return () => clearTimeout(timer);
     }
   }, [showReadingInput]);
+
+  useEffect(() => {
+    if (aiReading && !isAiLoading) {
+      const element = document.getElementById("ai-reading-result");
+      if (element) {
+        element.scrollIntoView({ behavior: "auto", block: "start" });
+      }
+    }
+  }, [aiReading, isAiLoading]);
 
   return (
     <div className="relative min-h-screen bg-[#171111] text-[#F9ECDC] overflow-hidden p-4 pb-24">
@@ -500,30 +521,8 @@ export default function LoveTarotPage() {
                   {isAiLoading ? (
                     <div className="py-24 flex flex-col items-center justify-center animate-in fade-in duration-1000">
                       {/* Premium Crystal Ball Loading State */}
-                      <div className="relative w-48 h-48 mb-8 flex items-center justify-center">
-                        {/* External rotating light fields */}
-                        <div className="absolute inset-[-20%] rounded-full bg-[conic-gradient(from_0deg,transparent_0,rgba(251,191,36,0.3)_20deg,transparent_40deg,rgba(251,191,36,0.3)_60deg,transparent_80deg,transparent_360deg)] animate-[spin_4s_linear_infinite] blur-2xl opacity-60"></div>
-                        <div className="absolute inset-[-20%] rounded-full bg-[conic-gradient(from_180deg,transparent_0,rgba(236,72,153,0.2)_30deg,transparent_60deg,transparent_360deg)] animate-[spin_6s_linear_infinite_reverse] blur-2xl opacity-50"></div>
-                        <div className="absolute inset-0 rounded-full bg-amber-500/10 blur-3xl animate-pulse"></div>
-
-                        {/* Core Orb */}
-                        <div className="relative w-32 h-32 rounded-full overflow-hidden shadow-[0_0_60px_-10px_rgba(251,191,36,0.7)] ring-2 ring-white/20 bg-gradient-to-b from-amber-100/20 to-black/80 backdrop-blur-[4px] z-10 flex items-center justify-center">
-                          {/* Internal Active Swirls */}
-                          <div className="absolute inset-[-60%] bg-[conic-gradient(from_0deg,transparent,rgba(217,119,6,0.4),transparent)] animate-[spin_3s_linear_infinite] blur-lg"></div>
-                          <div className="absolute inset-[-60%] bg-[conic-gradient(from_180deg,transparent,rgba(251,191,36,0.4),transparent)] animate-[spin_5s_linear_infinite_reverse] blur-lg mix-blend-plus-lighter"></div>
-
-                          {/* Pulsing Nebula */}
-                          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(236,72,153,0.2),transparent_70%)] animate-pulse"></div>
-                          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(251,191,36,0.1),transparent_80%)] animate-[pulse_2s_ease-in-out_infinite]"></div>
-
-                          {/* Fast Particles */}
-                          <div className="absolute inset-0 animate-[spin_2s_linear_infinite]">
-                            <div className="absolute top-1/4 left-1/4 w-1.5 h-1.5 bg-amber-100 rounded-full blur-[1px]"></div>
-                            <div className="absolute bottom-1/3 right-1/4 w-2 h-2 bg-white rounded-full blur-[1px]"></div>
-                          </div>
-
-                          <div className="absolute top-6 left-8 w-12 h-6 bg-gradient-to-br from-white/50 to-transparent rounded-[100%] rotate-[-45deg] blur-[3px] opacity-90 animate-pulse"></div>
-                        </div>
+                      <div className="relative mb-8">
+                        <CrystalBall size="lg" />
                       </div>
 
                       <div className="text-center space-y-4 relative z-20">
@@ -547,7 +546,10 @@ export default function LoveTarotPage() {
                         ))}
                       </div>
 
-                      <div className="bg-[#C99041]/5 border border-[#C99041]/30 rounded-[3rem] p-10 animate-in fade-in zoom-in duration-1000 shadow-[0_0_40px_rgba(0,0,0,0.3)] relative overflow-hidden min-h-[400px]">
+                      <div
+                        id="ai-reading-result"
+                        className="bg-[#C99041]/5 border border-[#C99041]/30 rounded-[3rem] p-10 animate-in fade-in zoom-in duration-1000 shadow-[0_0_40px_rgba(0,0,0,0.3)] relative overflow-hidden min-h-[400px] scroll-mt-24"
+                      >
                         <div className="absolute -top-20 -right-20 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl"></div>
                         <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl"></div>
 
@@ -642,71 +644,111 @@ export default function LoveTarotPage() {
                       </div>
 
                       {showReadingInput && (
-                        <div
-                          id="ai-input-section"
-                          className="space-y-8 pt-12 border-t border-[#C99041]/30 animate-in fade-in slide-in-from-bottom duration-1000"
-                        >
-                          <section className="text-center">
-                            <h3 className="text-2xl text-amber-100 font-serif mb-4 flex items-center justify-center">
-                              <Sparkles className="w-6 h-6 mr-3 text-amber-400" />
-                              凝聚靈感，開啟解讀
-                            </h3>
-                            <p className="text-amber-200/60 text-sm mb-6 max-w-md mx-auto">
-                              牌陣已現。在此刻，您可以再次閉上眼睛，感受您的問題，然後請
-                              AI 為您翻譯命運的訊息。
-                            </p>
-                            <div className="relative">
-                              <Textarea
-                                value={question}
-                                onChange={(e) => setQuestion(e.target.value)}
-                                placeholder="請描述您的問題，或直接使用先前的建議主題..."
-                                className="bg-black/50 border-[#C99041] text-amber-50 font-serif min-h-[140px] focus:border-amber-400 focus:ring-2 focus:ring-amber-500/20 text-lg p-6 rounded-xl"
-                              />
+                        <div className="space-y-12 animate-in fade-in slide-in-from-bottom duration-1000 mt-16">
+                          {/* Step 1: Professional Meanings */}
+                          <section
+                            id="initial-insights-section"
+                            className="space-y-8 scroll-mt-24"
+                          >
+                            <div className="flex items-center justify-center gap-4 mb-10">
+                              <div className="h-px w-12 bg-gradient-to-r from-transparent to-amber-500/50"></div>
+                              <h3 className="text-2xl font-bold text-amber-100 font-serif tracking-widest text-center">
+                                聖愛之書：初始啟示
+                              </h3>
+                              <div className="h-px w-12 bg-gradient-to-l from-transparent to-amber-500/50"></div>
+                            </div>
+
+                            <div className="space-y-10">
+                              {drawnCards.map((card, index) => (
+                                <article
+                                  key={card.id}
+                                  className="p-8 bg-amber-950/20 border border-amber-500/10 rounded-[2rem] hover:border-amber-500/30 transition-all group"
+                                >
+                                  <header className="flex items-center gap-4 mb-6">
+                                    <div className="w-10 h-10 bg-amber-400/10 text-amber-200 border border-amber-500/30 rounded-full flex items-center justify-center font-bold font-serif shadow-inner group-hover:bg-amber-500/20 transition-colors">
+                                      {index + 1}
+                                    </div>
+                                    <div className="flex flex-col">
+                                      <h4 className="text-xl font-semibold text-amber-100 font-serif tracking-wider">
+                                        {card.name}{" "}
+                                        <span className="text-amber-500/60 text-sm ml-2 font-normal italic">
+                                          ({card.positionMeaning})
+                                        </span>
+                                      </h4>
+                                      <div className="flex items-center gap-2 mt-1">
+                                        <Badge
+                                          variant={
+                                            card.isReversed
+                                              ? "destructive"
+                                              : "default"
+                                          }
+                                          className={`px-2 py-0 text-[10px] ${card.isReversed ? "bg-red-900/40 text-red-100" : "bg-amber-600/40 text-amber-50"}`}
+                                        >
+                                          {card.isReversed ? "逆位" : "正位"}
+                                        </Badge>
+                                      </div>
+                                    </div>
+                                  </header>
+                                  <div className="text-amber-100/90 space-y-4 ml-2 border-l-2 border-amber-500/20 pl-6">
+                                    <p className="leading-relaxed font-medium text-amber-50 text-lg italic">
+                                      {card.meaning.summary}
+                                    </p>
+                                    <ul className="list-disc list-outside space-y-3 text-sm text-amber-100/80 pl-4 py-2">
+                                      {card.meaning.details.map((detail, i) => (
+                                        <li key={i}>{detail}</li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                </article>
+                              ))}
                             </div>
                           </section>
-                          <div className="text-center">
-                            <button
-                              onClick={fetchAiReading}
-                              disabled={!question.trim()}
-                              className="w-full bg-amber-500/5 hover:bg-amber-500/10 text-amber-200 border border-[#C99041]/40 rounded-[2rem] py-10 h-auto flex flex-col items-center group transition-all duration-700 hover:border-amber-400 hover:text-amber-100 shadow-inner relative overflow-hidden focus:outline-none disabled:opacity-30"
-                            >
-                              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(251,191,36,0.1),transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
-                              <div className="flex flex-col items-center relative z-10 transition-transform duration-700 group-hover:scale-105">
-                                {/* Divine Crystal Ball Animation */}
-                                <div className="relative w-36 h-36 mb-6 flex items-center justify-center">
-                                  {/* External rays */}
-                                  <div className="absolute inset-[-20%] rounded-full bg-[conic-gradient(from_0deg,transparent_0,rgba(251,191,36,0.2)_20deg,transparent_40deg,rgba(251,191,36,0.2)_60deg,transparent_80deg,transparent_360deg)] animate-[spin_8s_linear_infinite] blur-xl opacity-50"></div>
-                                  <div className="absolute inset-[-20%] rounded-full bg-[conic-gradient(from_180deg,transparent_0,rgba(245,158,11,0.15)_30deg,transparent_60deg,transparent_360deg)] animate-[spin_12s_linear_infinite_reverse] blur-xl opacity-40"></div>
-                                  <div className="absolute inset-0 rounded-full bg-amber-500/5 blur-2xl animate-pulse"></div>
 
-                                  {/* Core Orb */}
-                                  <div className="relative w-24 h-24 rounded-full overflow-hidden shadow-[0_0_40px_-10px_rgba(251,191,36,0.6)] ring-1 ring-white/10 bg-gradient-to-b from-amber-100/10 to-black/60 backdrop-blur-[2px] z-10 flex items-center justify-center">
-                                    {/* Internal Mystic Essence */}
-                                    <div className="absolute inset-[-60%] bg-[conic-gradient(from_0deg,transparent,rgba(217,119,6,0.2),transparent)] animate-[spin_8s_linear_infinite] blur-md"></div>
-                                    <div className="absolute inset-[-60%] bg-[conic-gradient(from_180deg,transparent,rgba(251,191,36,0.2),transparent)] animate-[spin_12s_linear_infinite_reverse] blur-md mix-blend-plus-lighter"></div>
-
-                                    {/* Nebula Clouds */}
-                                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(236,72,153,0.1),transparent_50%)] animate-pulse"></div>
-                                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(245,158,11,0.15),transparent_50%)] animate-[pulse_4s_ease-in-out_infinite_reverse]"></div>
-
-                                    {/* Orbiting Stardust */}
-                                    <div className="absolute inset-0 animate-[spin_10s_linear_infinite]">
-                                      <div className="absolute top-1/4 left-1/4 w-1 h-1 bg-amber-100 rounded-full blur-[1px] opacity-60"></div>
-                                      <div className="absolute bottom-1/3 right-1/4 w-1.5 h-1.5 bg-white rounded-full blur-[1px] opacity-40"></div>
-                                    </div>
-
-                                    {/* Glass Reflection */}
-                                    <div className="absolute top-4 left-5 w-8 h-4 bg-gradient-to-br from-white/40 to-transparent rounded-[100%] rotate-[-45deg] blur-[2px] opacity-80 animate-pulse"></div>
-                                  </div>
+                          {/* Step 2: AI Soul Reading */}
+                          <div
+                            id="ai-input-section"
+                            className="space-y-8 pt-16 border-t border-[#C99041]/30"
+                          >
+                            <section className="text-center">
+                              <div className="flex items-center justify-center gap-4 mb-6">
+                                <div className="flex flex-col items-center gap-2">
+                                  <h3 className="text-2xl font-bold text-amber-100 font-serif tracking-widest">
+                                    AI 靈魂共鳴
+                                  </h3>
                                 </div>
-                                <span className="text-md font-serif tracking-[0.2em] mb-4 text-amber-100 font-bold">
-                                  啟動 AI 聖愛深度解讀
-                                </span>
-                                <span className="text-xs text-amber-100/40 font-serif uppercase tracking-[0.3em] group-hover:text-amber-100/60">
-                                  需登入以連結您的獨特聖愛印記
-                                </span>
                               </div>
-                            </button>
+                              <p className="text-amber-200/60 text-sm mb-6 max-w-md mx-auto">
+                                初始牌義僅是引導。您可以啟動進階
+                                AI，透過能量共振翻譯卡牌背後專屬於您的靈性低語。
+                              </p>
+                              <div className="relative">
+                                <Textarea
+                                  value={question}
+                                  onChange={(e) => setQuestion(e.target.value)}
+                                  placeholder="請描述您的問題，或直接使用先前的建議主題..."
+                                  className="bg-black/50 border-[#C99041] text-amber-50 font-serif min-h-[140px] focus:border-amber-400 focus:ring-2 focus:ring-amber-500/20 text-lg p-6 rounded-xl"
+                                />
+                              </div>
+                            </section>
+                            <div className="text-center">
+                              <button
+                                onClick={fetchAiReading}
+                                disabled={!question.trim()}
+                                className="w-full bg-amber-500/5 hover:bg-amber-500/10 text-amber-200 border border-[#C99041]/40 rounded-[2rem] py-10 h-auto flex flex-col items-center group transition-all duration-700 hover:border-amber-400 hover:text-amber-100 shadow-inner relative overflow-hidden focus:outline-none disabled:opacity-30"
+                              >
+                                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(251,191,36,0.1),transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
+                                <div className="flex flex-col items-center relative z-10 transition-transform duration-700 group-hover:scale-105">
+                                  {/* Divine Crystal Ball Animation */}
+                                  <CrystalBall />
+                                  <span className="text-md font-serif tracking-[0.2em] mb-4 text-amber-100 font-bold">
+                                    啟動 AI 聖愛深度解讀
+                                  </span>
+                                  <span className="text-xs text-amber-100/40 font-serif uppercase tracking-[0.3em] group-hover:text-amber-100/60">
+                                    需登入以連結您的獨特聖愛印記
+                                  </span>
+                                </div>
+                              </button>
+                            </div>
                           </div>
                         </div>
                       )}

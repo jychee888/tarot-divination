@@ -60,6 +60,73 @@ body {
     }
   }
   
+  /* Mystic Float for Crystal Ball */
+  @keyframes mystic-float {
+    0%, 100% {
+      transform: translateY(0) scale(1);
+    }
+    50% {
+      transform: translateY(-15px) scale(1.02);
+    }
+  }
+
+  /* Nebula Drift for internal mist */
+  @keyframes nebula-drift {
+    0% {
+      transform: translate(-10%, -10%) scale(1) rotate(0deg);
+    }
+    50% {
+      transform: translate(10%, 10%) scale(1.2) rotate(180deg);
+    }
+    100% {
+      transform: translate(-10%, -10%) scale(1) rotate(360deg);
+    }
+  }
+
+  /* Shimmer Glow for outer edge */
+  @keyframes shimmer-glow {
+    0%, 100% {
+      box-shadow: 0 0 20px rgba(251, 191, 36, 0.4), inset 0 0 10px rgba(251, 191, 36, 0.2);
+    }
+    50% {
+      box-shadow: 0 0 50px rgba(251, 191, 36, 0.7), inset 0 0 20px rgba(251, 191, 36, 0.4);
+    }
+  }
+
+  /* Standard pulse for internal elements */
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.3;
+    }
+  }
+
+  /* Energy Pulse for core */
+  @keyframes energy-pulse {
+    0%, 100% {
+      transform: scale(1);
+      filter: brightness(1);
+    }
+    50% {
+      transform: scale(1.05);
+      filter: brightness(1.2);
+    }
+  }
+  
+  .animate-mystic {
+    animation: mystic-float 6s ease-in-out infinite;
+  }
+
+  .animate-nebula {
+    animation: nebula-drift 20s ease-in-out infinite;
+  }
+
+  .animate-shimmer {
+    animation: shimmer-glow 4s ease-in-out infinite;
+  }
+
   .hover\:animate-float {
     transition: transform 0.3s ease-in-out;
   }
