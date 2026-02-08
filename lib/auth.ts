@@ -65,6 +65,18 @@ export const authOptions: NextAuthOptions = {
         session.user.role = adminEmails.includes(session.user.email as string) ? "admin" : (token.role || "user");
         // @ts-ignore
         session.user.nickname = token.nickname || "";
+        
+        // Update Last Active Time in background
+        if (token.id) {
+          // Temporarily commented out until Prisma Client sync issues are resolved
+          /*
+          prisma.user.update({
+            where: { id: token.id as string },
+            data: { lastActiveAt: new Date() } as any
+          }).catch(err => console.error("[Auth] Failed to update lastActiveAt:", err));
+          */
+        }
+
         console.log("[Auth] Session Created for:", session.user.email, "Role:", session.user.role);
       }
       return session;

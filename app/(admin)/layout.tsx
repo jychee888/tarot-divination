@@ -10,6 +10,7 @@ import {
   LogOut,
   Home,
   Sparkles,
+  User,
 } from "lucide-react";
 
 export default async function AdminLayout({
@@ -25,95 +26,103 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="flex min-h-screen bg-[#0f0a0a] text-amber-50">
+    <div className="flex min-h-screen bg-slate-950 text-slate-50 font-sans selection:bg-blue-500/30">
       {/* Sidebar */}
-      <aside className="w-64 border-r border-amber-900/50 bg-[#171111] flex flex-col">
-        <div className="p-6 border-b border-amber-900/50 flex items-center gap-2">
-          <Sparkles className="w-6 h-6 text-amber-500" />
-          <span className="font-serif font-bold text-xl tracking-wider text-amber-200">
-            聖愛後台
-          </span>
+      <aside className="w-64 border-r border-slate-800 bg-slate-900/50 flex flex-col fixed inset-y-0 z-50">
+        <div className="h-16 px-6 border-b border-slate-800 flex items-center gap-3 bg-slate-900">
+          <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
+            <LayoutDashboard className="w-5 h-5 text-white" />
+          </div>
+          <span className="font-bold text-lg tracking-tight">管理中心</span>
         </div>
 
-        <nav className="flex-1 p-4 space-y-2 mt-4 text-sm">
+        <nav className="flex-1 p-4 space-y-1 mt-2 overflow-y-auto">
           <Link
             href="/admin"
-            className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-amber-500/10 text-amber-200/80 hover:text-amber-100 transition-all font-serif"
+            className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-800 text-slate-400 hover:text-white transition-all text-sm font-medium group"
           >
-            <LayoutDashboard className="w-4 h-4" />
+            <LayoutDashboard className="w-4 h-4 group-hover:text-blue-400 shrink-0" />
             統計總覽
           </Link>
           <Link
             href="/admin/users"
-            className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-amber-500/10 text-amber-200/80 hover:text-amber-100 transition-all font-serif"
+            className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-800 text-slate-400 hover:text-white transition-all text-sm font-medium group"
           >
-            <Users className="w-4 h-4" />
+            <Users className="w-4 h-4 group-hover:text-blue-400 shrink-0" />
             使用者管理
           </Link>
           <Link
             href="/admin/divinations"
-            className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-amber-500/10 text-amber-200/80 hover:text-amber-100 transition-all font-serif"
+            className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-800 text-slate-400 hover:text-white transition-all text-sm font-medium group"
           >
-            <History className="w-4 h-4" />
+            <History className="w-4 h-4 group-hover:text-blue-400 shrink-0" />
             占卜紀錄彙整
           </Link>
-          <div className="pt-4 mt-4 border-t border-amber-900/30">
-            <Link
-              href="/admin/settings"
-              className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-amber-500/10 text-amber-200/80 hover:text-amber-100 transition-all font-serif"
-            >
-              <Settings className="w-4 h-4" />
+
+          <div className="pt-4 pb-2 px-3">
+            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
               系統設定
-            </Link>
+            </span>
           </div>
+
+          <Link
+            href="/admin/settings"
+            className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-800 text-slate-400 hover:text-white transition-all text-sm font-medium group"
+          >
+            <Settings className="w-4 h-4 group-hover:text-blue-400 shrink-0" />
+            偏好設定
+          </Link>
         </nav>
 
-        <div className="p-4 border-t border-amber-900/50 space-y-2">
+        <div className="p-4 border-t border-slate-800 space-y-2 bg-slate-900/50">
           <Link
             href="/"
-            className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-amber-500/10 text-amber-400/80 transition-all font-serif"
+            className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-800 text-slate-400 hover:text-white transition-all text-sm font-medium group"
           >
-            <Home className="w-4 h-4" />
+            <Home className="w-4 h-4 group-hover:text-blue-400 shrink-0" />
             返回前台
           </Link>
         </div>
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col">
-        <header className="h-16 border-b border-amber-900/30 bg-[#171111]/50 backdrop-blur-md flex items-center justify-between px-8">
-          <div className="text-amber-200/60 font-serif text-sm">
-            管理者系統 / <span className="text-amber-200">統計總覽</span>
+      <div className="flex-1 pl-64 flex flex-col min-h-screen">
+        <header className="h-16 border-b border-slate-800 bg-slate-900/80 backdrop-blur-md sticky top-0 z-40 flex items-center justify-between px-8">
+          <div className="flex items-center gap-2 text-slate-400 text-sm">
+            <span>後台管理系統</span>
+            <span className="text-slate-600">/</span>
+            <span className="text-slate-200 font-medium">目前的頁面</span>
           </div>
+
           <div className="flex items-center gap-4">
-            <div className="text-right">
-              <div className="text-sm font-bold text-amber-100">
-                {session.user.name}
-              </div>
-              <div className="text-[10px] text-amber-500 uppercase tracking-widest font-serif">
-                {session.user.role}
-              </div>
-            </div>
-            <div className="w-10 h-10 rounded-full border border-amber-500/30 overflow-hidden shadow-[0_0_10px_rgba(251,191,36,0.2)]">
-              {session.user.image ? (
-                <img
-                  src={session.user.image}
-                  alt="Avatar"
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full bg-amber-900 flex items-center justify-center">
-                  <span className="text-amber-100">
-                    {session.user.name?.[0]}
-                  </span>
+            <div className="flex items-center gap-3 pl-4 border-l border-slate-800">
+              <div className="text-right">
+                <div className="text-sm font-semibold text-slate-100 leading-none mb-1">
+                  {session.user.name}
                 </div>
-              )}
+                <div className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20 uppercase tracking-tighter">
+                  {session.user.role}
+                </div>
+              </div>
+              <div className="w-9 h-9 rounded-full border border-slate-700 overflow-hidden bg-slate-800 flex items-center justify-center shrink-0 ring-2 ring-transparent group-hover:ring-blue-500/20 transition-all">
+                {session.user.image ? (
+                  <img
+                    src={session.user.image}
+                    alt="Avatar"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <User className="w-5 h-5 text-slate-400" />
+                )}
+              </div>
             </div>
           </div>
         </header>
 
-        <div className="p-8 overflow-y-auto">{children}</div>
-      </main>
+        <main className="p-8 flex-1 overflow-x-hidden">
+          <div className="max-w-7xl mx-auto">{children}</div>
+        </main>
+      </div>
     </div>
   );
 }

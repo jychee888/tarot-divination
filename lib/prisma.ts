@@ -13,3 +13,4 @@ export const prisma =
   })
 
 if (process.env.NODE_ENV !== 'production') global.prisma = prisma
+// Last schema sync: 2026-02-08 15:30

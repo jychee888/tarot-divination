@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 
 export async function POST(req: Request) {
   try {
@@ -12,6 +13,19 @@ export async function POST(req: Request) {
       }, { status: 500 });
     }
 
+    // 獲取後台設定的 AI 引導語
+    let sysPromptPrefix = "";
+    try {
+      const setting = await (prisma as any).systemSettings.findUnique({
+        where: { key: "ai_prompt_prefix" }
+      });
+      if (setting?.value) {
+        sysPromptPrefix = setting.value + "\n\n";
+      }
+    } catch (e) {
+      console.warn("Could not fetch system settings:", e);
+    }
+
     // 構建求問者個人化資訊
     const userProfilePrompt = userContext ? `
       【求問者資訊】
@@ -23,7 +37,7 @@ export async function POST(req: Request) {
 
     // 構建 Prompt
     const promptText = `
-      現在，你不再是一台機器，也不再是一本書。你是一位在此刻與求問者靈魂共振的「聖域引導者」。你正坐在求問者的對面，透過燭光與牌面，輕聲對他說話。
+      ${sysPromptPrefix}現在，你不再是一台機器，也不再是一本書。你是一位在此刻與求問者靈魂共振的「聖域引導者」。你正坐在求問者的對面，透過燭光與牌面，輕聲對他說話。
       
       ${userProfilePrompt}
       

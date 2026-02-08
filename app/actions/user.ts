@@ -108,3 +108,93 @@ export async function updateUserProfile(formData: {
     return { success: false, error: "Failed to update user profile" }
   }
 }
+
+/**
+ * Update user role (Admin only)
+ */
+export async function updateUserRole(targetUserId: string, newRole: string) {
+  const session = await getServerSession(authOptions)
+
+  // Verify authorization
+  const isSuperAdmin = session?.user?.email === "jychee888@gmail.com"
+  const isAdmin = session?.user?.role === "admin" || isSuperAdmin
+
+  if (!session || !isAdmin) {
+    throw new Error("Unauthorized: Admin access required")
+  }
+
+  try {
+    // Fetch target user to check email
+    const targetUser = await prisma.user.findUnique({
+      where: { id: targetUserId },
+      select: { email: true }
+    })
+
+    if (!targetUser) {
+      return { success: false, error: "Target user not found" }
+    }
+
+    // Protection: Cannot change the role of the super admin
+    if (targetUser.email === "jychee888@gmail.com") {
+      return { success: false, error: "Cannot change the role of the super admin" }
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id: targetUserId },
+      data: { role: newRole } as any
+    })
+
+    // Refresh the admin users management page
+    revalidatePath('/admin/users')
+
+    return { success: true, data: updatedUser }
+  } catch (error) {
+    console.error("Error updating user role:", error)
+    return { success: false, error: "Failed to update user role" }
+  }
+}
+
+/**
+ * Update user status (Admin only) - Block/Unblock
+ */
+export async function updateUserStatus(targetUserId: string, newStatus: string) {
+  const session = await getServerSession(authOptions)
+
+  // Verify authorization
+  const isSuperAdmin = session?.user?.email === "jychee888@gmail.com"
+  const isAdmin = session?.user?.role === "admin" || isSuperAdmin
+
+  if (!session || !isAdmin) {
+    throw new Error("Unauthorized: Admin access required")
+  }
+
+  try {
+    // Fetch target user to check email
+    const targetUser = await prisma.user.findUnique({
+      where: { id: targetUserId },
+      select: { email: true }
+    })
+
+    if (!targetUser) {
+      return { success: false, error: "Target user not found" }
+    }
+
+    // Protection: Cannot block the super admin
+    if (targetUser.email === "jychee888@gmail.com" && newStatus === "blocked") {
+      return { success: false, error: "Cannot block the super admin" }
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id: targetUserId },
+      data: { status: newStatus } as any
+    })
+
+    // Refresh the admin users management page
+    revalidatePath('/admin/users')
+
+    return { success: true, data: updatedUser }
+  } catch (error) {
+    console.error("Error updating user status:", error)
+    return { success: false, error: "Failed to update user status" }
+  }
+}

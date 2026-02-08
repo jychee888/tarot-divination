@@ -51,6 +51,8 @@ model User {
   birthTime     String?   // Format: HH:mm
   gender        String?   // e.g., "Male", "Female", "Non-binary", etc.
   role          String    @default("user")
+  status        String    @default("active") // active, blocked
+  lastActiveAt  DateTime? @default(now())
 }
 
 model VerificationToken {
@@ -73,4 +75,12 @@ model DivinationRecord {
   createdAt   DateTime @default(now())
   userId      String   @db.ObjectId
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model SystemSettings {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  key         String   @unique
+  value       String
+  description String?
+  updatedAt   DateTime @updatedAt
 }

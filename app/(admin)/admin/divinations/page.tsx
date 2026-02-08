@@ -1,17 +1,26 @@
 import { prisma } from "@/lib/prisma";
 import {
   Sparkles,
-  History,
   Calendar,
   User,
   ExternalLink,
   Search,
-  ChevronRight,
+  Clock,
+  Layout,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 
-async function getDivinationRecords() {
+async function getDivinationRecords(searchEmail?: string) {
   const records = await prisma.divinationRecord.findMany({
+    where: searchEmail
+      ? {
+          user: {
+            email: {
+              contains: searchEmail,
+            },
+          },
+        }
+      : {},
     orderBy: {
       createdAt: "desc",
     },
@@ -24,46 +33,65 @@ async function getDivinationRecords() {
         },
       },
     },
-    take: 50, // Limit to last 50 for safety
+    take: 50,
   });
   return records as any[];
 }
 
-export default async function AdminDivinationsPage() {
-  const records = await getDivinationRecords();
+export default async function AdminDivinationsPage({
+  searchParams: searchParamsPromise,
+}: {
+  searchParams: Promise<{ email?: string }>;
+}) {
+  const searchParams = await searchParamsPromise;
+  const searchEmail = searchParams.email;
+  const records = await getDivinationRecords(searchEmail);
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-700">
-      <div className="flex items-end justify-between">
+    <div className="space-y-6 animate-in fade-in duration-500 font-sans">
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-serif font-bold text-amber-100 tracking-wider">
+          <h1 className="text-2xl font-bold text-slate-100 tracking-tight">
             占卜紀錄彙整
           </h1>
-          <p className="text-amber-200/40 mt-1 font-serif">
-            監控全系統的占卜活動、問題與 AI 解讀品質
+          <p className="text-slate-500 text-sm mt-1">
+            {searchEmail
+              ? `正在檢視使用者 ${searchEmail} 的紀錄`
+              : "全系統求問問題與 AI 響應品質監控日誌"}
           </p>
         </div>
-        <div className="relative">
-          <input
-            type="text"
-            placeholder="搜尋問題或內容..."
-            className="bg-[#171111] border border-amber-900/30 rounded-full px-6 py-2 text-sm text-amber-100 focus:outline-none focus:border-amber-500/50 w-64 pl-12"
-          />
-          <Search className="w-4 h-4 text-amber-500/50 absolute left-5 top-1/2 -translate-y-1/2" />
+        <div className="flex items-center gap-3">
+          {searchEmail && (
+            <a
+              href="/admin/divinations"
+              className="text-xs text-blue-500 hover:text-blue-400 font-bold border-b border-blue-500/30"
+            >
+              清除過濾
+            </a>
+          )}
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="搜尋 Email 或 問題..."
+              defaultValue={searchEmail || ""}
+              className="bg-slate-900 border border-slate-800 rounded-lg px-4 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 w-64 pl-10"
+            />
+            <Search className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+          </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-6">
+      <div className="space-y-4">
         {records.map((record) => (
           <div
             key={record.id}
-            className="bg-[#171111] border border-amber-900/30 rounded-2xl overflow-hidden shadow-xl hover:border-amber-500/20 transition-all flex flex-col md:flex-row"
+            className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-sm hover:border-slate-700 transition-all flex flex-col md:flex-row group"
           >
-            {/* Left Info Bar */}
-            <div className="w-full md:w-64 bg-black/40 p-6 border-b md:border-b-0 md:border-r border-amber-900/30 flex flex-col justify-between">
+            {/* Sidebar Label */}
+            <div className="w-full md:w-60 bg-slate-950/50 p-5 border-b md:border-b-0 md:border-r border-slate-800 flex flex-col justify-between">
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full border border-amber-500/30 overflow-hidden bg-black/60">
+                  <div className="w-8 h-8 rounded-full border border-slate-800 overflow-hidden bg-slate-900 shadow-inner">
                     {record.user.image ? (
                       <img
                         src={record.user.image}
@@ -71,59 +99,70 @@ export default async function AdminDivinationsPage() {
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <User className="w-4 h-4 text-amber-700" />
+                      <div className="w-full h-full flex items-center justify-center bg-slate-800 text-slate-500">
+                        <User className="w-4 h-4" />
+                      </div>
                     )}
                   </div>
                   <div className="overflow-hidden">
-                    <p className="text-amber-100 text-xs font-bold truncate">
-                      {record.user.name || "匿名用戶"}
+                    <p className="text-slate-200 text-xs font-bold truncate">
+                      {record.user.name || "Anon."}
                     </p>
-                    <p className="text-amber-200/30 text-[10px] truncate">
+                    <p className="text-slate-500 text-[10px] truncate">
                       {record.user.email}
                     </p>
                   </div>
                 </div>
 
-                <div className="pt-2 space-y-2">
-                  <span className="px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 text-[10px] font-bold uppercase tracking-wider border border-amber-500/20 block w-fit">
-                    {record.theme === "love_tarot" ? "聖愛塔羅" : record.theme}
-                  </span>
-                  <p className="text-amber-200/40 text-[10px] font-serif flex items-center gap-1">
-                    <Calendar className="w-3 h-3" />
-                    {new Date(record.createdAt).toLocaleString("zh-TW")}
-                  </p>
+                <div className="space-y-1.5">
+                  <div className="inline-flex items-center px-2 py-0.5 rounded-md bg-blue-500/10 text-blue-400 border border-blue-500/20 text-[10px] font-bold uppercase">
+                    {record.theme === "love_tarot"
+                      ? "LOVE_TAROT"
+                      : record.theme}
+                  </div>
+                  <div className="flex items-center gap-2 text-slate-500 text-[10px] font-medium">
+                    <Clock className="w-3 h-3" />
+                    {new Date(record.createdAt).toLocaleString("zh-TW", {
+                      hour12: false,
+                    })}
+                  </div>
                 </div>
               </div>
 
-              <div className="pt-4 mt-4 border-t border-amber-900/20">
-                <button className="text-amber-500/60 hover:text-amber-400 text-[10px] font-serif flex items-center gap-1 transition-colors group">
-                  查看完整資料{" "}
-                  <ExternalLink className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+              <div className="pt-4 mt-4 border-t border-slate-800/50">
+                <button className="text-blue-500 hover:text-blue-400 text-[10px] font-bold flex items-center gap-1 transition-colors uppercase tracking-tight">
+                  Log Details
+                  <ExternalLink className="w-3 h-3" />
                 </button>
               </div>
             </div>
 
-            {/* Right Content */}
-            <div className="flex-1 p-8 space-y-6">
+            {/* Content Display */}
+            <div className="flex-1 p-6 space-y-5 bg-gradient-to-br from-slate-900 to-slate-950">
               <div className="space-y-2">
-                <h3 className="text-amber-500/40 text-[10px] font-serif uppercase tracking-widest flex items-center gap-2">
-                  <Sparkles className="w-3 h-3" />
-                  提問內容
-                </h3>
-                <p className="text-amber-100 font-serif text-lg leading-relaxed italic border-l-2 border-amber-500/20 pl-4 bg-amber-500/5 py-2 rounded-r-lg">
-                  「{record.question || "未提供提問內容"}」
-                </p>
+                <div className="flex items-center gap-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest">
+                  <Layout className="w-3 h-3" />
+                  Query Context
+                </div>
+                <div className="text-slate-100 text-sm font-medium leading-relaxed bg-slate-800/40 p-4 rounded-lg border border-slate-800/50">
+                  {record.question || "No prompt provided."}
+                </div>
               </div>
 
-              <div className="space-y-4">
-                <h3 className="text-amber-500/40 text-[10px] font-serif uppercase tracking-widest flex items-center gap-2">
-                  <ChevronRight className="w-3 h-3" />
-                  AI 解讀片段
-                </h3>
-                <div className="text-amber-200/80 text-sm font-serif line-clamp-3 overflow-hidden mask-fade-bottom">
-                  <ReactMarkdown>
-                    {record.aiReading || "無 AI 解讀內容"}
-                  </ReactMarkdown>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest">
+                    <Sparkles className="w-3 h-3" />
+                    Model Result Payload
+                  </div>
+                  <span className="text-[10px] text-slate-500 font-mono">
+                    MD_RENDERED
+                  </span>
+                </div>
+                <div className="text-slate-300 text-[13px] leading-relaxed max-h-64 overflow-y-auto bg-slate-950/80 p-5 rounded-lg border border-slate-800 scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
+                  <div className="prose prose-invert prose-sm max-w-none">
+                    <ReactMarkdown>{record.aiReading || "N/A"}</ReactMarkdown>
+                  </div>
                 </div>
               </div>
             </div>
@@ -131,9 +170,9 @@ export default async function AdminDivinationsPage() {
         ))}
 
         {records.length === 0 && (
-          <div className="py-20 text-center border border-dashed border-amber-900/30 rounded-3xl bg-black/20">
-            <p className="text-amber-200/20 font-serif italic text-lg">
-              目前尚無任何占卜紀錄
+          <div className="py-20 text-center border-2 border-dashed border-slate-800 rounded-2xl bg-slate-900/50">
+            <p className="text-slate-600 font-bold text-sm uppercase tracking-widest">
+              No Data Records Found
             </p>
           </div>
         )}
