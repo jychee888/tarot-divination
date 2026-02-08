@@ -104,7 +104,16 @@ export default async function ArticleDetailPage(props: {
           </div>
         )}
 
-        <article className="prose prose-invert prose-amber max-w-none prose-headings:font-bold prose-headings:text-[#F9ECDC] prose-headings:im-fell-english-regular prose-p:text-[#F9ECDC]/80 prose-p:leading-relaxed prose-p:text-lg prose-li:text-[#F9ECDC]/80 prose-strong:text-[#C99041]">
+        <article
+          className="prose prose-invert prose-amber max-w-none 
+          prose-headings:font-bold prose-headings:text-[#F9ECDC] prose-headings:im-fell-english-regular prose-headings:tracking-wide prose-headings:mb-6 prose-headings:mt-10
+          prose-p:text-[#F9ECDC]/80 prose-p:leading-8 prose-p:text-lg prose-p:mb-6 prose-p:tracking-wide
+          prose-li:text-[#F9ECDC]/80 prose-li:marker:text-[#C99041]
+          prose-strong:text-[#C99041] prose-strong:font-bold prose-strong:text-xl
+          prose-ul:my-6 prose-ul:space-y-2
+          prose-blockquote:border-l-[#C99041] prose-blockquote:bg-[#C99041]/5 prose-blockquote:py-2 prose-blockquote:px-6 prose-blockquote:rounded-r-lg prose-blockquote:italic
+          "
+        >
           <div
             className="article-content"
             dangerouslySetInnerHTML={{ __html: post.content }}
