@@ -21,6 +21,7 @@ import Pagination from "@/components/Pagination";
 import ModalPortal from "@/components/ui/ModalPortal";
 import { Button } from "@/components/ui/button";
 import { MoonPhaseIndicator } from "@/components/decorations/moonPhaseIndicator";
+import ReactMarkdown from "react-markdown";
 
 interface Card {
   id?: string;
@@ -354,11 +355,16 @@ export default function HistoryPage() {
           >
             <div className="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
             <div
-              className="relative w-full max-w-5xl h-[90vh] bg-amber-950/95 border border-[#C99041]/20 rounded-[2rem] shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col animate-in zoom-in-95 duration-500"
+              className="relative w-full max-w-5xl h-[90vh] bg-[#171111] border border-[#C99041]/40 rounded-[2rem] shadow-[0_0_80px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col animate-in zoom-in-95 duration-500"
               onClick={(e) => e.stopPropagation()}
             >
+              {/* Decorative background glow */}
+              <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
+                <div className="absolute -top-[20%] -right-[10%] w-[60%] h-[60%] bg-amber-500/5 rounded-full blur-[120px]"></div>
+                <div className="absolute -bottom-[20%] -left-[10%] w-[60%] h-[60%] bg-amber-500/5 rounded-full blur-[120px]"></div>
+              </div>
               {/* Modal Header */}
-              <div className="px-6 py-4 md:px-8 md:py-5 border-b border-[#C99041]/10 flex items-center justify-between bg-gradient-to-b from-amber-900/10 to-transparent">
+              <div className="px-6 py-4 md:px-8 md:py-5 border-b border-[#C99041]/10 flex items-center justify-between bg-[#1a1414]/90">
                 <div className="flex items-center gap-6">
                   <h2 className="text-xl font-bold text-amber-100 font-serif tracking-tight">
                     {getThemeLabel(selectedReading.theme)}
@@ -451,7 +457,7 @@ export default function HistoryPage() {
                                 )?.map((detail: string, i: number) => (
                                   <div
                                     key={i}
-                                    className="flex gap-4 bg-amber-900/10 p-5 rounded-2xl border border-amber-500/10 hover:border-amber-500/30 transition-all duration-500 group/item"
+                                    className="flex gap-4 bg-white/5 p-5 rounded-2xl border border-amber-500/10 hover:border-amber-500/30 transition-all duration-500 group/item"
                                   >
                                     <Sparkles className="w-4 h-4 text-amber-500 shrink-0 mt-1 opacity-40 group-hover/item:opacity-100 transition-opacity" />
                                     <span className="text-[15px] text-amber-100/80 leading-relaxed font-serif">
@@ -464,7 +470,7 @@ export default function HistoryPage() {
                           </div>
                         </div>
                         {index < selectedReading.cards.length - 1 && (
-                          <div className="pt-10 border-b border-amber-900/20 w-full" />
+                          <div className="pt-10 border-b border-white/5 w-full" />
                         )}
                       </Fragment>
                     );
@@ -474,51 +480,89 @@ export default function HistoryPage() {
                 {/* AI Reading Section in History */}
                 {selectedReading.aiReading && (
                   <div className="mt-12 pt-10 border-t border-[#C99041]/10 space-y-8 mb-6">
-                    <div className="bg-[#C99041]/5 border border-[#C99041]/30 rounded-[2rem] p-8 md:p-10 shadow-inner relative overflow-hidden group">
-                      <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
-                        <Sparkles className="w-24 h-24 text-[#C99041]" />
+                    <div className="bg-[#C99041]/5 border border-[#C99041]/30 rounded-[3rem] p-10 animate-in fade-in zoom-in duration-1000 shadow-[0_0_40px_rgba(0,0,0,0.3)] relative overflow-hidden min-h-[400px]">
+                      <div className="absolute -top-20 -right-20 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl"></div>
+                      <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl"></div>
+
+                      <div className="flex flex-col items-center justify-center gap-4 mb-10">
+                        <div className="flex items-center justify-center gap-4">
+                          <div className="w-1.5 h-1.5 bg-amber-500/40 rounded-full"></div>
+                          <Sparkles className="w-6 h-6 text-amber-400" />
+                          <h4 className="text-2xl font-bold text-amber-100 font-serif tracking-widest text-center">
+                            {selectedReading.theme === "love_tarot"
+                              ? "聖愛深度啟示錄"
+                              : "命運深度啟示錄"}
+                          </h4>
+                          <Sparkles className="w-6 h-6 text-amber-400" />
+                          <div className="w-1.5 h-1.5 bg-amber-500/40 rounded-full"></div>
+                        </div>
+
+                        {selectedReading.question && (
+                          <p className="text-xs text-amber-500/60 font-medium tracking-wide mt-1">
+                            核心焦點：{selectedReading.question}
+                          </p>
+                        )}
+                        {selectedReading.userContext && (
+                          <p className="text-[10px] text-amber-500/40 font-medium tracking-widest mt-0.5 uppercase">
+                            靈魂簽名：
+                            {selectedReading.userContext.birthday || "未知誕辰"}
+                            {selectedReading.userContext.birthTime
+                              ? ` ${selectedReading.userContext.birthTime}`
+                              : ""}{" "}
+                            /{" "}
+                            {selectedReading.userContext.gender === "male"
+                              ? "陽性能量"
+                              : selectedReading.userContext.gender === "female"
+                                ? "陰性能量"
+                                : selectedReading.userContext.gender ===
+                                    "non-binary"
+                                  ? "多元能量"
+                                  : "宇宙能量"}
+                          </p>
+                        )}
                       </div>
 
-                      <div className="relative z-10 space-y-6">
-                        <div className="flex items-center gap-3">
-                          <div className="p-2 bg-[#C99041]/20 rounded-lg">
-                            <Sparkles className="w-5 h-5 text-[#C99041]" />
-                          </div>
-                          <div>
-                            <h4 className="text-xl font-bold text-amber-100 font-serif tracking-tight">
-                              星辰啟讀報告
-                            </h4>
-                            {selectedReading.question && (
-                              <p className="text-xs text-amber-500/60 font-medium tracking-wide mt-1">
-                                核心焦點：{selectedReading.question}
-                              </p>
-                            )}
-                            {selectedReading.userContext && (
-                              <p className="text-[10px] text-amber-500/40 font-medium tracking-widest mt-0.5 uppercase">
-                                靈魂簽名：
-                                {selectedReading.userContext.birthday ||
-                                  "未知誕辰"}
-                                {selectedReading.userContext.birthTime
-                                  ? ` ${selectedReading.userContext.birthTime}`
-                                  : ""}{" "}
-                                /{" "}
-                                {selectedReading.userContext.gender === "male"
-                                  ? "陽性能量"
-                                  : selectedReading.userContext.gender ===
-                                      "female"
-                                    ? "陰性能量"
-                                    : selectedReading.userContext.gender ===
-                                        "non-binary"
-                                      ? "多元能量"
-                                      : "宇宙能量"}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="prose prose-invert max-w-none text-amber-50/90 leading-relaxed font-serif whitespace-pre-wrap border-l-2 border-[#C99041]/20 pl-6">
+                      <div className="prose prose-invert max-w-none text-md text-amber-50/90 leading-[2.2] font-serif tracking-wide text-justify transition-all duration-1000">
+                        <ReactMarkdown
+                          components={{
+                            h2: ({ node, ...props }) => (
+                              <h2
+                                className="text-2xl font-bold text-amber-100 my-8 flex items-center gap-3 border-l-4 border-amber-500/40 pl-4 bg-amber-500/5 py-2 rounded-r-xl"
+                                {...props}
+                              />
+                            ),
+                            h3: ({ node, ...props }) => (
+                              <h3
+                                className="text-xl font-bold text-amber-300 mt-12 mb-8 flex items-center gap-3 border-b border-amber-500/20 pb-4 font-serif tracking-widest italic"
+                                {...props}
+                              />
+                            ),
+                            p: ({ node, ...props }) => (
+                              <p
+                                className="mb-10 drop-shadow-sm leading-[2.4]"
+                                {...props}
+                              />
+                            ),
+                            strong: ({ node, ...props }) => (
+                              <strong
+                                className="text-amber-200 font-bold drop-shadow-[0_0_10px_rgba(251,191,36,0.4)] px-1"
+                                {...props}
+                              />
+                            ),
+                            blockquote: ({ node, ...props }) => (
+                              <blockquote
+                                className="border-l-4 border-amber-500/40 pl-8 py-6 my-12 italic text-amber-200/90 bg-amber-500/5 rounded-r-3xl border-double"
+                                {...props}
+                              />
+                            ),
+                          }}
+                        >
                           {selectedReading.aiReading}
-                        </div>
+                        </ReactMarkdown>
+                      </div>
+
+                      <div className="mt-12 flex justify-center">
+                        <div className="h-px w-32 bg-gradient-to-r from-transparent via-amber-500/30 to-transparent"></div>
                       </div>
                     </div>
                   </div>
@@ -526,7 +570,7 @@ export default function HistoryPage() {
               </div>
 
               {/* Modal Blur Gradient Footer */}
-              <div className="absolute bottom-0 inset-x-0 h-24 bg-gradient-to-t from-amber-950 to-transparent pointer-events-none"></div>
+              <div className="absolute bottom-0 inset-x-0 h-24 bg-gradient-to-t from-[#171111] to-transparent pointer-events-none"></div>
             </div>
           </div>
         </ModalPortal>
@@ -535,7 +579,7 @@ export default function HistoryPage() {
       {/* Delete Confirmation Modal */}
       {isDeleteConfirmOpen && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-[110] p-4 animate-in fade-in duration-300">
-          <div className="bg-amber-950 border border-red-500/20 rounded-3xl p-8 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-300">
+          <div className="bg-[#1a1414] border border-red-500/20 rounded-3xl p-8 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-300">
             <div className="flex flex-col items-center text-center space-y-4">
               <div className="p-3 bg-red-500/10 rounded-full">
                 <AlertCircle className="w-8 h-8 text-red-500" />

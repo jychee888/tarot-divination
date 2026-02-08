@@ -388,7 +388,7 @@ function DivinationContent() {
   };
 
   return (
-    <div className="relative min-h-screen bg-[#171111] text-[#F9ECDC] overflow-hidden p-4">
+    <div className="relative min-h-screen bg-[#171111] text-[#F9ECDC] overflow-hidden p-4 pb-20">
       <div className="absolute z-50 inset-2 sm:inset-4 border border-[#C99041] rounded-3xl pointer-events-none"></div>
       <div className="absolute z-50 inset-4 sm:inset-8 border border-[#C99041] rounded-xl pointer-events-none"></div>
       <div className="absolute z-10 inset-0 sm:inset-0 sm:border-[40px] border-[20px] border-[#171111] rounded-xl pointer-events-none"></div>
@@ -508,7 +508,7 @@ function DivinationContent() {
                 <div className="text-center pt-6">
                   <Button
                     size="lg"
-                    className={`font-serif sm:text-md text-[14px] text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 border-2 border-[#C99041] sm:py-8 sm:px-12 rounded-full shadow-[0_0_20px_rgba(201,144,65,0.2)] transition-all duration-300 transform ${!selectedQuestion ? "opacity-50 cursor-not-allowed grayscale" : "hover:scale-105 hover:border-amber-400 hover:shadow-[0_0_30px_rgba(201,144,65,0.4)]"}`}
+                    className={`font-serif sm:text-md text-[14px] text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 border-2 border-[#C99041] sm:py-8 sm:px-12 rounded-full shadow-[0_0_20px_rgba(201,144,65,0.2)] transition-all duration-300 transform ${!selectedQuestion ? "opacity-40 cursor-not-allowed" : "hover:scale-105 hover:border-amber-400 hover:shadow-[0_0_30px_rgba(201,144,65,0.4)]"}`}
                     onClick={startDivination}
                     disabled={!selectedQuestion}
                   >

@@ -85,11 +85,8 @@ const LoveTarotCard = ({
           className={`relative aspect-[2/3] w-full transform transition-all duration-700 ${isRevealed ? "rotate-y-180" : "hover:scale-105 shadow-2xl"}`}
           style={{ transformStyle: "preserve-3d" }}
         >
-          {/* Card Back */}
-
           <CardBack />
 
-          {/* Card Front */}
           <div
             className="absolute inset-0 w-full h-full flex flex-col items-center justify-center overflow-hidden rounded-lg shadow-2xl shadow-amber-500/20"
             style={{
@@ -100,7 +97,7 @@ const LoveTarotCard = ({
             <img
               src={card.image}
               alt={card.name}
-              className={`h-[82%] w-auto rounded-md shadow-inner ${card.isReversed ? "rotate-180" : ""}`}
+              className={`h-[90%] w-auto rounded-md shadow-inner ${card.isReversed ? "rotate-180" : ""}`}
             />
             <div className="absolute inset-0 w-full h-full -z-10">
               <CardFront />
@@ -327,7 +324,7 @@ export default function LoveTarotPage() {
   }, [showReadingInput]);
 
   return (
-    <div className="relative min-h-screen bg-[#171111] text-[#F9ECDC] overflow-hidden p-4">
+    <div className="relative min-h-screen bg-[#171111] text-[#F9ECDC] overflow-hidden p-4 pb-24">
       <div className="absolute z-50 inset-2 sm:inset-4 border border-[#C99041] rounded-3xl pointer-events-none"></div>
       <div className="absolute z-50 inset-4 sm:inset-8 border border-[#C99041] rounded-xl pointer-events-none"></div>
       <div className="absolute z-10 inset-0 sm:inset-0 sm:border-[40px] border-[20px] border-[#171111] rounded-xl pointer-events-none"></div>
@@ -406,34 +403,40 @@ export default function LoveTarotPage() {
                   </h2>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {currentSuggestedQuestions.map((q: string, idx: number) => (
-                      <button
+                      <Button
                         key={idx}
+                        variant={question === q ? "default" : "outline"}
+                        className={`font-serif sm:text-sm text-[12px] text-left justify-start px-6 py-6 h-auto whitespace-normal text-amber-100/80 hover:text-amber-100 bg-transparent hover:bg-amber-500/10 border border-[#C99041]/30 hover:border-[#C99041] rounded-xl transition-all duration-300 ${question === q ? "bg-[#C99041]/10 border-[#C99041] text-amber-100 shadow-[0_0_10px_rgba(201,144,65,0.1)]" : ""}`}
                         onClick={() => handleSuggestedQuestion(q)}
                         disabled={!relationshipStatus}
-                        className={`bg-transparent rounded-xl py-4 text-[13px] font-serif h-auto flex items-center justify-start px-4 text-left disabled:opacity-30 transform transition-all hover:scale-[1.02] active:scale-95 border focus:outline-none ${
-                          question === q
-                            ? "border-[#C99041] bg-amber-500/20 text-amber-50 shadow-[0_0_15px_rgba(201,144,65,0.1)] hover:bg-amber-500/30 hover:text-amber-50"
-                            : "border-[#C99041]/30 text-amber-200/70 hover:bg-amber-500/10 hover:text-amber-100 hover:border-[#C99041]"
-                        }`}
                       >
                         <Sparkles
                           className={`w-3.5 h-3.5 mr-2 shrink-0 ${question === q ? "text-amber-400" : "text-amber-400/30"}`}
                         />
                         {q}
-                      </button>
+                      </Button>
                     ))}
                   </div>
                 </section>
 
                 <div className="text-center pt-4">
-                  <button
+                  <Button
+                    size="lg"
                     onClick={startDivination}
                     disabled={!relationshipStatus || isDrawing}
-                    className="w-full sm:w-auto bg-amber-500/10 hover:bg-amber-500/20 text-amber-200 hover:text-amber-100 border-2 border-[#C99041] rounded-full px-8 py-4 sm:text-md text-lg font-serif transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_30px_rgba(201,144,65,0.1)] flex items-center justify-center mx-auto"
+                    className={`font-serif sm:text-md text-[14px] text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 border-2 border-[#C99041] sm:py-8 sm:px-12 rounded-full shadow-[0_0_20px_rgba(201,144,65,0.2)] transition-all duration-300 transform ${!relationshipStatus ? "opacity-40 cursor-not-allowed" : "hover:scale-105 hover:border-amber-400 hover:shadow-[0_0_30px_rgba(201,144,65,0.4)]"}`}
                   >
-                    <Sparkles className="mr-3 h-7 w-7" />
-                    {isDrawing ? "召喚卡片中..." : "啟動聖愛占卜"}
-                  </button>
+                    <Sparkles
+                      className={`w-5 h-5 mr-2 ${relationshipStatus ? "text-amber-300" : "text-amber-300/30"}`}
+                    />
+                    <span className="drop-shadow-sm font-bold tracking-widest text-lg">
+                      {isDrawing
+                        ? "召喚卡片中..."
+                        : relationshipStatus
+                          ? "啟動聖愛占卜"
+                          : "請先選擇關係狀態"}
+                    </span>
+                  </Button>
                 </div>
               </CardContent>
               <DecorativeCorner
