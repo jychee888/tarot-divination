@@ -41,6 +41,7 @@ interface DivinationRecord {
     birthday?: string;
     birthTime?: string;
     gender?: string;
+    relationshipStatus?: string;
   };
   cards: Card[];
   createdAt: string;
@@ -245,7 +246,7 @@ export default function HistoryPage() {
                       ? "聖愛啟示"
                       : t === "daily_draw"
                         ? "每日靈感"
-                        : "一般占卜"}
+                        : "塔羅運勢"}
                 </button>
               ),
             )}
@@ -355,6 +356,12 @@ export default function HistoryPage() {
                         <Calendar className="w-3 h-3" />
                         {new Date(record.createdAt).toLocaleDateString("zh-TW")}
                       </div>
+
+                      {record.question && (
+                        <p className="mt-3 text-xs text-foreground/70 font-serif leading-relaxed line-clamp-2">
+                          {record.question}
+                        </p>
+                      )}
                     </div>
 
                     <button
@@ -568,27 +575,61 @@ export default function HistoryPage() {
                         </div>
 
                         {selectedReading.question && (
-                          <p className="text-xs text-primary/60 font-medium tracking-wide mt-1">
-                            核心焦點：{selectedReading.question}
-                          </p>
+                          <div className="text-center space-y-1 mt-1">
+                            <p className="text-sm text-primary/80 font-bold tracking-wide">
+                              求問事項：{selectedReading.question}
+                            </p>
+                          </div>
                         )}
+
                         {selectedReading.userContext && (
-                          <p className="text-[10px] text-primary/40 font-medium tracking-widest mt-0.5 uppercase">
-                            靈魂簽名：
-                            {selectedReading.userContext.birthday || "未知誕辰"}
-                            {selectedReading.userContext.birthTime
-                              ? ` ${selectedReading.userContext.birthTime}`
-                              : ""}{" "}
-                            /{" "}
-                            {selectedReading.userContext.gender === "male"
-                              ? "陽性能量"
-                              : selectedReading.userContext.gender === "female"
-                                ? "陰性能量"
-                                : selectedReading.userContext.gender ===
-                                    "non-binary"
-                                  ? "多元能量"
-                                  : "宇宙能量"}
-                          </p>
+                          <div className="text-[10px] text-primary/50 font-medium tracking-widest mt-2 uppercase flex flex-col items-center gap-1">
+                            {/* Display Relationship Status for Love Tarot */}
+                            {selectedReading.userContext.relationshipStatus && (
+                              <span className="bg-primary/10 px-2 py-0.5 rounded text-primary/80">
+                                關係對象：
+                                {selectedReading.userContext
+                                  .relationshipStatus === "crush"
+                                  ? "曖昧對象"
+                                  : selectedReading.userContext
+                                        .relationshipStatus === "ex"
+                                    ? "前任"
+                                    : selectedReading.userContext
+                                          .relationshipStatus === "current"
+                                      ? "現任"
+                                      : selectedReading.userContext
+                                          .relationshipStatus}
+                              </span>
+                            )}
+
+                            {/* Display User Profile Info */}
+                            {(selectedReading.userContext.birthday ||
+                              selectedReading.userContext.gender) && (
+                              <span>
+                                靈魂簽名：
+                                {selectedReading.userContext.birthday ||
+                                  "未知誕辰"}
+                                {selectedReading.userContext.birthTime
+                                  ? ` ${selectedReading.userContext.birthTime}`
+                                  : ""}
+                                {selectedReading.userContext.gender && (
+                                  <>
+                                    {" / "}
+                                    {selectedReading.userContext.gender ===
+                                    "male"
+                                      ? "陽性能量"
+                                      : selectedReading.userContext.gender ===
+                                          "female"
+                                        ? "陰性能量"
+                                        : selectedReading.userContext.gender ===
+                                            "non-binary"
+                                          ? "多元能量"
+                                          : "宇宙能量"}
+                                  </>
+                                )}
+                              </span>
+                            )}
+                          </div>
                         )}
                       </div>
 
