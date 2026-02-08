@@ -16,11 +16,19 @@ export async function POST(req: Request) {
     // 獲取後台設定的 AI 引導語
     let sysPromptPrefix = "";
     try {
-      const setting = await (prisma as any).systemSettings.findUnique({
-        where: { key: "ai_prompt_prefix" }
-      });
-      if (setting?.value) {
-        sysPromptPrefix = setting.value + "\n\n";
+      const systemSettingModel = 
+        (prisma as any).systemSetting || 
+        (prisma as any).systemSettings || 
+        (prisma as any).SystemSetting || 
+        (prisma as any).SystemSettings;
+
+      if (systemSettingModel) {
+        const setting = await systemSettingModel.findUnique({
+          where: { key: "ai_prompt_prefix" }
+        });
+        if (setting?.value) {
+          sysPromptPrefix = setting.value + "\n\n";
+        }
       }
     } catch (e) {
       console.warn("Could not fetch system settings:", e);

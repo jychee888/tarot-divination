@@ -11,14 +11,19 @@ export async function getSystemSettings() {
     const models = Object.keys(prisma).filter(key => !key.startsWith('_') && !key.startsWith('$'));
     console.log("[Settings] Available Prisma models:", models);
 
-    // Try both camelCase and PascalCase just in case of generation discrepancies
-    const systemSettingsModel = (prisma as any).systemSettings || (prisma as any).SystemSettings;
+    // Try multiple possible model names due to Prisma naming conventions and singular/plural variations
+    // Pattern: singular (systemSetting), plural (systemSettings), PascalCase (SystemSetting/SystemSettings)
+    const systemSettingModel = 
+      (prisma as any).systemSetting || 
+      (prisma as any).systemSettings || 
+      (prisma as any).SystemSetting || 
+      (prisma as any).SystemSettings;
     
-    if (!systemSettingsModel) {
-      throw new Error(`SystemSettings model not found in Prisma client. Available models: ${models.join(', ')}`);
+    if (!systemSettingModel) {
+      throw new Error(`SystemSetting model not found in Prisma client. Available models: ${models.join(', ')}`);
     }
 
-    const settings = await systemSettingsModel.findMany()
+    const settings = await systemSettingModel.findMany()
     console.log(`[Settings] Fetched ${settings.length} settings from database`);
     
     // Convert array to searchable object
@@ -47,14 +52,18 @@ export async function updateSystemSettings(settings: Record<string, string>) {
   }
 
   try {
-    const systemSettingsModel = (prisma as any).systemSettings || (prisma as any).SystemSettings;
+    const systemSettingModel = 
+      (prisma as any).systemSetting || 
+      (prisma as any).systemSettings || 
+      (prisma as any).SystemSetting || 
+      (prisma as any).SystemSettings;
     
-    if (!systemSettingsModel) {
-      throw new Error("SystemSettings model not found in Prisma client");
+    if (!systemSettingModel) {
+      throw new Error("SystemSetting model not found in Prisma client");
     }
 
     const upserts = Object.entries(settings).map(([key, value]) => {
-      return systemSettingsModel.upsert({
+      return systemSettingModel.upsert({
         where: { key },
         update: { value },
         create: { key, value }

@@ -7,7 +7,15 @@ import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 // Helper to fetch settings
 async function getSettings() {
   try {
-    const settings = await (prisma as any).systemSettings.findMany();
+    const systemSettingModel =
+      (prisma as any).systemSetting ||
+      (prisma as any).systemSettings ||
+      (prisma as any).SystemSetting ||
+      (prisma as any).SystemSettings;
+
+    if (!systemSettingModel) return {};
+
+    const settings = await systemSettingModel.findMany();
     return settings.reduce((acc: any, curr: any) => {
       acc[curr.key] = curr.value;
       return acc;
