@@ -7,7 +7,18 @@ import { authOptions } from "@/lib/auth"
 
 export async function getSystemSettings() {
   try {
-    const settings = await (prisma as any).systemSettings.findMany()
+    // Debug: Log available models on prisma client
+    const models = Object.keys(prisma).filter(key => !key.startsWith('_') && !key.startsWith('$'));
+    console.log("[Settings] Available Prisma models:", models);
+
+    // Try both camelCase and PascalCase just in case of generation discrepancies
+    const systemSettingsModel = (prisma as any).systemSettings || (prisma as any).SystemSettings;
+    
+    if (!systemSettingsModel) {
+      throw new Error(`SystemSettings model not found in Prisma client. Available models: ${models.join(', ')}`);
+    }
+
+    const settings = await systemSettingsModel.findMany()
     console.log(`[Settings] Fetched ${settings.length} settings from database`);
     
     // Convert array to searchable object
@@ -19,7 +30,7 @@ export async function getSystemSettings() {
     return { success: true, data: settingsMap }
   } catch (error: any) {
     console.error("[Settings] Error fetching settings:", error.message)
-    return { success: false, error: "Failed to fetch settings" }
+    return { success: false, error: `讀取失敗: ${error.message}` }
   }
 }
 
@@ -36,8 +47,14 @@ export async function updateSystemSettings(settings: Record<string, string>) {
   }
 
   try {
+    const systemSettingsModel = (prisma as any).systemSettings || (prisma as any).SystemSettings;
+    
+    if (!systemSettingsModel) {
+      throw new Error("SystemSettings model not found in Prisma client");
+    }
+
     const upserts = Object.entries(settings).map(([key, value]) => {
-      return (prisma as any).systemSettings.upsert({
+      return systemSettingsModel.upsert({
         where: { key },
         update: { value },
         create: { key, value }
