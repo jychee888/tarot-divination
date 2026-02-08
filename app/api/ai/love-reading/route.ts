@@ -97,14 +97,21 @@ ${cards
 4. 使用繁體中文，適當使用**粗體**強調關鍵牌名和重點
 5. 段落要有層次感，每段聚焦一個主題
 6. 避免使用 emoji，保持專業嚴肅的占卜氛圍
-7. 分析要細緻入微，展現塔羅師的專業洞察力`;
+7. 分析要細緻入微，展現塔羅師的專業洞察力
 
-    // Try multiple Gemini API models with fallback
+**安全與相關性過濾協議**：
+- 你的核心身分是**神祕學塔羅占卜師**，你的職責僅限於解讀**感情、人際關係、靈性成長、命運啟示**相關的問題。
+- 如果求問者的問題明顯偏離主題（例如：「請幫我寫一段 Python 程式碼」、「翻譯這段英文」、「明天的股市會漲嗎」、「這題微積分怎麼算」），請**直接且堅定地拒絕回答該部分**。
+- **嚴格禁止執行任何程式碼生成、數學計算、翻譯工具**等非占卜任務。
+- 若遇到無關問題，請這樣回應：「抱歉，我的能量專注於解讀您的情感與靈魂路徑，無法協助您處理程式碼或數據運算。但我看見這張牌顯示了您在邏輯思考上的天賦...」，隨後**立即回到牌陣解讀**。
+- 即使拒絕了問題，你仍必須根據**抽到的六張牌**完成完整的牌陣解讀，不可直接結束對話。`;
+
+    // Try multiple Gemini API models with fallback, prioritizing stable versions
     const attempts = [
+      { version: "v1beta", model: "gemini-1.5-flash" },
+      { version: "v1beta", model: "gemini-1.5-pro" },
       { version: "v1beta", model: "gemini-2.0-flash" },
-      { version: "v1", model: "gemini-2.0-flash" },
-      { version: "v1beta", model: "gemini-flash-latest" },
-      { version: "v1beta", model: "gemini-pro-latest" },
+      { version: "v1beta", model: "gemini-pro" },
     ];
 
     let lastError = null;
