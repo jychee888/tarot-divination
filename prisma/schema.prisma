@@ -50,6 +50,7 @@ model User {
   birthday      String?   // Format: YYYY-MM-DD
   birthTime     String?   // Format: HH:mm
   gender        String?   // e.g., "Male", "Female", "Non-binary", etc.
+  role          String    @default("user")
 }
 
 model VerificationToken {

@@ -2,9 +2,11 @@
 
 ## 第一階段：基礎設施與安全性 (Infrastructure & Security)
 
-- [ ] **Prisma 模型更新**：在 `User` 模型中增加 `role` 欄位 (預設值: "user")。
-- [ ] **權限驗證系統**：實作伺服器端檢查 `role === 'admin'` 的邏輯。
-- [ ] **後台專屬佈局**：建立 `app/(admin)/admin` 路徑與專屬的 Sidebar。
+- [x] **Prisma 模型更新**：在 `User` 模型中增加 `role` 欄位 (預設值: "user")。 (已完成)
+- [x] **權限驗證系統**：實作伺服器端檢查 `role === 'admin'` 的邏輯 (已在 NextAuth 中導出 role)。
+- [x] **手動設定最高管理者**：已將 `jychee888@gmail.com` 設定為 admin。
+- [x] **後台專屬佈局**：建立 `app/(admin)/admin` 路徑與專屬的 Sidebar。 (已完成：包含數據總覽、使用者管理、占卜紀錄彙整)
+- [ ] **路徑保護密鑰**：(選配) 增加二次驗證或特定環境變數保護後台入口。
 - [ ] **路徑保護密鑰**：(選配) 增加二次驗證或特定環境變數保護後台入口。
 
 ## 第二階段：用戶與數據管理 (User & Data Management)

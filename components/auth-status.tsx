@@ -64,6 +64,19 @@ export function AuthStatus() {
                   </span>
                 </Link>
               </DropdownMenu.Item>
+              {session.user?.role === "admin" && (
+                <DropdownMenu.Item className="outline-none group">
+                  <Link
+                    href="/admin"
+                    className="relative w-full text-amber-500/60 hover:text-amber-400 hover:bg-amber-500/10 rounded-xl px-4 py-3 text-sm flex items-center transition-all duration-300 border border-transparent hover:border-amber-400/20"
+                  >
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-4 bg-amber-500 rounded-r-full opacity-0 group-hover:opacity-100 transition-opacity shadow-[0_0_10px_rgba(251,191,36,0.5)]"></div>
+                    <span className="tracking-widest font-serif ml-2 font-bold">
+                      管理者後台
+                    </span>
+                  </Link>
+                </DropdownMenu.Item>
+              )}
               <DropdownMenu.Separator className="h-px bg-[#C99041]/10 m-2" />
               <DropdownMenu.Item className="outline-none group">
                 <button

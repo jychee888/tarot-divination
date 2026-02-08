@@ -9,6 +9,10 @@ declare module "next-auth" {
       image?: string | null;
       nickname?: string;
       bio?: string;
+      birthday?: string;
+      birthTime?: string;
+      gender?: string;
+      role?: string;
     };
   }
 
@@ -19,6 +23,10 @@ declare module "next-auth" {
     image?: string | null;
     nickname?: string;
     bio?: string;
+    birthday?: string;
+    birthTime?: string;
+    gender?: string;
+    role?: string;
   }
 }
 
@@ -27,5 +35,6 @@ declare module "next-auth/jwt" {
     id: string;
     nickname?: string;
     bio?: string;
+    role?: string;
   }
 }
