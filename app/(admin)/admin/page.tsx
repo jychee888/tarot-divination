@@ -10,6 +10,9 @@ import {
   PieChart as PieChartIcon,
   ArrowUpRight,
   Loader2,
+  Search,
+  BarChart3,
+  ExternalLink,
 } from "lucide-react";
 import {
   AreaChart,
@@ -165,6 +168,49 @@ export default function AdminDashboard() {
                 />
               </AreaChart>
             </ResponsiveContainer>
+          </div>
+
+          {/* Quick Tools Header - Moved below trend chart per user request */}
+          <div className="mt-8 pt-8 border-t border-slate-800 flex flex-wrap gap-4">
+            <a
+              href="https://search.google.com/search-console?resource_id=https%3A%2F%2Ftarot-divination.zipffdigital.com%2F"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-3 px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl hover:bg-slate-800 hover:border-amber-500/50 transition-all group flex-1 min-w-[200px]"
+            >
+              <div className="p-2 bg-amber-500/10 rounded-lg group-hover:bg-amber-500/20 transition-colors">
+                <Search className="w-4 h-4 text-amber-500" />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">
+                  Google
+                </span>
+                <span className="text-xs font-bold text-slate-200 flex items-center gap-2">
+                  Search Console
+                  <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </span>
+              </div>
+            </a>
+
+            <a
+              href="https://analytics.google.com/analytics/web/?hl=zh-tw#/a383755504p523706249/realtime/overview?params=_u..nav%3Dmaui"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-3 px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl hover:bg-slate-800 hover:border-emerald-500/50 transition-all group flex-1 min-w-[200px]"
+            >
+              <div className="p-2 bg-emerald-500/10 rounded-lg group-hover:bg-emerald-500/20 transition-colors">
+                <BarChart3 className="w-4 h-4 text-emerald-500" />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">
+                  Google
+                </span>
+                <span className="text-xs font-bold text-slate-200 flex items-center gap-2">
+                  Analytics (Realtime)
+                  <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </span>
+              </div>
+            </a>
           </div>
         </div>
 
