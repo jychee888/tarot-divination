@@ -171,7 +171,7 @@ export default function ProfileForm({ user }: ProfileFormProps) {
           <form onSubmit={handleSubmit} className="space-y-8">
             <div className="space-y-8 bg-card/30 p-8 rounded-[2rem] border border-border shadow-xl relative overflow-hidden backdrop-blur-sm">
               {/* Subtle background glow */}
-              <div className="absolute -top-32 -right-32 w-64 h-64 bg-primary/5 rounded-full blur-[100px] pointer-events-none"></div>
+
               <div className="space-y-3">
                 <label className="flex items-center gap-2 text-sm font-medium text-foreground/80 mb-1 ml-1">
                   <Sparkles className="w-3.5 h-3.5" />

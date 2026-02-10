@@ -3,7 +3,7 @@
 export const dynamic = "force-dynamic";
 
 import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
+import { useSession, signIn } from "next-auth/react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,7 +15,14 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
-import { Heart, Sparkles, ArrowLeft, ChevronRight } from "lucide-react";
+import {
+  Heart,
+  Sparkles,
+  ArrowLeft,
+  ChevronRight,
+  Lock,
+  Users,
+} from "lucide-react";
 import Header from "@/components/layout/Header";
 import { CornerDecoration } from "@/components/decorations/corner-decoration";
 import { DecorativeCorner } from "@/components/decorations/decorative-corner";
@@ -31,6 +38,13 @@ import ReactMarkdown from "react-markdown";
 import tarotCards from "@/data/tarot-cards";
 import { useToast } from "@/hooks/use-toast";
 import { CrystalBall } from "@/components/CrystalBall";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 type RelationshipStatus = "crush" | "ex" | "current" | null;
 
@@ -133,7 +147,7 @@ const SUGGESTED_QUESTIONS: Record<string, string[]> = {
   ],
   ex: [
     "我們之間還有複合的可能嗎？",
-    "這段關係結束的修課與意義？",
+    "這段分手背後的真實意義？",
     "對方現在是如何看待我的？",
     "我該如何放下並重新開始？",
   ],
@@ -164,6 +178,7 @@ export default function LoveTarotPage() {
   const [showReadingInput, setShowReadingInput] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  const [showLoginDialog, setShowLoginDialog] = useState(false);
   const { toast } = useToast();
 
   const currentSuggestedQuestions = relationshipStatus
@@ -233,6 +248,10 @@ export default function LoveTarotPage() {
   };
 
   const fetchAiReading = async () => {
+    if (!session) {
+      setShowLoginDialog(true);
+      return;
+    }
     if (!question.trim()) return;
     setIsAiLoading(true);
     try {
@@ -769,6 +788,39 @@ export default function LoveTarotPage() {
           )}
         </div>
       </div>
+      <Dialog open={showLoginDialog} onOpenChange={setShowLoginDialog}>
+        <DialogContent className="bg-[#171111] border border-[#C99041] text-amber-50 rounded-2xl sm:max-w-md">
+          <DialogHeader className="space-y-4">
+            <div className="mx-auto w-16 h-16 bg-amber-500/10 rounded-full flex items-center justify-center border border-amber-500/20 mb-2">
+              <Lock className="w-8 h-8 text-amber-400" />
+            </div>
+            <DialogTitle className="text-center text-2xl font-serif tracking-wider text-amber-100">
+              開啟聖愛之門
+            </DialogTitle>
+            <DialogDescription className="text-center text-amber-200/80 leading-relaxed font-serif text-base">
+              AI 聖愛深度解讀需要連結您的靈魂印記
+              <br />
+              請登入以開啟這段專屬於您的靈魂對話
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-3 py-6">
+            <Button
+              onClick={() => signIn("google")}
+              className="w-full bg-amber-600 hover:bg-amber-500 text-white font-serif tracking-widest py-6 rounded-xl text-lg shadow-[0_0_15px_rgba(217,119,6,0.3)] transition-all transform hover:scale-[1.02]"
+            >
+              <Users className="w-5 h-5 mr-3" />
+              使用 Google 帳號登入
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => setShowLoginDialog(false)}
+              className="mt-2 text-amber-500/60 hover:text-amber-400 hover:bg-transparent tracking-widest font-serif"
+            >
+              暫時不要
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
