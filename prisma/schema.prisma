@@ -45,7 +45,7 @@ model User {
   divinations   DivinationRecord[]
 
   // Custom fields for user profile
-  nickname      String?   @unique
+  nickname      String?   
   bio           String?   
   birthday      String?   // Format: YYYY-MM-DD
   birthTime     String?   // Format: HH:mm
