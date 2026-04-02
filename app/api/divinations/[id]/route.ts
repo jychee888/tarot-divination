@@ -51,3 +51,53 @@ export async function DELETE(
     )
   }
 }
+
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const session = await getServerSession(authOptions)
+
+  if (!session || !session.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  }
+
+  try {
+    const { id } = await params;
+    const { aiReading } = await req.json();
+
+    if (!id || !aiReading) {
+      return NextResponse.json({ error: "Record ID and aiReading are required" }, { status: 400 })
+    }
+
+    // Verify ownership
+    const record = await prisma.divinationRecord.findUnique({
+      where: { id },
+    })
+
+    if (!record) {
+      return NextResponse.json({ error: "Record not found" }, { status: 404 })
+    }
+
+    if (record.userId !== session.user.id) {
+      return NextResponse.json(
+        { error: "Unauthorized to update this record" },
+        { status: 403 }
+      )
+    }
+
+    // Update the record
+    const updatedRecord = await prisma.divinationRecord.update({
+      where: { id },
+      data: { aiReading },
+    })
+
+    return NextResponse.json(updatedRecord)
+  } catch (error) {
+    console.error("Update error:", error)
+    return NextResponse.json(
+      { error: "Error updating divination record" },
+      { status: 500 }
+    )
+  }
+}

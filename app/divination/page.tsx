@@ -147,6 +147,7 @@ function DivinationContent() {
   const [isSaved, setIsSaved] = useState(false);
   const [aiReading, setAiReading] = useState<string>("");
   const [isAiLoading, setIsAiLoading] = useState(false);
+  const [savedRecordId, setSavedRecordId] = useState<string | null>(null);
 
   // Soul Signature States
   const [birthYear, setBirthYear] = useState<string>("");
@@ -338,6 +339,9 @@ function DivinationContent() {
       });
 
       if (!response.ok) throw new Error("儲存失敗");
+      const savedData = await response.json();
+      if (savedData.id) setSavedRecordId(savedData.id);
+
       setIsSaved(true);
       toast({ title: "儲存成功！", description: "您的占卜紀錄已儲存。" });
     } catch (error) {
@@ -369,6 +373,19 @@ function DivinationContent() {
       const data = await response.json();
       if (data.reading) {
         setAiReading(data.reading);
+
+        // 如果已經儲存過紀錄，自動更新資料庫中的 AI 解讀
+        if (savedRecordId) {
+          try {
+            await fetch(`/api/divinations/${savedRecordId}`, {
+              method: "PATCH",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ aiReading: data.reading }),
+            });
+          } catch (updateError) {
+            console.error("Failed to update AI reading in DB:", updateError);
+          }
+        }
       } else if (data.error) {
         toast({
           title: "AI 解讀失敗",

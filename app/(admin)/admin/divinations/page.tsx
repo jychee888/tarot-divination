@@ -9,6 +9,8 @@ import {
   Layout,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+import tarotCards from "@/data/tarot-cards";
+import LogDetailsButton from "./LogDetailsDialog";
 
 async function getDivinationRecords(searchEmail?: string) {
   const records = await prisma.divinationRecord.findMany({
@@ -130,10 +132,7 @@ export default async function AdminDivinationsPage({
               </div>
 
               <div className="pt-4 mt-4 border-t border-slate-800/50">
-                <button className="text-blue-500 hover:text-blue-400 text-[10px] font-bold flex items-center gap-1 transition-colors uppercase tracking-tight">
-                  Log Details
-                  <ExternalLink className="w-3 h-3" />
-                </button>
+                <LogDetailsButton record={record} />
               </div>
             </div>
 
@@ -165,6 +164,39 @@ export default async function AdminDivinationsPage({
                   </div>
                 </div>
               </div>
+
+              {/* Cards Display */}
+              {record.cards && Array.isArray(record.cards) && record.cards.length > 0 && (
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2 text-[10px] font-bold text-slate-600 uppercase tracking-widest">
+                    <Layout className="w-3 h-3" />
+                    Drawn Cards
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                    {record.cards.map((card: any, idx: number) => (
+                      <div key={idx} className="bg-slate-800/30 border border-slate-800/50 rounded-lg p-3 flex items-center gap-3">
+                        <div className="w-10 h-10 rounded bg-slate-900 border border-slate-700 flex items-center justify-center text-[10px] font-bold text-slate-500 overflow-hidden">
+                           {(card.image || tarotCards.find(t => t.name === card.name)?.image) ? (
+                             <img 
+                               src={card.image || tarotCards.find(t => t.name === card.name)?.image} 
+                               alt="" 
+                               className={`w-full h-full object-cover ${card.isReversed ? 'rotate-180' : ''}`} 
+                             />
+                           ) : (
+                             'CARD'
+                           )}
+                        </div>
+                        <div className="overflow-hidden">
+                          <p className="text-slate-200 text-xs font-bold truncate">{card.name}</p>
+                          <p className={`text-[10px] font-medium ${card.isReversed ? 'text-red-400/80' : 'text-blue-400/80'}`}>
+                            {card.isReversed ? 'REVERSED' : 'UPRIGHT'}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         ))}

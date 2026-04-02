@@ -174,6 +174,7 @@ export default function LoveTarotPage() {
   const [isDrawing, setIsDrawing] = useState(false);
   const [aiReading, setAiReading] = useState("");
   const [isAiLoading, setIsAiLoading] = useState(false);
+  const [savedRecordId, setSavedRecordId] = useState<string | null>(null);
   const [isReading, setIsReading] = useState(false);
   const [showReadingInput, setShowReadingInput] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -272,6 +273,19 @@ export default function LoveTarotPage() {
       const data = await response.json();
       if (data.reading) {
         setAiReading(data.reading);
+
+        // 如果已經儲存過紀錄，自動更新資料庫中的 AI 解讀
+        if (savedRecordId) {
+          try {
+            await fetch(`/api/divinations/${savedRecordId}`, {
+              method: "PATCH",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ aiReading: data.reading }),
+            });
+          } catch (updateError) {
+            console.error("Failed to update AI reading in DB:", updateError);
+          }
+        }
       }
     } catch (error) {
       console.error("AI reading error:", error);
@@ -329,6 +343,9 @@ export default function LoveTarotPage() {
       });
 
       if (!response.ok) throw new Error("儲存失敗");
+      const savedData = await response.json();
+      if (savedData.id) setSavedRecordId(savedData.id);
+
       setIsSaved(true);
       toast({ title: "儲存成功！", description: "您的占卜紀錄已儲存。" });
     } catch (error) {
