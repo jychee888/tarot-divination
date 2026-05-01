@@ -80,10 +80,11 @@ export async function POST(req: Request) {
 
     // 根據實測結果，優先嘗試穩定版模型
     const attempts = [
-      { version: 'v1beta', model: 'gemini-1.5-flash' },
-      { version: 'v1beta', model: 'gemini-1.5-pro' },
-      { version: 'v1beta', model: 'gemini-2.0-flash' }, // 若可用
-      { version: 'v1beta', model: 'gemini-pro' }
+      { version: 'v1beta', model: 'gemini-2.0-flash' },
+      { version: 'v1beta', model: 'gemini-2.0-flash-lite' },
+      { version: 'v1beta', model: 'gemini-flash-latest' },
+      { version: 'v1beta', model: 'gemini-1.5-flash-latest' },
+      { version: 'v1beta', model: 'gemini-1.5-pro-latest' }
     ];
 
     let lastError = null;
@@ -115,12 +116,21 @@ export async function POST(req: Request) {
             return NextResponse.json({ reading: finalReading });
           }
         } else {
-          lastError = data.error?.message || "Unknown error";
-          console.warn(`Gemini API Attempt (${attempt.version}/${attempt.model}) failed:`, lastError);
+          lastError = data.error?.message || data.error?.status || `HTTP ${response.status}`;
+          console.warn(`Gemini API Attempt (${attempt.version}/${attempt.model}) failed:`, {
+            status: response.status,
+            statusText: response.statusText,
+            error: data.error,
+          });
           
-          if (data.error?.code === 403 || data.error?.status === 'PERMISSION_DENIED') {
-             // specific api key error
-             throw new Error(`API Key invalid or permission denied: ${lastError}`);
+          if (data.error?.code === 403 || data.error?.status === 'PERMISSION_DENIED' || response.status === 403) {
+             throw new Error(`API Key 無效或權限不足：${lastError}`);
+          }
+          
+          // 如果是 404，可能是模型名稱不存在，繼續嘗試其他模型
+          if (response.status === 404) {
+            console.warn(`Model ${attempt.model} not found, trying next...`);
+            continue;
           }
         }
       } catch (e: any) {

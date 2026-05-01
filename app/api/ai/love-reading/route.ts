@@ -120,10 +120,11 @@ ${cards
 
     // Try multiple Gemini API models with fallback, prioritizing stable versions
     const attempts = [
-      { version: "v1beta", model: "gemini-1.5-flash" },
-      { version: "v1beta", model: "gemini-1.5-pro" },
       { version: "v1beta", model: "gemini-2.0-flash" },
-      { version: "v1beta", model: "gemini-pro" },
+      { version: "v1beta", model: "gemini-2.0-flash-lite" },
+      { version: "v1beta", model: "gemini-flash-latest" },
+      { version: "v1beta", model: "gemini-1.5-flash-latest" },
+      { version: "v1beta", model: "gemini-1.5-pro-latest" },
     ];
 
     let lastError = null;
@@ -155,18 +156,29 @@ ${cards
             return NextResponse.json({ reading });
           }
         } else {
-          lastError = data.error?.message || "Unknown error";
+          lastError = data.error?.message || data.error?.status || `HTTP ${response.status}`;
           console.warn(
             `Love Reading Attempt (${attempt.version}/${attempt.model}) failed:`,
-            lastError,
+            {
+              status: response.status,
+              statusText: response.statusText,
+              error: data.error,
+            }
           );
 
           // If API key error, stop trying other models
           if (
             data.error?.status === "PERMISSION_DENIED" ||
-            data.error?.status === "UNAUTHENTICATED"
+            data.error?.status === "UNAUTHENTICATED" ||
+            response.status === 403
           ) {
             throw new Error(`API 金鑰無效或權限不足：${lastError}`);
+          }
+          
+          // 如果是 404，可能是模型名稱不存在，繼續嘗試其他模型
+          if (response.status === 404) {
+            console.warn(`Model ${attempt.model} not found, trying next...`);
+            continue;
           }
         }
       } catch (e: any) {
