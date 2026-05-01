@@ -95,6 +95,50 @@ npx prisma generate
 npm run build
 ```
 
+### 文章發布流程 (Article Publishing)
+
+使用自動化腳本批量發布或更新文章：
+
+```bash
+# 執行文章發布腳本
+node scripts/publish-articles.js
+```
+
+**新增分類（若需要）**：
+
+在發布文章前，確保分類已存在於資料庫中：
+
+```bash
+# 新增分類（直接在 terminal 執行）
+node scripts/add-category.js "分類名稱" "category-slug" "分類描述"
+
+# 範例
+node scripts/add-category.js "新手入門指南" "beginner-guide" "第一次接觸塔羅？從如何洗牌、抽牌到建立儀式感的完整教學。"
+```
+
+**操作步驟**：
+1. 開啟 `scripts/publish-articles.js`
+2. 在 `newArticles` 陣列中填入新文章資料：
+   - `title`: 文章標題
+   - `slug`: 文章網址識別碼（英文，唯一）
+   - `content`: 文章內容（支援 HTML）
+   - `excerpt`: 文章摘要
+   - `categorySlug`: 分類代碼（對應資料庫分類）
+   - `tags`: 標籤陣列
+   - `coverImage`: 封面圖片連結
+3. 執行腳本，系統會自動：
+   - 驗證圖片連結有效性（失效時自動替換備用圖）
+   - 創建新文章或更新現有文章（基於 slug）
+   - 將文章關聯到指定分類
+
+**可用分類代碼**：
+- `major-arcana` - 大阿爾克那
+- `minor-arcana` - 小阿爾克那
+- `beginner-guide` - 新手入門指南
+- `tarot-spreads` - 經典牌陣研究
+- `reading-secrets` - 解牌心法與秘訣
+- `case-studies` - 實戰案例分析
+
 ## 📈 SEO 與 數據分析
 
 - 自動化 `sitemap.xml` 與 `robots.txt` 生成。

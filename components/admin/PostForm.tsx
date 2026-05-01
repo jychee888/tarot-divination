@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createPost, updatePost } from "@/app/actions/post";
 import { getCategories } from "@/app/actions/classification";
+import { generatePostDraft } from "@/app/actions/post-ai";
 import {
   Save,
   ArrowLeft,
@@ -15,6 +16,7 @@ import {
   Loader2,
   PlusCircle,
   X,
+  Sparkles,
 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -30,6 +32,15 @@ export function PostForm({ initialData, isEdit = false }: PostFormProps) {
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState<any[]>([]);
   const [tagInput, setTagInput] = useState("");
+  const [aiOpen, setAiOpen] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiForm, setAiForm] = useState({
+    topic: "",
+    tone: "溫暖、務實、可行動",
+    audience: "新手",
+    length: "medium" as "short" | "medium" | "long",
+    keywords: "",
+  });
   const [formData, setFormData] = useState({
     title: initialData?.title || "",
     slug: initialData?.slug || "",
@@ -123,6 +134,51 @@ export function PostForm({ initialData, isEdit = false }: PostFormProps) {
     }
   };
 
+  const handleGenerateDraft = async () => {
+    if (!formData.categoryId) {
+      toast.error("請先選擇一個分類");
+      return;
+    }
+    // 主題改為選填，若為空則由 AI 根據分類生成
+
+    setAiLoading(true);
+    try {
+      const result = await generatePostDraft({
+        topic: aiForm.topic,
+        tone: aiForm.tone,
+        audience: aiForm.audience,
+        length: aiForm.length,
+        keywords: aiForm.keywords,
+        categoryId: formData.categoryId,
+      });
+
+      if (!result.success) {
+        toast.error(result.error || "AI 生成失敗");
+        return;
+      }
+
+      const draft = result.data;
+
+      setFormData((prev) => ({
+        ...prev,
+        title: draft.title,
+        slug: draft.slug,
+        excerpt: draft.excerpt,
+        coverImage: draft.coverImage,
+        tags: draft.tags,
+        content: draft.content,
+        published: false, // 預設草稿，避免誤發
+      }));
+
+      toast.success("AI 草稿已生成並回填到表單（預設為草稿）");
+      setAiOpen(false);
+    } catch (e) {
+      toast.error("AI 生成時發生未知錯誤");
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
   return (
     <form
       onSubmit={handleSubmit}
@@ -137,19 +193,166 @@ export function PostForm({ initialData, isEdit = false }: PostFormProps) {
           <ArrowLeft className="w-4 h-4" />
           返回列表
         </Link>
-        <button
-          type="submit"
-          disabled={loading}
-          className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl font-bold transition-all shadow-lg shadow-blue-600/20 active:scale-95 text-sm"
-        >
-          {loading ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
-          ) : (
-            <Save className="w-4 h-4" />
+        <div className="flex items-center gap-2">
+          {!isEdit && (
+            <button
+              type="button"
+              onClick={() => setAiOpen(true)}
+              className="flex items-center gap-2 px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-100 rounded-xl font-bold transition-all active:scale-95 text-sm border border-slate-700"
+            >
+              <Sparkles className="w-4 h-4 text-purple-300" />
+              AI 生成草稿
+            </button>
           )}
-          {isEdit ? "更新文章" : "發布文章"}
-        </button>
+          <button
+            type="submit"
+            disabled={loading}
+            className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl font-bold transition-all shadow-lg shadow-blue-600/20 active:scale-95 text-sm"
+          >
+            {loading ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Save className="w-4 h-4" />
+            )}
+            {isEdit ? "更新文章" : "發布文章"}
+          </button>
+        </div>
       </div>
+
+      {aiOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center">
+          <div
+            className="absolute inset-0 bg-black/60"
+            onClick={() => (aiLoading ? null : setAiOpen(false))}
+          />
+          <div className="relative w-[95vw] max-w-2xl bg-slate-950 border border-slate-800 rounded-2xl shadow-2xl p-6">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h2 className="text-lg font-bold text-slate-100 flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-purple-300" />
+                  AI 生成文章草稿
+                </h2>
+                <p className="text-xs text-slate-500 mt-1">
+                  生成後會回填到表單。您可以輸入主題，或留空讓 AI 根據分類自動發揮。
+                </p>
+              </div>
+              <button
+                type="button"
+                disabled={aiLoading}
+                onClick={() => setAiOpen(false)}
+                className="text-slate-500 hover:text-slate-200 disabled:opacity-40"
+                title="關閉"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="mt-6 space-y-4">
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">
+                  主題（選填，留空則自動生成）
+                </label>
+                <input
+                  value={aiForm.topic}
+                  onChange={(e) =>
+                    setAiForm((p) => ({ ...p, topic: e.target.value }))
+                  }
+                  placeholder="例如：塔羅新手如何從牌面圖像開始解讀（留空則由 AI 擬定）"
+                  className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all text-sm"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">
+                    語氣/風格
+                  </label>
+                  <input
+                    value={aiForm.tone}
+                    onChange={(e) =>
+                      setAiForm((p) => ({ ...p, tone: e.target.value }))
+                    }
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-slate-200 focus:outline-none text-sm"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">
+                    目標讀者
+                  </label>
+                  <input
+                    value={aiForm.audience}
+                    onChange={(e) =>
+                      setAiForm((p) => ({ ...p, audience: e.target.value }))
+                    }
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-slate-200 focus:outline-none text-sm"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">
+                    長度
+                  </label>
+                  <select
+                    value={aiForm.length}
+                    onChange={(e) =>
+                      setAiForm((p) => ({
+                        ...p,
+                        length: e.target.value as any,
+                      }))
+                    }
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-slate-200 focus:outline-none text-sm appearance-none"
+                  >
+                    <option value="short">短（約 600-800 字）</option>
+                    <option value="medium">中（約 900-1200 字）</option>
+                    <option value="long">長（約 1400-1800 字）</option>
+                  </select>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">
+                    關鍵字（可選）
+                  </label>
+                  <input
+                    value={aiForm.keywords}
+                    onChange={(e) =>
+                      setAiForm((p) => ({ ...p, keywords: e.target.value }))
+                    }
+                    placeholder="例如：洗牌、心念、正逆位、共時性"
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-slate-200 focus:outline-none text-sm"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  disabled={aiLoading}
+                  onClick={() => setAiOpen(false)}
+                  className="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-200 text-sm font-bold disabled:opacity-40"
+                >
+                  取消
+                </button>
+                <button
+                  type="button"
+                  disabled={aiLoading}
+                  onClick={handleGenerateDraft}
+                  className="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-sm font-bold disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                >
+                  {aiLoading ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Sparkles className="w-4 h-4" />
+                  )}
+                  生成並回填
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main Content Areas */}

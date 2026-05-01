@@ -1,18 +1,37 @@
 import { getPosts } from "@/app/actions/post";
+import { getCategories } from "@/app/actions/classification";
 import Link from "next/link";
 import { BookOpen, Calendar, Tag, ChevronRight } from "lucide-react";
 import Header from "@/components/layout/Header";
 import BackgroundStars from "@/components/decorations/background-stars";
 import { CornerDecoration } from "@/components/decorations/corner-decoration";
+import ArticleFilter from "@/components/articles/ArticleFilter";
+
+export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "塔羅牌義介紹 | 心靈之眼 Soul's Eye",
   description: "深入了解 78 張塔羅牌的象徵意義、關鍵字與正逆位解釋。",
 };
 
-export default async function ArticlesPage() {
-  const result = await getPosts(true); // Only published
-  const posts = result.success ? result.data : [];
+interface ArticlesPageProps {
+  searchParams: {
+    category?: string;
+  };
+}
+
+export default async function ArticlesPage({ searchParams }: ArticlesPageProps) {
+  const params = await searchParams;
+  const category = params.category;
+  
+  // 獲取文章與分類
+  const [postsResult, categoriesResult] = await Promise.all([
+    getPosts(true, category),
+    getCategories()
+  ]);
+
+  const posts = postsResult.success ? postsResult.data : [];
+  const categories = categoriesResult.success ? categoriesResult.data : [];
 
   return (
     <div className="relative min-h-screen bg-[rgb(23,17,17)] text-[#F9ECDC] overflow-hidden">
@@ -44,7 +63,7 @@ export default async function ArticlesPage() {
       <Header />
 
       <main className="relative z-10 max-w-7xl mx-auto px-6 pt-32 pb-20 animate-in fade-in duration-1000">
-        <div className="space-y-4 mb-16 text-center">
+        <div className="space-y-4 mb-12 text-center">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#C99041]/10 border border-[#C99041]/20 text-[#C99041] text-xs font-bold uppercase tracking-widest">
             <BookOpen className="w-3.5 h-3.5" />
             知識庫
@@ -56,6 +75,12 @@ export default async function ArticlesPage() {
             探索塔羅牌的神秘世界，從大阿爾克那到小阿爾克那，為您的直覺尋找最深層的指引。
           </p>
         </div>
+
+        {/* 分類篩選器 */}
+        <ArticleFilter 
+          categories={categories} 
+          currentCategory={category} 
+        />
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {posts.map((post: any) => (

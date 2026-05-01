@@ -20,16 +20,30 @@ async function checkAdmin() {
   }
 }
 
-export async function getPosts(onlyPublished = false) {
+export async function getPosts(onlyPublished = false, categorySlug?: string) {
   try {
     const postModel = (prisma as any).post || (prisma as any).Post;
+    const where: any = onlyPublished ? { published: true } : {};
+    
+    if (categorySlug && categorySlug !== "all") {
+      // 使用更精確的關聯查詢
+      where.category = {
+        slug: categorySlug
+      };
+    }
+
+    console.log(`[getPosts] Fetching posts with where:`, JSON.stringify(where));
+
     const posts = await postModel.findMany({
-      where: onlyPublished ? { published: true } : {},
+      where,
       orderBy: { createdAt: 'desc' },
       include: { category: true }
     })
+    
+    console.log(`[getPosts] Found ${posts.length} posts`);
     return { success: true, data: posts }
   } catch (error: any) {
+    console.error(`[getPosts] Error:`, error.message);
     return { success: false, error: error.message }
   }
 }

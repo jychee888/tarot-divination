@@ -19,6 +19,36 @@
 
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
+const path = require("path");
+require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
+
+function getArgValue(flag) {
+  const prefix = `${flag}=`;
+  const exactIdx = process.argv.indexOf(flag);
+  if (exactIdx !== -1) return process.argv[exactIdx + 1];
+  const withEq = process.argv.find((a) => a.startsWith(prefix));
+  if (withEq) return withEq.slice(prefix.length);
+  return undefined;
+}
+
+async function resolveCategorySlug(categoryInput) {
+  if (!categoryInput) return undefined;
+
+  const category = await prisma.category.findFirst({
+    where: {
+      OR: [{ slug: categoryInput }, { name: categoryInput }],
+    },
+    select: { slug: true, name: true },
+  });
+
+  if (!category) {
+    throw new Error(
+      `找不到分類 "${categoryInput}"（請輸入分類 name 或 slug，例如：新手入門指南 或 beginner-guide）`,
+    );
+  }
+
+  return category.slug;
+}
 
 // ==========================================
 // 在下方填入您的新文章 (New Articles Here)
@@ -273,12 +303,117 @@ const FALLBACK_IMAGES = [
 ];
 
 // ==========================================
+// AI 文章生成邏輯 (AI Generation Logic)
+// ==========================================
+async function generateArticleDraft(categoryName, topic = null) {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    throw new Error("找不到 GEMINI_API_KEY，請檢查 .env 檔案");
+  }
+
+  const prompt = `
+你是一位專業內容編輯與塔羅教學作者，請為部落格產出「一篇」新文章草稿。
+【分類】${categoryName}
+【主題】${topic || "（請根據分類自行擬定一個高品質且吸引人的主題）"}
+
+寫作要求：
+- 如果主題為空，請先為該分類設計一個具備 SEO 潛力且有趣的標題。
+- 原創、可操作、避免空泛心靈雞湯。
+- 不要提到 AI / 模型 / prompt。
+- 輸出格式必須是「純 JSON」，不要 Markdown。
+{
+  "title": "文章標題",
+  "slug": "article-url-slug",
+  "excerpt": "簡短摘要",
+  "content": "HTML 內容 (使用 p, h2, h3, ul, li, strong)",
+  "tags": ["標籤1", "標籤2"],
+  "coverImage": "https://images.unsplash.com/..."
+}
+`;
+
+  try {
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: {
+            responseMimeType: "application/json",
+          },
+        }),
+      },
+    );
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error?.message || "AI 呼叫失敗");
+
+    let text = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+    
+    // 強力解析 JSON
+    let cleaned = text.replace(/^\s*```(?:json)?\s*/i, "").replace(/\s*```\s*$/i, "").trim();
+    if (!cleaned.startsWith("{")) {
+      const start = text.indexOf("{");
+      const end = text.lastIndexOf("}");
+      if (start !== -1 && end !== -1 && end > start) {
+        cleaned = text.substring(start, end + 1);
+      }
+    }
+    
+    return JSON.parse(cleaned);
+  } catch (error) {
+    console.error("❌ AI 生成或解析時發生錯誤:");
+    console.error(error.message);
+    return null;
+  }
+}
+
+// ==========================================
 // 主程式邏輯 (Main Logic) - 通常不需要修改
 // ==========================================
 async function main() {
   console.log("🚀 開始執行文章發布程序...");
 
-  for (const article of newArticles) {
+  const categoryInput = getArgValue("--category");
+  const generateCount = parseInt(getArgValue("--generate") || "0");
+  const targetCategorySlug = await resolveCategorySlug(categoryInput);
+
+  let articlesToPublish = [];
+
+  if (generateCount > 0) {
+    if (!targetCategorySlug) {
+      console.error("❌ 採用 AI 生成模式時，必須使用 --category 指定分類。");
+      return;
+    }
+
+    const category = await prisma.category.findUnique({
+      where: { slug: targetCategorySlug },
+    });
+
+    console.log(`✨ 進入 AI 自動生成模式: 正在為「${category.name}」產出 ${generateCount} 篇文章...`);
+
+    for (let i = 0; i < generateCount; i++) {
+      console.log(`⏳ 正在生成第 ${i + 1}/${generateCount} 篇...`);
+      const draft = await generateArticleDraft(category.name);
+      if (draft) {
+        draft.categorySlug = targetCategorySlug;
+        articlesToPublish.push(draft);
+      }
+    }
+  } else {
+    articlesToPublish = targetCategorySlug
+      ? newArticles.filter((a) => a.categorySlug === targetCategorySlug)
+      : newArticles;
+
+    if (targetCategorySlug) {
+      console.log(
+        `📚 僅發布指定分類: ${targetCategorySlug}（匹配到 ${articlesToPublish.length} 篇文章）`,
+      );
+    }
+  }
+
+  for (const article of articlesToPublish) {
     if (!article.title || !article.content) {
       console.warn(`⚠️ 跳過資料不完整的文章: ${article.title || "未命名"}`);
       continue;
