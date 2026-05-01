@@ -116,9 +116,9 @@ export async function POST(req: Request) {
       `;
 
       const attempts = [
-        { version: "v1beta", model: "gemini-2.0-flash" },
-        { version: "v1beta", model: "gemini-2.0-flash-lite" },
-        { version: "v1beta", model: "gemini-flash-latest" },
+        { version: "v1beta", model: "gemini-1.5-flash" },
+        { version: "v1beta", model: "gemini-1.5-pro" },
+        { version: "v1beta", model: "gemini-2.0-flash-exp" },
       ];
 
       for (const attempt of attempts) {
