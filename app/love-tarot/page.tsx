@@ -129,14 +129,24 @@ const LoveTarotCard = ({
   );
 };
 
-const CARD_POSITIONS = [
-  "你對Ta的想法",
-  "Ta對你的想法",
-  "你對目前關係的看法",
-  "Ta對目前關係的看法",
-  "你對未來關係的期待",
-  "Ta對未來關係的期待",
-];
+const CARD_POSITIONS: Record<number, string[]> = {
+  1: ["聖愛核心指引"],
+  3: ["過去狀態", "現狀分析", "未來發展"],
+  6: [
+    "你對Ta的想法",
+    "Ta對你的想法",
+    "你對目前關係的看法",
+    "Ta對目前關係的看法",
+    "你對未來關係的期待",
+    "Ta對未來關係的期待",
+  ],
+};
+
+const SPREAD_NAMES: Record<number, string> = {
+  1: "單牌聖愛指引",
+  3: "三聯愛情牌陣",
+  6: "六芒星牌陣",
+};
 
 const SUGGESTED_QUESTIONS: Record<string, string[]> = {
   crush: [
@@ -180,6 +190,7 @@ export default function LoveTarotPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [showLoginDialog, setShowLoginDialog] = useState(false);
+  const [cardCount, setCardCount] = useState<1 | 3 | 6>(6);
   const { toast } = useToast();
 
   const currentSuggestedQuestions = relationshipStatus
@@ -190,6 +201,12 @@ export default function LoveTarotPage() {
     { id: "crush" as RelationshipStatus, label: "曖昧對象", icon: "💗" },
     { id: "ex" as RelationshipStatus, label: "前任", icon: "💔" },
     { id: "current" as RelationshipStatus, label: "現任", icon: "❤️" },
+  ];
+
+  const cardCountOptions = [
+    { count: 1 as const, label: "單牌", icon: "✨" },
+    { count: 3 as const, label: "三張", icon: "🔮" },
+    { count: 6 as const, label: "六張", icon: "💫" },
   ];
 
   const handleStatusSelect = (status: RelationshipStatus) => {
@@ -207,7 +224,7 @@ export default function LoveTarotPage() {
     setIsReading(true);
 
     const shuffled = [...tarotCards].sort(() => Math.random() - 0.5);
-    const selected = shuffled.slice(0, 6).map((cardItem, index) => {
+    const selected = shuffled.slice(0, cardCount).map((cardItem, index) => {
       const isReversed = Math.random() > 0.5;
       const themeMeaning = cardItem.meanings.love;
       const meaning = isReversed ? themeMeaning.reversed : themeMeaning.upright;
@@ -216,7 +233,7 @@ export default function LoveTarotPage() {
         id: `${cardItem.id}-${index}`,
         name: cardItem.name,
         position: index + 1,
-        positionMeaning: CARD_POSITIONS[index],
+        positionMeaning: CARD_POSITIONS[cardCount][index],
         image: cardItem.image,
         isRevealed: false,
         isReversed,
@@ -330,7 +347,7 @@ export default function LoveTarotPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           theme: "love_tarot",
-          spreadType: "love_six_cards",
+          spreadType: `love_${cardCount}_cards`,
           cards: drawnCards.map((c) => ({
             name: c.name,
             isReversed: c.isReversed,
@@ -432,6 +449,28 @@ export default function LoveTarotPage() {
               />
 
               <CardContent className="space-y-8 p-8 mt-4 mb-8">
+                <section>
+                  <h2 className="sm:text-3xl text-[16px] font-bold text-amber-100 mb-6 text-center font-serif tracking-wider">
+                    選擇牌陣
+                  </h2>
+                  <div className="grid grid-cols-3 gap-3">
+                    {cardCountOptions.map((option) => (
+                      <button
+                        key={option.count}
+                        onClick={() => setCardCount(option.count)}
+                        className={`font-serif sm:text-md text-[14px] border transition-all duration-300 transform flex items-center justify-center sm:py-3 py-2 rounded-full focus:outline-none ${
+                          cardCount === option.count
+                            ? "scale-105 bg-amber-500/20 border-amber-400 text-amber-50 shadow-[0_0_15px_rgba(251,191,36,0.1)] hover:bg-amber-500/30 hover:text-amber-50"
+                            : "bg-transparent border-[#C99041] text-amber-300 hover:text-amber-100 hover:bg-amber-500/10 hover:scale-105"
+                        }`}
+                      >
+                        <span className="text-lg mr-1">{option.icon}</span>
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                </section>
+
                 <section>
                   <h2 className="sm:text-3xl text-[16px] font-bold text-amber-100 mb-6 text-center font-serif tracking-wider">
                     你想了解誰？
@@ -545,7 +584,7 @@ export default function LoveTarotPage() {
                 <CardContent className="p-8 mt-4 mb-8 space-y-8">
                   <CardHeader className="text-center sm:mt-[50px] mt-[10px] p-0 mb-8">
                     <CardTitle className="text-2xl md:text-3xl text-amber-100 font-serif tracking-wider">
-                      聖愛塔羅 - 六芒星牌陣
+                      聖愛塔羅 - {SPREAD_NAMES[cardCount]}
                     </CardTitle>
                     <CardDescription className="text-amber-200/90 text-sm md:text-base mt-2">
                       <span className="inline-block border-b border-[#C99041]/50 pb-1 font-serif text-amber-200">
@@ -572,7 +611,7 @@ export default function LoveTarotPage() {
                     </div>
                   ) : aiReading ? (
                     <div className="space-y-12 animate-in fade-in slide-in-from-bottom duration-1000">
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+                      <div className={`grid gap-6 ${cardCount === 1 ? "grid-cols-1 max-w-xs mx-auto" : cardCount === 3 ? "grid-cols-1 md:grid-cols-3" : "grid-cols-2 md:grid-cols-3"}`}>
                         {drawnCards.map((card) => (
                           <LoveTarotCard
                             key={card.id}
@@ -667,7 +706,7 @@ export default function LoveTarotPage() {
                     </div>
                   ) : (
                     <>
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
+                      <div className={`grid gap-8 ${cardCount === 1 ? "grid-cols-1 max-w-xs mx-auto" : cardCount === 3 ? "grid-cols-1 md:grid-cols-3" : "grid-cols-2 md:grid-cols-3"}`}>
                         {drawnCards.map((card) => (
                           <LoveTarotCard
                             key={card.id}

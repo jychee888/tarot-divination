@@ -80,9 +80,10 @@ export async function POST(req: Request) {
 
     // 根據實測結果，優先嘗試穩定版模型
     const attempts = [
-      { version: 'v1beta', model: 'gemini-1.5-flash' },
-      { version: 'v1beta', model: 'gemini-1.5-pro' },
-      { version: 'v1beta', model: 'gemini-2.0-flash-exp' }
+      { version: 'v1beta', model: 'gemini-2.5-flash' },
+      { version: 'v1beta', model: 'gemini-2.5-pro' },
+      { version: 'v1beta', model: 'gemini-2.0-flash' },
+      { version: 'v1beta', model: 'gemini-3.0-flash' }
     ];
 
     let lastError = null;
