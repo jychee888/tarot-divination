@@ -64,6 +64,18 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
+model EmailOtp {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email     String
+  otp       String
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([email])
+  @@index([expiresAt])
+}
+
 model DivinationRecord {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
   theme       String
