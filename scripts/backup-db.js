@@ -66,6 +66,26 @@ async function backup() {
     "utf-8"
   );
 
+  // 自動清理舊備份，預設保留最近 14 份，避免佔用電腦過多磁碟空間
+  try {
+    const backupsRoot = path.resolve(__dirname, "../backups");
+    const allBackups = fs
+      .readdirSync(backupsRoot)
+      .filter((name) => name.startsWith("backup-"))
+      .sort();
+
+    const MAX_BACKUPS = 14;
+    if (allBackups.length > MAX_BACKUPS) {
+      const toDelete = allBackups.slice(0, allBackups.length - MAX_BACKUPS);
+      for (const folder of toDelete) {
+        fs.rmSync(path.join(backupsRoot, folder), { recursive: true, force: true });
+        console.log(`🧹 已自動清理舊備份: ${folder}`);
+      }
+    }
+  } catch (cleanErr) {
+    // 忽略清理錯誤
+  }
+
   console.log(`\n🎉 備份完成！`);
   console.log(`📁 備份檔案存放路徑: ${backupDir}`);
   console.log(`💡 若未來資料庫遺失，可執行 'npm run db:restore' 進行還原。\n`);
