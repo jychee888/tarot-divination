@@ -1,0 +1,37 @@
+name: Supabase & Service Keep Alive
+
+on:
+  schedule:
+    # 每 3 天午夜 (00:00 UTC) 自動觸發一次，重置 Supabase 7 天閒置計時
+    - cron: '0 0 */3 * *'
+  workflow_dispatch: # 支援在 GitHub Actions 後台手動按「Run workflow」測試
+
+jobs:
+  keep-alive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase Project
+        env:
+          SUPABASE_PROJECT_REF: "jiorbrohmdoiuteqeifc"
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          echo "🚀 發送保活請求至 Supabase (Project: $SUPABASE_PROJECT_REF)..."
+          
+          if [ -n "$SUPABASE_ANON_KEY" ]; then
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+              -H "apikey: $SUPABASE_ANON_KEY" \
+              -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
+              "https://${SUPABASE_PROJECT_REF}.supabase.co/rest/v1/")
+          else
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+              "https://${SUPABASE_PROJECT_REF}.supabase.co/rest/v1/")
+          fi
+
+          echo "Supabase 回應狀態碼: $HTTP_CODE"
+
+          # 只要 Supabase 收到請求並回應 (200, 401, 404 等非 500/503 暫停)，即表示存取成功並重置閒置計時器
+          if [ "$HTTP_CODE" -ge 200 ] && [ "$HTTP_CODE" -lt 500 ]; then
+            echo "✅ Supabase 保活成功！已重置 7 天閒置計時，專案不會被自動休眠。"
+          else
+            echo "⚠️ 收到非預期狀態碼 ($HTTP_CODE)，請檢查 Supabase 專案是否已被暫停需先手動 Restore。"
+          fi
