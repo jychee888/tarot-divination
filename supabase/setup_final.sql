@@ -538,6 +538,146 @@ insert into public."Post" (title, slug, excerpt, cover_image, category_id, tags,
 )
 on conflict (slug) do update set content = excluded.content, title = excluded.title;
 
+-- 文章 21: 斷聯期他在想什麼
+insert into public."Post" (title, slug, excerpt, cover_image, category_id, tags, content, published) values
+(
+  '斷聯期他在想什麼？抽到這 4 張牌，代表他正在偷偷關注你還是已放下？',
+  'no-contact-what-is-he-thinking-tarot',
+  '斷聯後的安靜，往往比爭吵更讓人窒息。從倒吊人、隱士、聖杯八到寶劍七，深度解碼對方在冷戰斷聯期的真實心理狀態與復聯幾率。',
+  'https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&q=80&w=1200',
+  'cat_reading_secrets',
+  array['斷聯心態', '復聯時機', '冷戰心理', '愛情解答'],
+  '<h2>斷聯後的寂靜：是徹底放下，還是暗潮洶湧的心理博弈？</h2><p>倒吊人代表暫停思考、隱士進入防禦閉關模式、寶劍七偷偷關注近況、聖杯八正在強迫自己放下。若想精確掌握復聯時機，推薦使用聖愛六芒星深度占卜！</p>',
+  true
+)
+on conflict (slug) do update set content = excluded.content, title = excluded.title;
+
+-- 文章 22: 前任還會主動聯絡我嗎
+insert into public."Post" (title, slug, excerpt, cover_image, category_id, tags, content, published) values
+(
+  '前任還會主動聯絡我嗎？解密塔羅中 3 大「舊情復燃」的關鍵信號',
+  'will-my-ex-contact-me-reconciliation-tarot',
+  '分手後的遺憾與不捨，總讓人忍不住期待手機響起的那一刻。本文透過專業塔羅象徵，深度剖析最容易帶來復合轉機的 3 大神聖信號牌。',
+  'https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&q=80&w=1200',
+  'cat_case_studies',
+  array['復合機率', '前任聯絡', '舊情復燃', '案例解析'],
+  '<h2>舊情復燃的 3 大核心信號牌</h2><p>聖杯六喚醒甜蜜回憶與思念、審判正位預告死灰復燃與重生、命運之輪再次將宿命齒輪交會。真正的復合是兩個全新成熟的人重新相愛。</p>',
+  true
+)
+on conflict (slug) do update set content = excluded.content, title = excluded.title;
+
+-- 文章 23: 他心裡有別人嗎
+insert into public."Post" (title, slug, excerpt, cover_image, category_id, tags, content, published) values
+(
+  '他的心裡只有我嗎？揭開曖昧關係中是否存在「第三者」的 4 大牌面徵兆',
+  'is-there-someone-else-third-party-tarot',
+  '女人的直覺往往不是空穴來風。當對方的行蹤開始變得可疑、手機不離手時，教你從塔羅牌的隱微符號中，理性識別關係中的潛在干擾者。',
+  'https://images.unsplash.com/photo-1534068590799-09895a701e3e?auto=format&fit=crop&q=80&w=1200',
+  'cat_reading_secrets',
+  array['第三者徵兆', '感情背叛', '解牌心法', '愛情盲點'],
+  '<h2>女人的直覺，往往是潛意識的警訊</h2><p>聖杯三逆位代表邊界模糊的異性社交、寶劍七隱瞞與謊言、惡魔牌肉慾與誘惑、權杖二正在兩人之間權衡比較。看清局勢才能保護自己的底線。</p>',
+  true
+)
+on conflict (slug) do update set content = excluded.content, title = excluded.title;
+
+-- 文章 24: 是正緣還是孽緣
+insert into public."Post" (title, slug, excerpt, cover_image, category_id, tags, content, published) values
+(
+  '他是我的正緣嗎？如何從塔羅牌分辨「宿命孽緣」與「靈魂伴侶」？',
+  'is-he-my-soulmate-or-karmic-lesson',
+  '有些人遇見了像天雷勾動地火，卻把你傷得體無完膚；有些人相處平淡如水，卻能陪伴一生。教你用塔羅哲學精準分辨你的愛情究竟是「業力考驗」還是「神聖正緣」。',
+  'https://images.unsplash.com/photo-1518173946687-a4c8892bbd9f?auto=format&fit=crop&q=80&w=1200',
+  'cat_reading_secrets',
+  array['正緣命定', '靈魂伴侶', '業力關係', '愛情解答'],
+  '<h2>真正的正緣，會讓你感到安心平靜</h2><p>惡魔與高塔往往是業力關係的互相消耗；戀人、聖杯二、聖杯十才是真正的靈魂伴侶，讓你在彼此面前做最自在的自己。</p>',
+  true
+)
+on conflict (slug) do update set content = excluded.content, title = excluded.title;
+
+-- 文章 25: 男人冷淡原因
+insert into public."Post" (title, slug, excerpt, cover_image, category_id, tags, content, published) values
+(
+  '他為什麼突然對我冷淡？剖析男人在感情中「突然退縮」的 4 種深層心理',
+  'why-is-he-acting-cold-suddenly-tarot',
+  '前幾天還無話不談，怎麼突然回話變短、態度降到冰點？透過塔羅牌深入男性潛意識，拆解男人「洞穴期」與感情退縮的真正成因。',
+  'https://images.unsplash.com/photo-1579407364450-481fe19dbfaa?auto=format&fit=crop&q=80&w=1200',
+  'cat_case_studies',
+  array['男人冷淡', '洞穴期', '情感心理', '案例解析'],
+  '<h2>男人的突然冷淡：洞穴期與防衛機制</h2><p>錢幣八被工作現實佔滿、寶劍四心力交瘁休眠、寶劍騎士逆位自尊受挫生悶氣、聖杯五悲觀防禦。退後兩步專注自己，他自然會彈回你的身邊。</p>',
+  true
+)
+on conflict (slug) do update set content = excluded.content, title = excluded.title;
+
+-- 文章 26: 走向婚姻長久指標
+insert into public."Post" (title, slug, excerpt, cover_image, category_id, tags, content, published) values
+(
+  '我們會走到最後嗎？評估感情能否長久穩定的「聖愛未來」檢核指標',
+  'will-we-last-long-term-love-future',
+  '相愛容易相處難。從激情退去後的柴米油鹽，到共同面對生活的風雨，教你用塔羅牌檢核你們的感情是否具備走入婚姻、白頭偕老的能量基礎。',
+  'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&q=80&w=1200',
+  'cat_tarot_spreads',
+  array['走向婚姻', '長久感情', '牌陣檢核', '未來預測'],
+  '<h2>長久感情的四大基石</h2><p>權杖四代表穩固的承諾與歸屬、錢幣十穩健現實基礎、節制牌高情商調和包容、教皇牌共同信念與契約精神。</p>',
+  true
+)
+on conflict (slug) do update set content = excluded.content, title = excluded.title;
+
+-- 文章 27: 無疾而終與放下
+insert into public."Post" (title, slug, excerpt, cover_image, category_id, tags, content, published) values
+(
+  '沒有說出口的再見：為什麼有些人注定只能陪你走一小段路？',
+  'closure-without-goodbye-spiritual-meaning',
+  '最遺憾的分手，往往是沒有正式的告白與告別。解析無疾而終的感情背後所蘊含的靈魂契約與深刻啟示，學會與遺憾和解。',
+  'https://images.unsplash.com/photo-1669604728627-dda1f689be72?auto=format&fit=crop&q=80&w=1200',
+  'cat_reading_secrets',
+  array['無疾而終', '斷捨離', '自我療癒', '靈性心法'],
+  '<h2>有些相遇，是為了喚醒你的靈魂</h2><p>信使完成使命後因緣自然散去；死神的恩慈避免了長期的慢性折磨；星星牌洗滌心靈，把淚水化為智慧。學會放下才是真正的成熟。</p>',
+  true
+)
+on conflict (slug) do update set content = excluded.content, title = excluded.title;
+
+-- 文章 28: 單身脫單預測
+insert into public."Post" (title, slug, excerpt, cover_image, category_id, tags, content, published) values
+(
+  '我什麼時候能脫單？解鎖未來 3 個月桃花運勢與新戀情的關鍵契機',
+  'when-will-i-find-love-singles-tarot',
+  '單身許久，想知道自己的正緣何時才會降臨？本文教你如何透過塔羅牌預測未來的桃花時機點，並提供快速提升個人戀愛吸引力的實用建議。',
+  'https://images.unsplash.com/photo-1769974672482-b6726090c4ca?auto=format&fit=crop&q=80&w=1200',
+  'cat_tarot_spreads',
+  array['脫單預測', '桃花運勢', '單身必讀', '牌陣分析'],
+  '<h2>桃花吉牌大盤點</h2><p>聖杯王牌溢位的情感甘霖、聖杯騎士浪漫追求者、權杖三遠方與跨界桃花、太陽牌熱烈光明。敞開胸懷，調成喜悅頻率迎接新戀情！</p>',
+  true
+)
+on conflict (slug) do update set content = excluded.content, title = excluded.title;
+
+-- 文章 29: 高能量女王心法
+insert into public."Post" (title, slug, excerpt, cover_image, category_id, tags, content, published) values
+(
+  '如何讓他主動奔向你？運用「高能量女王」心法，徹底逆轉情感被動局勢',
+  'how-to-attract-him-queen-energy-tarot',
+  '卑微討好只會換來廉價的對待，真正的吸引力來自於內在的高貴與笃定。結合塔羅牌中的四大宮廷女王原型，教你活出讓男人情不自禁尊重的極致魅力。',
+  'https://images.unsplash.com/photo-1765822019605-1c5f6a91864b?auto=format&fit=crop&q=80&w=1200',
+  'cat_reading_secrets',
+  array['女王心法', '吸引力法則', '兩性博弈', '高價值女人'],
+  '<h2>高能量女王的四大原型</h2><p>權杖女王自信熱情自帶光芒、寶劍女王邊界分明及時止損、聖杯女王溫柔深邃情緒共鳴、錢幣女王經濟獨立生活豐盛。做自己的女王，才能吸引真正的國王。</p>',
+  true
+)
+on conflict (slug) do update set content = excluded.content, title = excluded.title;
+
+-- 文章 30: 實戰六芒星案例解密
+insert into public."Post" (title, slug, excerpt, cover_image, category_id, tags, content, published) values
+(
+  '從瀕臨分手到甜蜜升溫：一場「聖愛六芒星」牌陣如何拯救陷入死局的關係？',
+  'hexagram-saved-relationship-real-case',
+  '冷戰一個月、互相拉黑，這段長達五年的感情真的無藥可救了嗎？完整還原一場真實諮詢案例，展示六芒星牌陣如何抽絲剝繭化解死局。',
+  'https://images.unsplash.com/photo-1541963463532-d68292c34b19?auto=format&fit=crop&q=80&w=1200',
+  'cat_case_studies',
+  array['六芒星牌陣', '真實案例', '關係修復', '實戰解牌'],
+  '<h2>五年情侶的冷戰死局解方</h2><p>寶劍三的委屈被看見、權杖十的壓力被同理，雙方內心深處的聖杯十被重新喚醒。放下勝負心，用理解取代指責，成功挽回真摯愛情。</p>',
+  true
+)
+on conflict (slug) do update set content = excluded.content, title = excluded.title;
+
 -- ==============================================================================
 -- 5. 執行驗證與統計報告 (Verification & Stats)
 -- ==============================================================================
