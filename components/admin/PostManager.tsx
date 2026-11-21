@@ -23,22 +23,26 @@ import CategoryManager from "./CategoryManager";
 
 interface PostManagerProps {
   initialPosts: any[];
+  allCategories?: any[];
 }
 
-export default function PostManager({ initialPosts }: PostManagerProps) {
+export default function PostManager({ initialPosts, allCategories = [] }: PostManagerProps) {
   const [activeTab, setActiveTab] = useState<"posts" | "categories">("posts");
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const router = useRouter();
 
-  // 取得所有唯一的分類
-  const categories = Array.from(
-    new Set(
-      initialPosts
-        .map((p: any) => p.category?.name)
-        .filter((name: string | undefined) => name !== undefined),
-    ),
-  ).sort() as string[];
+  // 取得所有分類（若後端有傳入全部分類表則使用全部分類，否則從現有文章中萃取）
+  const categories =
+    allCategories.length > 0
+      ? Array.from(new Set(allCategories.map((c: any) => c.name))).sort() as string[]
+      : (Array.from(
+          new Set(
+            initialPosts
+              .map((p: any) => p.category?.name)
+              .filter((name: string | undefined) => name !== undefined),
+          ),
+        ).sort() as string[]);
 
   // 根據選擇的分類過濾文章
   const posts =
