@@ -398,6 +398,146 @@ insert into public."Post" (title, slug, excerpt, cover_image, category_id, tags,
 )
 on conflict (slug) do update set content = excluded.content, title = excluded.title;
 
+-- 文章 11: 他到底喜不喜歡我
+insert into public."Post" (title, slug, excerpt, cover_image, category_id, tags, content, published) values
+(
+  '他到底喜不喜歡我？從 5 張關鍵塔羅牌看透曖昧對象的真實心意',
+  'does-he-like-me-5-tarot-cards',
+  '曖昧期最讓人心力交瘁的，莫過於對方的忽冷忽熱。本文拆解 5 張在感情占卜中最能揭露對方真實心理態度的關鍵牌卡，教你一眼看穿他是真心動還是只是寂寞。',
+  'https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&q=80&w=1200',
+  'cat_reading_secrets',
+  array['曖昧心態', '愛情占卜', '牌義解析', '心理投射'],
+  '<h2>曖昧時期的「忽冷忽熱」，背後到底是甚麼心態？</h2><p>在感情占卜中，以下 5 張關鍵牌往往能直接照出對方最真實的心理狀態：</p><h3>1. 聖杯二 (Two of Cups) —— 雙向奔赴的靈魂吸引</h3><p>對方的核心牌出現聖杯二正位，代表他真誠渴望與你建立深刻連結。</p><h3>2. 權杖騎士 (Knight of Wands) —— 熱烈但可能稍縱即逝的激情</h3><p>他此時對你充滿好奇與征服欲，但若處於逆位，要留意熱情來得快去得也快。</p><h3>3. 寶劍二 (Two of Swords) —— 內心築起高牆的防禦者</h3><p>他在感情中受過傷，處於「想靠近卻害怕受傷」的矛盾狀態。</p><h3>4. 魔術師逆位 (The Magician Reversed) —— 需留意的包裝與漁場管理</h3><p>擅長甜言蜜語，但承諾遲遲不落實，需提高警覺。</p><h3>5. 錢幣四 (Four of Pentacles) —— 保守試探、不願主動付出代價</h3><p>害怕承擔責任，享受陪伴但短時間內不會給予關係名分。</p>',
+  true
+)
+on conflict (slug) do update set content = excluded.content, title = excluded.title;
+
+-- 文章 12: 該放手還是繼續等
+insert into public."Post" (title, slug, excerpt, cover_image, category_id, tags, content, published) values
+(
+  '該放手還是繼續等？塔羅牌教你判斷這段「內耗感情」是否值得挽回',
+  'let-go-or-wait-toxic-relationship',
+  '明明痛苦比快樂多，卻遲遲捨不得離開？透過真實占卜案例與自我檢核指標，教你用塔羅看清關係本質，走出情感內耗，拿回愛自己的勇氣。',
+  'https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&q=80&w=1200',
+  'cat_case_studies',
+  array['感情挽回', '斷捨離', '情感內耗', '案例分析'],
+  '<h2>我們放不下的，究竟是那個人，還是付出的沉沒成本？</h2><p>當一段關係讓你頻繁哭泣與自我懷疑時，它已從「滋養」變成了「內耗」。</p><h3>判斷是否該放手的 3 大塔羅指標牌：</h3><ol><li><strong>死神 (Death) 正位：</strong>舊篇章已完結，唯有放手埋葬過去，新生才能降臨。</li><li><strong>寶劍三 (Three of Swords)：</strong>核心本質已經是傷害大於愛，不要再為對方的冷漠找藉口。</li><li><strong>高塔 (The Tower)：</strong>虛假的關係終將崩解，及時止損才能保全尊嚴。</li></ol>',
+  true
+)
+on conflict (slug) do update set content = excluded.content, title = excluded.title;
+
+-- 文章 13: 愚人是真愛還是玩玩
+insert into public."Post" (title, slug, excerpt, cover_image, category_id, tags, content, published) values
+(
+  '抽到「愚人」是真愛還是玩玩？深度解析塔羅牌中的 3 大浪子/海王特徵',
+  'the-fool-true-love-or-player',
+  '「他對每個人都很好，還是只對我特別？」解析愚人正逆位、聖杯騎士與魔術師逆位在愛情關係中的心理機制，教你識破不願承諾的「假性親密」。',
+  'https://images.unsplash.com/photo-1534068590799-09895a701e3e?auto=format&fit=crop&q=80&w=1200',
+  'cat_reading_secrets',
+  array['浪子心理', '海王特徵', '感情避坑', '解牌心法'],
+  '<h2>有些人的溫柔，只是他的社交禮貌與狩獵本能</h2><h3>三大浪子/海王特徵牌面：</h3><ul><li><strong>愚人 (The Fool)：</strong>熱愛當下與冒險，但一旦談及長遠承諾便會迅速抽離。</li><li><strong>聖杯騎士逆位：</strong>專職造夢的情感騙徒，沉迷於深情男主角的人設。</li><li><strong>魔術師逆位：</strong>話術大師，利用信任掩飾謊言與多線發展。</li></ul>',
+  true
+)
+on conflict (slug) do update set content = excluded.content, title = excluded.title;
+
+-- 文章 14: 鏡像關係與盲點
+insert into public."Post" (title, slug, excerpt, cover_image, category_id, tags, content, published) values
+(
+  '愛情總是鬼打牆？用「鏡像關係」找出你在親密關係中重複受傷的盲點',
+  'mirror-relationship-tarot-blind-spots',
+  '為什麼每次戀愛都以相似的原因收場？塔羅牌是一面心靈鏡子，映照出你未曾察覺的內在匱乏與童年依附模式，帶你打破重複受傷的輪迴。',
+  'https://images.unsplash.com/photo-1518173946687-a4c8892bbd9f?auto=format&fit=crop&q=80&w=1200',
+  'cat_case_studies',
+  array['親密關係', '鏡像投射', '自我療癒', '心理學'],
+  '<h2>「為什麼我總會遇到同一種類型的人傷害我？」</h2><p>親密關係往往映照出我們尚未療癒的內在盲點。過度付出的皇后逆位容易吸引依賴幼態的伴侶；過度戒備的權杖九則容易把溫和的愛阻絕於心門之外。改變自己的心靈頻率，才能徹底翻轉吸引力法則。</p>',
+  true
+)
+on conflict (slug) do update set content = excluded.content, title = excluded.title;
+
+-- 文章 15: 如何挑選第一副牌
+insert into public."Post" (title, slug, excerpt, cover_image, category_id, tags, content, published) values
+(
+  '塔羅新手如何挑選第一副牌？偉特、托特與馬賽牌的完整新手指南',
+  'how-to-choose-first-tarot-deck',
+  '市面上塔羅牌琳瑯滿目，初學者該從何入手？深入對比萊德偉特（RWS）、托特（Thoth）與馬賽牌（Tarot of Marseilles）三大體系，為你指引最順手的第一步。',
+  'https://images.unsplash.com/photo-1596706062103-3a6d71f78082?auto=format&fit=crop&q=80&w=1200',
+  'cat_beginner_guide',
+  array['選牌指南', '萊德偉特', '新手教學', '自學塔羅'],
+  '<h2>初學者首選：萊德·偉特塔羅 (RWS)</h2><p>78 張牌皆有生動具體的情景故事插圖，幾乎所有中文教材均以此為標準。托特與馬賽牌深奧但抽象，建議入門者先從偉特系牌卡建立扎實基礎。</p>',
+  true
+)
+on conflict (slug) do update set content = excluded.content, title = excluded.title;
+
+-- 文章 16: 破除 5 大迷思
+insert into public."Post" (title, slug, excerpt, cover_image, category_id, tags, content, published) values
+(
+  '初學者最常犯的 5 大迷思：牌卡真的會吸負能量？沒洗牌會不準嗎？',
+  '5-common-tarot-myths-debunked',
+  '「塔羅牌算多了命會變薄？」「抽到死神會有不幸？」破解流傳已久的 5 大塔羅民間迷思，建立健康、理智且充滿啟發性的現代靈性占卜觀念。',
+  'https://images.unsplash.com/photo-1541963463532-d68292c34b19?auto=format&fit=crop&q=80&w=1200',
+  'cat_beginner_guide',
+  array['破除迷信', '新手須知', '占卜觀念', '能量心理'],
+  '<h2>塔羅是心靈鏡子，不是怪力亂神</h2><p>命不會越算越薄，關鍵在於不要將人生的主導權完全交給外部工具；死神代表蛻變而非死亡；保持敬畏與客觀，塔羅是絕佳的自我覺察工具。</p>',
+  true
+)
+on conflict (slug) do update set content = excluded.content, title = excluded.title;
+
+-- 文章 17: 數字學與四元素
+insert into public."Post" (title, slug, excerpt, cover_image, category_id, tags, content, published) values
+(
+  '78張牌背不起來？掌握「數字學＋四元素」，解牌速度翻倍的進階心法',
+  'master-78-cards-numerology-elements',
+  '還在一張一張死背 78 張牌義嗎？傳授資深占卜師的秘密武器：透過 1 到 10 的數字進化軸線加上火水風土四元素本質，瞬間看懂所有小牌故事！',
+  'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&q=80&w=1200',
+  'cat_reading_secrets',
+  array['四元素', '數字學', '解牌秘訣', '小阿爾克那'],
+  '<h2>元素 × 數字 ＝ 秒懂牌義</h2><p>權杖（火/熱情）、聖杯（水/情感）、寶劍（風/思維）、錢幣（土/物質）。搭配 1（種子）到 10（圓滿）的生命週期演進，不用死記硬背，直觀看透小阿爾克那脈絡。</p>',
+  true
+)
+on conflict (slug) do update set content = excluded.content, title = excluded.title;
+
+-- 文章 18: 時間之流三張牌陣
+insert into public."Post" (title, slug, excerpt, cover_image, category_id, tags, content, published) values
+(
+  '三張牌搞定一切！「時間之流」牌陣：過去、現在、未來的高效實戰教學',
+  'three-card-spread-past-present-future',
+  '不需要複雜的十張大牌陣！簡單、精準且充滿洞見的「時間之流（過去／現在／未來）」牌陣，從問題設定到因果串聯解讀的完整實戰演練。',
+  'https://images.unsplash.com/photo-1579407364450-481fe19dbfaa?auto=format&fit=crop&q=80&w=1200',
+  'cat_tarot_spreads',
+  array['時間之流', '三張牌陣', '牌陣教學', '實戰解牌'],
+  '<h2>大道至簡的時間之流</h2><p>左邊過去（起因）、中間現在（焦點與選擇點）、右邊未來（趨勢）。重點在於因果串聯，看清現在該如何調整，以重塑未來的結果。</p>',
+  true
+)
+on conflict (slug) do update set content = excluded.content, title = excluded.title;
+
+-- 文章 19: 0號愚人深度指南
+insert into public."Post" (title, slug, excerpt, cover_image, category_id, tags, content, published) values
+(
+  '0號「愚人 (The Fool)」：歸零的勇氣！踏出未知懸崖的心靈啟示',
+  'the-fool-major-arcana-guide',
+  '愚人是整副塔羅牌靈魂之旅的起點。他站在懸崖邊，眼中只有天空與遠方。解析愚人牌的正逆位象徵、人生大冒險與跳脫舒適圈的深刻靈魂指引。',
+  'https://images.unsplash.com/photo-1519681393798-3828fb4090bb?auto=format&fit=crop&q=80&w=1200',
+  'cat_major_arcana',
+  array['大阿爾克那', '愚人', '重新開始', '冒險精神'],
+  '<h2>踏向未知的無限潛能</h2><p>愚人站在懸崖邊，象徵跳脫舒適圈需要全然的信任。白狗提醒本能清醒，白玫瑰代表純潔動機。正位象徵勇於冒險的新起點；逆位警惕任性逃避與不計後果。</p>',
+  true
+)
+on conflict (slug) do update set content = excluded.content, title = excluded.title;
+
+-- 文章 20: 7號戰車深度指南
+insert into public."Post" (title, slug, excerpt, cover_image, category_id, tags, content, published) values
+(
+  '7號「戰車 (The Chariot)」：在矛盾與衝突中奪回人生的掌控權',
+  'the-chariot-major-arcana-guide',
+  '駕馭黑白雙獅的年輕將領，象徵著在慾望與理智、外在挑戰與內心恐懼之間取得平衡。深度剖析戰車牌如何指引我們在混亂局勢中開闢一條勝利之路。',
+  'https://images.unsplash.com/photo-1669604728627-dda1f689be72?auto=format&fit=crop&q=80&w=1200',
+  'cat_major_arcana',
+  array['大阿爾克那', '戰車', '意志力', '自我掌控'],
+  '<h2>自我意志的極致掌控</h2><p>將領無韁繩而能駕馭黑白雙獅，象徵透過專注的心念協調內在的理性與慾望。正位是克服萬難獲得勝利的極佳吉兆；逆位提醒避免剛愎自用與情緒失控。</p>',
+  true
+)
+on conflict (slug) do update set content = excluded.content, title = excluded.title;
+
 -- ==============================================================================
 -- 5. 執行驗證與統計報告 (Verification & Stats)
 -- ==============================================================================
