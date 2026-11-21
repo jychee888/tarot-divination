@@ -75,7 +75,7 @@ const ARTICLES = [
     slug: "the-magician-guide",
     categorySlug: "major-arcana",
     coverImage:
-      "https://images.unsplash.com/photo-1596706062103-3a6d71f78082?auto=format&fit=crop&q=80&w=2070",
+      "https://images.unsplash.com/photo-1612323272388-34fe470bedad?auto=format&fit=crop&q=80&w=1200",
     excerpt:
       "魔術師象徵著將夢想化為現實的力量。他擁有了四大元素的工具，只需要專注的意志，就能創造奇蹟。",
     tags: ["大阿爾克那", "魔術師", "創造力", "顯化"],

@@ -145,7 +145,7 @@ const ARTICLES = [
     title: "塔羅新手如何挑選第一副牌？偉特、托特與馬賽牌的完整新手指南",
     slug: "how-to-choose-first-tarot-deck",
     categorySlug: "beginner-guide",
-    coverImage: "https://images.unsplash.com/photo-1596706062103-3a6d71f78082?auto=format&fit=crop&q=80&w=1200",
+    coverImage: "https://images.unsplash.com/photo-1728241189734-f422205a6a53?auto=format&fit=crop&q=80&w=1200",
     excerpt: "市面上塔羅牌琳瑯滿目，初學者該從何入手？深入對比萊德偉特（RWS）、托特（Thoth）與馬賽牌（Tarot of Marseilles）三大體系，為你指引最順手的第一步。",
     tags: ["選牌指南", "萊德偉特", "新手教學", "自學塔羅"],
     content: `
@@ -300,7 +300,7 @@ const ARTICLES = [
     title: "0號「愚人 (The Fool)」：歸零的勇氣！踏出未知懸崖的心靈啟示",
     slug: "the-fool-major-arcana-guide",
     categorySlug: "major-arcana",
-    coverImage: "https://images.unsplash.com/photo-1519681393798-3828fb4090bb?auto=format&fit=crop&q=80&w=1200",
+    coverImage: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&q=80&w=1200",
     excerpt: "愚人是整副塔羅牌靈魂之旅的起點。他站在懸崖邊，眼中只有天空與遠方。解析愚人牌的正逆位象徵、人生大冒險與跳脫舒適圈的深刻靈魂指引。",
     tags: ["大阿爾克那", "愚人", "重新開始", "冒險精神"],
     content: `
