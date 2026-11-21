@@ -12,7 +12,8 @@
     "db:backup": "node scripts/backup-db.js",
     "db:restore": "node scripts/restore-db.js",
     "db:backup:auto": "bash scripts/setup-auto-backup.sh",
-    "db:seed": "node scripts/seed-all-defaults.js"
+    "db:seed": "node scripts/seed-all-defaults.js",
+    "article:write": "node scripts/auto-write-article.js"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.1",
