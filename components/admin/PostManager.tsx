@@ -30,6 +30,7 @@ export default function PostManager({ initialPosts, allCategories = [] }: PostMa
   const [activeTab, setActiveTab] = useState<"posts" | "categories">("posts");
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [selectedTag, setSelectedTag] = useState<string>("all");
   const router = useRouter();
 
   // 取得所有分類（若後端有傳入全部分類表則使用全部分類，否則從現有文章中萃取）
@@ -44,11 +45,19 @@ export default function PostManager({ initialPosts, allCategories = [] }: PostMa
           ),
         ).sort() as string[]);
 
-  // 根據選擇的分類過濾文章
-  const posts =
-    selectedCategory === "all"
-      ? initialPosts
-      : initialPosts.filter((p: any) => p.category?.name === selectedCategory);
+  // 取得所有唯一標籤
+  const allTags = Array.from(
+    new Set(initialPosts.flatMap((p: any) => p.tags || []).filter(Boolean)),
+  ).sort() as string[];
+
+  // 根據選擇的分類與標籤過濾文章
+  const posts = initialPosts.filter((p: any) => {
+    const matchCategory =
+      selectedCategory === "all" || p.category?.name === selectedCategory;
+    const matchTag =
+      selectedTag === "all" || (p.tags && p.tags.includes(selectedTag));
+    return matchCategory && matchTag;
+  });
 
   const togglePublishStatus = async (post: any) => {
     setUpdatingId(post.id);
@@ -164,8 +173,9 @@ export default function PostManager({ initialPosts, allCategories = [] }: PostMa
 
           {/* Filters & Actions Row */}
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 bg-slate-900/40 p-4 rounded-2xl border border-slate-800">
-            <div className="flex items-center gap-3 w-full md:w-auto">
-              <div className="relative w-full md:w-64">
+            <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
+              {/* 分類篩選器 */}
+              <div className="relative w-full sm:w-56">
                 <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">
                   <Filter className="w-4 h-4" />
                 </div>
@@ -186,12 +196,37 @@ export default function PostManager({ initialPosts, allCategories = [] }: PostMa
                 </div>
               </div>
 
-              {selectedCategory !== "all" && (
-                <button
-                  onClick={() => setSelectedCategory("all")}
-                  className="text-xs text-slate-500 hover:text-blue-400 font-bold transition-colors whitespace-nowrap"
+              {/* 標籤篩選器 */}
+              <div className="relative w-full sm:w-56">
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">
+                  <TagIcon className="w-4 h-4" />
+                </div>
+                <select
+                  value={selectedTag}
+                  onChange={(e) => setSelectedTag(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-800 text-slate-200 text-sm rounded-xl pl-10 pr-10 py-2.5 appearance-none focus:outline-none focus:border-blue-500/50 transition-all hover:bg-slate-900"
                 >
-                  清除篩選
+                  <option value="all">所有標籤 ({allTags.length})</option>
+                  {allTags.map((tag) => (
+                    <option key={tag} value={tag}>
+                      #{tag}
+                    </option>
+                  ))}
+                </select>
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none">
+                  <ChevronDown className="w-4 h-4" />
+                </div>
+              </div>
+
+              {(selectedCategory !== "all" || selectedTag !== "all") && (
+                <button
+                  onClick={() => {
+                    setSelectedCategory("all");
+                    setSelectedTag("all");
+                  }}
+                  className="text-xs text-slate-400 hover:text-blue-400 font-bold transition-colors whitespace-nowrap px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl hover:bg-slate-900"
+                >
+                  重設篩選
                 </button>
               )}
             </div>
@@ -263,12 +298,19 @@ export default function PostManager({ initialPosts, allCategories = [] }: PostMa
                           </span>
                           <div className="flex flex-wrap gap-1">
                             {post.tags?.map((tag: string) => (
-                              <span
+                              <button
                                 key={tag}
-                                className="text-[9px] text-slate-500 bg-slate-800 px-1.5 rounded"
+                                type="button"
+                                onClick={() => setSelectedTag(tag === selectedTag ? "all" : tag)}
+                                className={`text-[9px] px-1.5 py-0.5 rounded transition-all cursor-pointer ${
+                                  selectedTag === tag
+                                    ? "bg-blue-500 text-white font-bold shadow-sm"
+                                    : "text-slate-400 bg-slate-800 hover:bg-slate-700 hover:text-slate-200"
+                                }`}
+                                title={`點擊依 #${tag} 篩選`}
                               >
                                 #{tag}
-                              </span>
+                              </button>
                             ))}
                           </div>
                         </div>

@@ -13,6 +13,7 @@
     "db:restore": "node scripts/restore-db.js",
     "db:backup:auto": "bash scripts/setup-auto-backup.sh",
     "db:seed": "node scripts/seed-all-defaults.js",
+    "db:tags": "node scripts/update-all-post-tags.js",
     "article:write": "node scripts/auto-write-article.js"
   },
   "dependencies": {
