@@ -1,13 +1,15 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { Filter, ChevronDown, Check } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
+import { useRef, useEffect } from "react";
 
 interface Category {
   id: string;
   name: string;
   slug: string;
+  _count?: {
+    posts: number;
+  };
 }
 
 interface ArticleFilterProps {
@@ -15,23 +17,31 @@ interface ArticleFilterProps {
   currentCategory?: string;
 }
 
-export default function ArticleFilter({ categories, currentCategory }: ArticleFilterProps) {
+export default function ArticleFilter({
+  categories,
+  currentCategory,
+}: ArticleFilterProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const activeTabRef = useRef<HTMLButtonElement>(null);
 
-  const selectedCategory = categories.find(c => c.slug === currentCategory);
+  // 計算所有文章總數（將各分類文章數加總，若分類有重複文章則 fallback 或準確呈現）
+  const totalPostsCount = categories.reduce(
+    (sum, c) => sum + (c._count?.posts || 0),
+    0
+  );
 
+  // 當選中特定分類時，自動平滑滾動讓該 Tab 保持在可視區域中
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+    if (activeTabRef.current && scrollContainerRef.current) {
+      activeTabRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+        inline: "center",
+      });
+    }
+  }, [currentCategory]);
 
   const handleSelect = (slug: string | null) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -40,56 +50,91 @@ export default function ArticleFilter({ categories, currentCategory }: ArticleFi
     } else {
       params.delete("category");
     }
-    router.push(`/articles?${params.toString()}`);
-    setIsOpen(false);
+    router.push(`/articles?${params.toString()}`, { scroll: false });
   };
 
   return (
-    <div className="relative mb-12 flex justify-center" ref={dropdownRef}>
-      <div className="flex items-center gap-4">
-        <label className="text-[#C99041]/60 text-xs font-bold uppercase tracking-widest hidden sm:block">
-          篩選專欄：
-        </label>
+    <nav
+      className="relative mb-10 w-full"
+      aria-label="文章分類導航"
+    >
+      {/* 奢華金色下劃線導航容器 */}
+      <div className="relative border-b border-[#C99041]/20">
+        {/* 左側滾動淡出遮罩（僅在有更多內容時平滑過渡） */}
+        <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-[rgb(23,17,17)] to-transparent z-10 md:hidden" />
         
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center justify-between gap-8 px-6 py-3 bg-[#1a1414]/80 backdrop-blur-md border border-[#C99041]/30 rounded-full hover:border-[#C99041] transition-all min-w-[200px] group shadow-[0_4px_20px_rgba(0,0,0,0.3)] hover:shadow-[0_4px_25px_rgba(201,144,65,0.15)]"
-        >
-          <div className="flex items-center gap-3">
-            <Filter className={`w-4 h-4 ${isOpen ? 'text-[#C99041]' : 'text-[#C99041]/60'} transition-colors`} />
-            <span className="text-sm font-bold text-[#F9ECDC] tracking-wide">
-              {selectedCategory ? selectedCategory.name : "所有文章"}
-            </span>
-          </div>
-          <ChevronDown className={`w-4 h-4 text-[#C99041]/60 group-hover:text-[#C99041] transition-all ${isOpen ? 'rotate-180' : ''}`} />
-        </button>
-      </div>
+        {/* 右側滾動淡出遮罩 */}
+        <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-[rgb(23,17,17)] to-transparent z-10 md:hidden" />
 
-      {/* Dropdown Menu */}
-      {isOpen && (
-        <div className="absolute top-full mt-3 w-64 bg-[#1a1414]/95 backdrop-blur-xl border border-[#C99041]/20 rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.5)] z-[60] overflow-hidden animate-in fade-in zoom-in-95 duration-200 origin-top">
-          <div className="py-2">
-            <button
-              onClick={() => handleSelect(null)}
-              className={`w-full flex items-center justify-between px-5 py-3 text-sm font-medium transition-colors hover:bg-[#C99041]/10 ${!currentCategory ? 'text-[#C99041]' : 'text-[#F9ECDC]/70'}`}
+        {/* 橫向單行頁籤列表（遵從 Modern Web Guidance 規範：保持單行滾動，不折行） */}
+        <div
+          ref={scrollContainerRef}
+          role="tablist"
+          aria-label="塔羅專欄分類"
+          className="flex items-center gap-6 sm:gap-8 overflow-x-auto no-scrollbar scroll-smooth px-2 sm:px-4 pb-0 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          style={{ scrollSnapType: "inline proximity" }}
+        >
+          {/* 所有文章 Tab */}
+          <button
+            type="button"
+            role="tab"
+            ref={!currentCategory ? activeTabRef : null}
+            aria-selected={!currentCategory}
+            onClick={() => handleSelect(null)}
+            className={`group relative flex-none flex items-center gap-2 pb-3.5 pt-1 text-sm font-medium transition-all cursor-pointer border-b-2 ${
+              !currentCategory
+                ? "text-[#C99041] border-[#C99041] font-bold shadow-[0_2px_12px_rgba(201,144,65,0.4)]"
+                : "text-[#F9ECDC]/60 hover:text-[#F9ECDC] border-transparent hover:border-[#C99041]/30"
+            }`}
+            style={{ scrollSnapAlign: "start" }}
+          >
+            <span className="tracking-wide">所有文章</span>
+            <span
+              className={`text-[10px] px-2 py-0.5 rounded-full font-mono transition-colors ${
+                !currentCategory
+                  ? "bg-[#C99041] text-[#171111] font-bold"
+                  : "bg-[#C99041]/15 text-[#C99041]/70 group-hover:bg-[#C99041]/25 group-hover:text-[#C99041]"
+              }`}
             >
-              <span>所有文章</span>
-              {!currentCategory && <Check className="w-4 h-4" />}
-            </button>
-            <div className="h-px bg-[#C99041]/10 mx-4 my-1" />
-            {categories.map((category) => (
+              {totalPostsCount > 0 ? totalPostsCount : "全部"}
+            </span>
+          </button>
+
+          {/* 各個獨立分類 Tab */}
+          {categories.map((category) => {
+            const isSelected = currentCategory === category.slug;
+            const count = category._count?.posts ?? 0;
+
+            return (
               <button
                 key={category.id}
+                type="button"
+                role="tab"
+                ref={isSelected ? activeTabRef : null}
+                aria-selected={isSelected}
                 onClick={() => handleSelect(category.slug)}
-                className={`w-full flex items-center justify-between px-5 py-3 text-sm font-medium transition-colors hover:bg-[#C99041]/10 ${currentCategory === category.slug ? 'text-[#C99041]' : 'text-[#F9ECDC]/70'}`}
+                className={`group relative flex-none flex items-center gap-2 pb-3.5 pt-1 text-sm font-medium transition-all cursor-pointer border-b-2 ${
+                  isSelected
+                    ? "text-[#C99041] border-[#C99041] font-bold shadow-[0_2px_12px_rgba(201,144,65,0.4)]"
+                    : "text-[#F9ECDC]/60 hover:text-[#F9ECDC] border-transparent hover:border-[#C99041]/30"
+                }`}
+                style={{ scrollSnapAlign: "start" }}
               >
-                <span>{category.name}</span>
-                {currentCategory === category.slug && <Check className="w-4 h-4" />}
+                <span className="tracking-wide">{category.name}</span>
+                <span
+                  className={`text-[10px] px-2 py-0.5 rounded-full font-mono transition-colors ${
+                    isSelected
+                      ? "bg-[#C99041] text-[#171111] font-bold"
+                      : "bg-[#C99041]/15 text-[#C99041]/70 group-hover:bg-[#C99041]/25 group-hover:text-[#C99041]"
+                  }`}
+                >
+                  {count}
+                </span>
               </button>
-            ))}
-          </div>
+            );
+          })}
         </div>
-      )}
-    </div>
+      </div>
+    </nav>
   );
 }
