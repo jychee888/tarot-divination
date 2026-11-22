@@ -135,9 +135,9 @@ export default function ArticleFilter({
     : { chinese: "全部文章", english: "All Articles" };
 
   return (
-    <div className="relative mb-10 w-full">
+    <div className={`relative mb-10 w-full ${isOpen ? "z-40" : "z-20"}`}>
       {/* 整合式奢華工具列：左側統計與標籤狀態，右側精緻星象下拉觸發器 */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 py-3 px-4 sm:px-6 rounded-2xl bg-[#140e0e]/80 border border-[#C99041]/25 backdrop-blur-md shadow-[0_4px_30px_rgba(0,0,0,0.3)]">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 py-3 px-4 sm:px-6 rounded-2xl bg-[#140e0e]/90 border border-[#C99041]/25 backdrop-blur-md shadow-[0_4px_30px_rgba(0,0,0,0.3)]">
         
         {/* 左側：專欄統計與即時狀態 */}
         <div className="flex items-center gap-3 flex-wrap">
@@ -174,7 +174,7 @@ export default function ArticleFilter({
         </div>
 
         {/* 右側：精緻星象下拉觸發按鈕 */}
-        <div className="relative w-full sm:w-auto" ref={dropdownRef}>
+        <div className="relative w-full sm:w-auto z-50" ref={dropdownRef}>
           <button
             type="button"
             onClick={() => setIsOpen(!isOpen)}
@@ -210,7 +210,7 @@ export default function ArticleFilter({
 
           {/* 展開面板：2 欄式卡牌網格選擇器（解決單欄太長、在中間遮擋的痛點） */}
           {isOpen && (
-            <div className="absolute right-0 top-full mt-3 w-full sm:w-[480px] md:w-[540px] bg-[#140e0e]/95 backdrop-blur-2xl border border-[#C99041]/40 rounded-3xl shadow-[0_20px_70px_rgba(0,0,0,0.85),0_0_35px_rgba(201,144,65,0.18)] z-[70] p-4 animate-in fade-in zoom-in-95 duration-200 origin-top-right">
+            <div className="absolute right-0 top-full mt-3 w-full sm:w-[480px] md:w-[540px] bg-[#140e0e]/98 backdrop-blur-2xl border border-[#C99041]/40 rounded-3xl shadow-[0_25px_80px_rgba(0,0,0,0.95),0_0_35px_rgba(201,144,65,0.25)] z-[100] p-4 animate-in fade-in zoom-in-95 duration-200 origin-top-right">
               
               {/* 頂部全覽按鈕 */}
               <button

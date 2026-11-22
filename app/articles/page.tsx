@@ -82,7 +82,7 @@ export default async function ArticlesPage({ searchParams }: ArticlesPageProps) 
           currentCategory={category} 
         />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 relative z-0">
           {posts.map((post: any) => (
             <Link
               href={`/articles/${post.slug}`}
